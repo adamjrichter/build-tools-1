@@ -1,0 +1,14 @@
+	Rename files.
+
+2016.10.11
+
+	Version 0.8 version number change
+
+	Made the tests run inside a docker image, including the
+	installation of the package files.  This is currently only
+	tested for Ubuntu, but should work for Debian.  It almost
+	certainly does not yet work for RPM-based distributions, such
+	as Centos.
+
+
+Version 0.7

@@ -1,0 +1,138 @@
+
+	The kernel test script relies can invoke different drivers
+(for lack of a better term) for different distributions and, potentially,
+different container systems.
+
+
+Top level programs:
+
+	./test_kernel_pkgs.sh [--distribution=dist] [--containers=container_system] [--logdir=logdir] pxfuse_src_dir pkg_file [pkg_file...]
+
+		Based on values of distribution and container_system,
+		test that the contents of pxfuse_src_dir compiles.
+
+	./test_kernels_in_mirror.sh  [--distribution=dist] [--containers=container_system] [--logdir=logdir] pxfuse_src_dir mirror_dir
+
+		Invokes test_kern_pkgs function, described below, to
+		test all kernels in the given directory tree
+
+
+	test_kernel_pkgs_log_results pxfuse_src_directory log_dir_parent log_dir_suffix pkg_file [pkg_file...]
+		If $log_dir_parent/$log_dir_suffix/done exists, do nothing.
+		Otherwise, invoke test_kernel_pkgs, logging output in
+		build.log (in that directory).  On success, stores the
+		resultant px.ko in the same directory as build.log.
+		On completion (succes or failure), creates the empty
+		file "done" in that directory.
+
+	 pxfuse_src_directory
+		Based on the contents of pxfuse_src_directory
+
+
+Distribution interface:
+
+	The distribution interface uses the $distribution shell global
+	variable to select the distribution type.  Currently, "ubuntu",
+	"debian" and "centos" are supported.  Every shell function func
+	listed below is just a wrapper that invokes func_$distribution.
+
+	dist_init_container	-  Install any needed initial
+				   packages in the initial container.
+
+	pkg_files_to_kernel_dirs - Extract the kernel directory strings
+				  from the given list of kernel header
+				  packages.
+
+	pkg_files_to_names	- Given a list of package files (outside
+				  of the container) output a list of the
+				  package names that can be passed to
+				  uninstall_pkgs
+
+	install_pkgs_dir dir	- Install all of the .deb or .rpm files
+			  	  that are located in directory dir
+				  in the container
+
+        install_pkgs		- Install packages over the network by name
+
+	uninstall_pkgs	        - Uninstall the specified package names.
+
+	pkgs_update		- Do something like
+				  "apt-get update" or "yum update".
+				  Perhaps unnecessary.
+
+	walk_mirror dir command [args..]
+				- Descend into subdirectories of a
+				  mirror tree, finding the relevant
+				  kernel packages and invoking
+				  comand with args followed by a
+				  recommended logging subdirectory,
+				  followed by package files that
+				  refers to a single set of kernel headers.
+				  Typically command
+				  and args is something like
+				  "test_kernel_pkgs_log_results
+				  $pxfuse_src_dir $log_dir_top".
+				  This function relies on the global
+				  variable $arch (which currently should
+				  be "x86_64").  In the future, this
+				  function might be moved to a separate
+				  file related to mirror operations.
+
+	test_kernel_pkgs_func container_tmpdir results_logdir
+			       - This is the main function of
+				  ./test_kernel_pkgs.  There is
+				  a default version of this function,
+				  test_kernel_pkgs_func.default, which
+				  distribution specific drivers can
+				  wrap or redirect to.  On success, it
+				  copies px.ko into the directory
+				  $results_logdir.
+
+
+Container interface:
+
+	The container interface uses the $container_system shell global
+	variable to select the container type.  Currently "docker" is the
+	only implemented driver, but "lxc" or "chroot" might come later.
+
+	Every shell function func listed below is just a wrapper that
+	invokes func_$container_system.
+
+	The container interface is at a lower level than the distribution
+	distribution driver functions.  It never directly calls such
+	functions, which is why, for example, the start_container
+	function takes an argument that is the function to be called
+	to do the distrbitution-specific initialization of the container.
+
+	start_containter init_command [args...]
+			 	  Makes sure a container
+				  is available for in_container.  Uses the
+				  the $distribution shell variables to which
+				  container template to use.  If a new
+				  container had to be created, invoke
+				  init_command [args...] to do the
+				  distribution-specific initialization
+
+	in_container shell_command - Run the shell command in the container.
+		     		   standard input, standard output, standard
+				   error and exit code are passed through.
+
+	stop_container		- Takes no argument.  Shut down the container
+				  if necessary.  Actually, for many
+				  container systems it is pretty harmless
+				  to leave this as a no-op.
+
+Directories on host:
+
+	/var/lib/pwx-mirror	- Contains crontab.txt
+	/var/lib/pwx-mirror/build-results
+
+	/usr/local/share/pwx-kernel-test/scripts
+				- All script libraries used by pwx-kernel-test
+	/usr/local/bin/pwx-update-mirrors
+	/usr/local/bin/pwx-test-kernel-headers
+	/usr/local/bin/pwx-test-kernel-headers-throughout-mirror
+
+TODO:
+	Commands to compare list of old a new kernel compilations, and
+	notify people about new compilation results.
