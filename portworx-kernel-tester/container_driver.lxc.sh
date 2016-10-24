@@ -32,5 +32,5 @@ stop_container_lxc() {
 }
 
 in_container_lxc() {
-    lxc-execute --name "$container_name" "$@"
+    lxc-execute --name "$container_name" -- "$@"
 }
