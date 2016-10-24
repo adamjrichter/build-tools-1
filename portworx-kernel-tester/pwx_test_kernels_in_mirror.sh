@@ -67,8 +67,13 @@ PATH=$PATH:/usr/local/bin
 mirror_callback() {
     local log_subdir="$1"
     shift 1
-    $command "--logdir=${log_subdir}" --pxfuse="$pxfuse_dir" \
-	"--distribution=$distro" "--containers=${container_system}" "$@"
+    $command \
+	"--arch=$arch" \
+	"--containers=${container_system}" \
+	"--distribution=$distro" \
+	"--logdir=${log_subdir}" \
+	"--pxfuse=$pxfuse_dir" \
+	"$@"
 }
 
 exit_status=0
