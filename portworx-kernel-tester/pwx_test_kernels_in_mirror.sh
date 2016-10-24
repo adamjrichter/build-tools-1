@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]] ; do
     case "$1" in
 	--arch=* ) arch=${1#--arch=} ;;
 	--command=* ) command=${1#--command=} ;;
-	--containers=* ) container_system=${1#--container-system=} ;;
+	--containers=* ) container_system=${1#--containers=} ;;
 	--distribution=* ) distro=${1#--distribution=} ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
 	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
