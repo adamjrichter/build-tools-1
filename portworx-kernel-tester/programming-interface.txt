@@ -159,13 +159,10 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 Directories on host:
 
 	/var/lib/pwx-mirror	- Contains crontab.txt
-	/var/lib/pwx-mirror/build-results
+	/var/lib/portworx-kernel-tester/build-results
 
-	/usr/local/share/pwx-kernel-test/scripts
-				- All script libraries used by pwx-kernel-test
-	/usr/local/bin/pwx-update-mirrors
-	/usr/local/bin/pwx-test-kernel-headers
-	/usr/local/bin/pwx-test-kernel-headers-throughout-mirror
+	/sur/local/share/portworx-kernel-tester/scripts
+		- All script libraries used by portworx-test-kernels-in-mirror
 
 TODO:
 	Commands to compare list of old a new kernel compilations, and
