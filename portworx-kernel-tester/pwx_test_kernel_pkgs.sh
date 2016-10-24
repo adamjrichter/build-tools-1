@@ -16,6 +16,10 @@ distro=ubuntu
 container_system=docker
 logdir=$PWD
 
+exit_handler() {
+    rm -rf "$local_tmp_dir"
+}
+
 while [[ $# -gt 0 ]] ; do
     case "$1" in
 	--arch=* ) arch=${1#--arch=} ;;
@@ -38,6 +42,18 @@ local_tmp_dir=/tmp/test-kernels.ubuntu.$$
 remote_tmp_dir=/tmp/test-portworx-kernels
 results_logdir=${scriptsdir}/../build/results/$distro
 
+prepare_pxfuse_dir() {
+    trap exit_handler EXIT
+
+    mkdir -p "$local_tmp_dir"
+    if [ -z "$pxfuse_dir" ] ; then
+	(cd "$local_tmp_dir" &&
+	 git clone https://github.com/portworx/px-fuse.git )
+
+	pxfuse_dir="$local_tmp_dir/px-fuse"
+    fi
+}
+
 main() {
     local kernel_dir
     start_container dist_init_container
@@ -50,4 +66,5 @@ main() {
     return $result
 }
 
+prepare_pxfuse_dir
 main "$@"

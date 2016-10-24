@@ -62,15 +62,17 @@ fi
 local_tmp_dir=/tmp/test-kernels.ubuntu.$$
 remote_tmp_dir=/tmp/test-portworx-kernels
 
-trap exit_handler EXIT
+prepare_pxfuse_dir() {
+    trap exit_handler EXIT
 
-mkdir -p "$local_tmp_dir"
-if [ -z "$pxfuse_dir" ] ; then
-	(cd "$local_tmp_dir/px-fuse" &&
+    mkdir -p "$local_tmp_dir"
+    if [ -z "$pxfuse_dir" ] ; then
+	(cd "$local_tmp_dir" &&
 	 git clone https://github.com/portworx/px-fuse.git )
 
 	pxfuse_dir="$local_tmp_dir/px-fuse"
-fi
+    fi
+}
 
 PATH=$PATH:/usr/local/bin
 
@@ -92,6 +94,7 @@ mirror_callback() {
 	"$@"
 }
 
+prepare_pxfuse_dir
 checksum=$(cd "$pxfuse_dir" && checksum_current_directory)
 log_subdir="$logdir/pxfuse-${checksum}/${distro}"
 exit_status=0
