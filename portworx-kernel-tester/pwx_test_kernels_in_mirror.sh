@@ -12,14 +12,18 @@ usage() {
     echo ""
 }
 
+exit_handler() {
+    rm -rf "$local_tmp_dir"
+}
 
 . ${scriptsdir}/container_driver.sh
 . ${scriptsdir}/distro_driver.sh
 
 distro=ubuntu
 container_system=docker
-logdir=$PWD
+logdir="$build_results_dir"
 pxfuse_dir=""
+command=pwx_test_kernel_pkgs.sh
 
 while [[ $# -gt 0 ]] ; do
     case "$1" in
@@ -27,24 +31,33 @@ while [[ $# -gt 0 ]] ; do
 	--containers=* ) container_system=${1#--container-system=} ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
 	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
+	--command=* ) command=${1#--command=} ;;
+	--* ) usage >&2 ; exit 1 ;;
 	* ) break ;;
     esac
     shift
 done
 
-if [ $# -ne 1 ] ; then
-    usage >&2
-    exit 1
+if [ $# = 0 ] ; then
+    case "$distro" in
+	centos ) set /home/ftp/mirrors/http/elrepo.org ;;
+	debian ) set /home/ftp/mirrors/http/snapshot.debian.org ;;
+	ubuntu ) set /home/ftp/mirrors/http/kernel.ubuntu.com  ;;
+	* ) echo "Unable to choose default mirror directory for unknown distribution \"$distro\"." >&2 ; exit 1 ;;
+    esac
 fi
-
-mirror_dir="$2"
-shift 2
 
 local_tmp_dir=/tmp/test-kernels.ubuntu.$$
 remote_tmp_dir=/tmp/test-portworx-kernels
 
+trap exit_handler EXIT
+
+mkdir -p "$local_tmp_dir"
 if [ -z "$pxfuse_dir" ] ; then
-    
+	(cd "$local_tmp_dir/px-fuse" &&
+	 git clone https://github.com/portworx/px-fuse.git )
+
+	pxfuse_dir="$local_tmp_dir/px-fuse"
 fi
 
 PATH=$PATH:/usr/local/bin
@@ -52,8 +65,19 @@ PATH=$PATH:/usr/local/bin
 mirror_callback() {
     local log_subdir="$1"
     shift 1
-    test_kernel_pkgs.sh "--logdir=${log_subdir}" \
+    $command "--logdir=${log_subdir}" --pxfuse="$pxfuse_dir" \
 	"--distribution=$distro" "--containers=${container_system}" "$@"
 }
 
-walk_mirror "$mirror_dir" mirror_callback
+exit_status=0
+for mirror_dir in "$@" ; do
+	walk_mirror "$mirror_dir" mirror_callback
+	tmp_exit_status=$?
+	if [ "$tmp_exit_status" != 0 ] ; then
+	    exit_status=$tmp_exit_status
+	fi
+done
+
+( exit $exit_status )
+# ^^^ Return $tmp_exit_status, but do not actually exit the shell if this
+# file was sourced rather than executed.
