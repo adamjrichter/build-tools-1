@@ -4,32 +4,65 @@
 different container systems.
 
 
-Top level programs:
+Top level scripts, installed in /usr/local/bin:
 
-	./test_kernel_pkgs.sh [--distribution=dist] [--containers=container_system] [--logdir=logdir] pxfuse_src_dir pkg_file [pkg_file...]
+	Each of the following scripts accepts a common set of options,
+	listed below.
 
-		Based on values of distribution and container_system,
-		test that the contents of pxfuse_src_dir compiles.
-
-	./test_kernels_in_mirror.sh  [--distribution=dist] [--containers=container_system] [--logdir=logdir] pxfuse_src_dir mirror_dir
-
-		Invokes test_kern_pkgs function, described below, to
-		test all kernels in the given directory tree
-
-
-	test_kernel_pkgs_log_results pxfuse_src_directory log_dir_parent log_dir_suffix pkg_file [pkg_file...]
-		If $log_dir_parent/$log_dir_suffix/done exists, do nothing.
-		Otherwise, invoke test_kernel_pkgs, logging output in
-		build.log (in that directory).  On success, stores the
-		resultant px.ko in the same directory as build.log.
-		On completion (succes or failure), creates the empty
-		file "done" in that directory.
-
-	 pxfuse_src_directory
-		Based on the contents of pxfuse_src_directory
+		--distribution=dist            [default: ubuntu]
+		--containers=container_system  [default: docker]
+		--logdir=logdir                [default: based on distribution]
+		--pfxuse=pxfuse_src_dir        [default: download tempoary
+					        directory from github]
 
 
-Distribution interface:
+	pwx_test_kernel_pkgs.sh [options] pkg_files...
+
+		If logdir/done exists, then do nothing.
+
+		Otherwise, based on values of distribution and
+		container_system, test that the contents of
+		pxfuse_src_dir compiles.  Record the results in
+		logdir/build.log. On success, also save the resultant
+		px.ko file in logdir.  Returns 0 on success, non-zero
+		on any failure.
+
+	pwx_test_kernels_in_mirror.sh [options] mirror_dirs_relative_paths...
+
+		Additional options:
+
+		--command=subcommand	[default: pwx_test_kernel_pkgs.sh]
+
+		Descent into all subdirectories of mirror_dirs, finding
+		kernel head packages that should be grouped together,
+		and pass each group of packages to subcommand (usually
+		pwx_test_kernel_pkgs.sh) with the arguments --distribution,
+		--containers, --logdir, and --pxfuse explicitly passed.
+
+		The value of logdir passed to the command is changed to
+		logdir/pxfuse-checksum-$CHECKSUM/distro/mirror_dir/subdir/pkg
+		where mirror_dir/subdir/pkg is the relative path from
+		the current working directory to the first package file
+		that will be passed to the subcommd.
+
+		Note that mirror_dirs should be specified as paths
+		relative to the current working directory, preferably
+		without	using ".." so that build reuslts will be
+		recorded in the problem directories.
+
+		The tests are invoked even if one of the subcommands
+		(tests) fails.
+
+		pwx_test_kernels_in_mirror.sh exits with exit code 0
+		(success) only if all subcommands (tests) succeeded.
+		Otherwise, it exists non-zero (failure).
+
+
+DESCRIPTION OF INTERNAL FUNCTIONS
+
+
+    Distribution interface (defined by sourcing
+    /usr/local/share/portworx-kernel-tester/distro_driver.sh ):
 
 	The distribution interface uses the $distribution shell global
 	variable to select the distribution type.  Currently, "ubuntu",
@@ -89,7 +122,9 @@ Distribution interface:
 				  $results_logdir.
 
 
-Container interface:
+
+    Container interface (defined by sourcing
+    /usr/local/share/portworx-kernel-tester/container_driver.sh ):
 
 	The container interface uses the $container_system shell global
 	variable to select the container type.  Currently "docker" is the
