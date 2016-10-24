@@ -70,6 +70,6 @@ test_kernel_pkgs_func_default() {
 	in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
 	    tar -C "${results_log_dir}" -xpv
     fi
-    uninstall_pkgs $(pkg_files_to-names "$@")
+    uninstall_pkgs $(pkg_files_to_names "$@")
     return $result
 }
