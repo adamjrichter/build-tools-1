@@ -1,5 +1,5 @@
-# This is not a standalone program.  It is a library to be sourced by a shell
-# script.
+# This is not a standalone program.  It is a library to be sourced by a bash
+# script (bash because it uses "[[").
 
 # For now, just default everything to the common Debian drivers.
 
@@ -24,7 +24,7 @@ ubuntu_process_non_arch_file()
         dir=${file%/*}
 
         for arch_file in ${dir}/${pkg_name}-*_${arch}.deb ; do
-            if [ ! -e "$arch_file" ] ; then
+            if [[ ! -e "$arch_file" ]] ; then
                 echo "No architecuture-specific matches for $file" >&2
                 continue
             fi
