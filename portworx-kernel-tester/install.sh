@@ -5,6 +5,8 @@ scriptsdir=${prefix}/share/portworx-kernel-tester/scripts
 build_results_dir=/var/lib/portworx-kernel-tester/build-results
 bindir=${prefix}/bin
 
+set -e
+
 install_scripts() {
     local dir="$1"
     shift
