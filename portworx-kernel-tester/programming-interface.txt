@@ -98,11 +98,9 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 				- Descend into subdirectories of a
 				  mirror tree, finding the relevant
 				  kernel packages and invoking
-				  comand with args followed by a
-				  recommended logging subdirectory,
-				  followed by package files that
-				  refers to a single set of kernel headers.
-				  Typically command
+				  comand with args followed by package
+				  files that refers to a single set of
+				  kernel headers.  Typically command
 				  and args is something like
 				  "test_kernel_pkgs_log_results
 				  $pxfuse_src_dir $log_dir_top".
