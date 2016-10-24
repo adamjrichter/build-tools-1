@@ -53,7 +53,7 @@ debian_process_common_deb_file()
 	prefix="${file%-common_*}"
 	suffix="${file#*-common_}"
 
-        pkg_name=$(dpkg_file_to_pkg_name "$file")
+        pkg_name=$(pkg_files_to_names_deb "${mirror_tree}/${file}")
         dir=${file%/*}
 
 	header_files=""
@@ -64,10 +64,10 @@ debian_process_common_deb_file()
 	    fi
 	done
 
-	deps=$(debian_pkgs_to_dependencies $files)
+	deps=$(debian_pkgs_to_dependencies $header_files)
 	depfiles=$(debian_find_pkgs_in_mirror "$mirror_tree" $deps)
 
-	"$@" $(echo_word_per_line $files $depfiles | sort --unique)
+	"$@" $(echo_word_per_line $header_files $depfiles | sort --unique)
 }
 
 walk_mirror_debian() {
