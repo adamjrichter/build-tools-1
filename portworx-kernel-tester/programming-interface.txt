@@ -114,7 +114,7 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 			       - This is the main function of
 				  ./test_kernel_pkgs.  There is
 				  a default version of this function,
-				  test_kernel_pkgs_func.default, which
+				  test_kernel_pkgs_func_default, which
 				  distribution specific drivers can
 				  wrap or redirect to.  On success, it
 				  copies px.ko into the directory
