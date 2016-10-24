@@ -18,8 +18,8 @@ start_container_lxc() {
     esac
 
     if [ ! -e "/var/lib/lxc/${container_name}" ] ; then
-	lxc-create --name "${container_name}" --template download \
-		   --dist "$distribution" --arch "$arch"
+	lxc-create --name "${container_name}" --template download -- \
+		   --dist "$distribution" --arch "$arch" --release "$release"
 	in_container_lxc "$@"
     fi
 
