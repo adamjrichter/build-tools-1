@@ -9,6 +9,7 @@ Top level scripts, installed in /usr/local/bin:
 	Each of the following scripts accepts a common set of options,
 	listed below.
 
+		--arch=architecture            [default: amd64]
 		--distribution=dist            [default: ubuntu]
 		--containers=container_system  [default: docker]
 		--logdir=logdir                [default: based on distribution]
