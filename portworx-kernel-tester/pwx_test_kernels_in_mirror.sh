@@ -12,12 +12,20 @@ usage() {
     echo ""
 }
 
+. ${scriptsdir}/container_driver.sh
+. ${scriptsdir}/distro_driver.sh
+
+checksum_current_directory() {
+    find . \( -name .git -type d -prune \) -o \( -type f -print0 \) |
+        sort --zero-terminated |
+        xargs --null --no-run-if-empty --max-args=1 md5sum |
+        md5sum - |
+	sed 's/ .*$//'
+}
+
 exit_handler() {
     rm -rf "$local_tmp_dir"
 }
-
-. ${scriptsdir}/container_driver.sh
-. ${scriptsdir}/distro_driver.sh
 
 distro=ubuntu
 arch=amd64
@@ -25,6 +33,8 @@ container_system=docker
 logdir="$build_results_dir"
 pxfuse_dir=""
 command=pwx_test_kernel_pkgs.sh
+# Global variables set later:
+#   log_subdir
 
 while [[ $# -gt 0 ]] ; do
     case "$1" in
@@ -76,6 +86,8 @@ mirror_callback() {
 	"$@"
 }
 
+checksum=$(cd "pxfuse_dir" && checksum_current_directory)
+log_subdir="$logdir/pxfuse-${checksum}/${distro}"
 exit_status=0
 for mirror_dir in "$@" ; do
 	walk_mirror "$mirror_dir" mirror_callback
