@@ -20,6 +20,7 @@ exit_handler() {
 . ${scriptsdir}/distro_driver.sh
 
 distro=ubuntu
+arch=amd64
 container_system=docker
 logdir="$build_results_dir"
 pxfuse_dir=""
@@ -27,11 +28,12 @@ command=pwx_test_kernel_pkgs.sh
 
 while [[ $# -gt 0 ]] ; do
     case "$1" in
-	--distribution=* ) distro=${1#--distribution=} ;;
+	--arch=* ) arch=${1#--arch=} ;;
+	--command=* ) command=${1#--command=} ;;
 	--containers=* ) container_system=${1#--container-system=} ;;
+	--distribution=* ) distro=${1#--distribution=} ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
 	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
-	--command=* ) command=${1#--command=} ;;
 	--* ) usage >&2 ; exit 1 ;;
 	* ) break ;;
     esac
