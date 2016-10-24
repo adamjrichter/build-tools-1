@@ -1,8 +1,8 @@
 #!/bin/sh
 
 prefix=/usr/local
-scriptsdir=${prefix}/share/pwxmirror/scripts
-build_resuls_dir=/var/lib/pwxmirror/build-results
+scriptsdir=${prefix}/share/portworx-kernel-tester/scripts
+build_resuls_dir=/var/lib/portworx-kernel-tester/build-results
 bindir=${prefix}/bin
 
 install_scripts() {
@@ -10,7 +10,8 @@ install_scripts() {
     shift
     mkdir -p "$dir"
     for file in "$@" ; do
-	sed -e "s|^scriptsdir=.*\$|scriptsdir=${scriptsdir}|" -e "s|^build_results_dir=.*\$|build_results_dir=${build_results_dir}|" \
+	sed -e "s|^scriptsdir=.*\$|scriptsdir=${scriptsdir}|" \
+	    -e "s|^build_results_dir=.*\$|build_results_dir=${build_results_dir}|" \
 	    < "$file" > "$dir/$file"
     done
 }
