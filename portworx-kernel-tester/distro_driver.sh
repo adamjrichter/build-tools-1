@@ -39,7 +39,7 @@ test_kernel_pkgs_func_default() {
     shift 2
 
     if [[ -e "$result_logdir/done" ]] ; then
-	echo "test_kernel_pkgs_func.default: $result_logdir/done exists.  Skipping."
+	echo "test_kernel_pkgs_func_default: $result_logdir/done exists.  Skipping."
     fi
 
     in_container mkdir -p "$container_tmpdir/pxfuse_dir" "$container_tmpdir/header_pkgs"
@@ -65,7 +65,7 @@ test_kernel_pkgs_func_default() {
 	 KERNELPATH="$headers_dir"
     
     result=$?
-    echo "test_kernel_pkgs_func.default: build_exit_code=$result" >&2
+    echo "test_kernel_pkgs_func_default: build_exit_code=$result" >&2
     if [ "$result" = 0 ] ; then
 	in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
 	    tar -C "${results_log_dir}" -xpv
