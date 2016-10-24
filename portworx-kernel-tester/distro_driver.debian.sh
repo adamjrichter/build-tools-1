@@ -3,14 +3,14 @@
 
 # For now, just default everything to the common Debian drivers.
 
-dist_init_container_debian()      { "dist_init_container.deb"      "$@" ; }
-pkg_files_to_kernel_dirs_debian() { "pkg_files_to_kernel_dirs.deb" "$@" ; }
-pkg_files_to_names_debian()       { "pkg_files_to_names.deb"       "$@" ; }
-install_pkgs_debian()             { "install_pkgs.deb"             "$@" ; }
-install_pkg_files_debian()        { "install_pkg_files.deb"        "$@" ; }
-uninstall_pkgs_debian()           { "uninstall_pkgs.deb"           "$@" ; }
-pkgs_update_debian()              { "pkgs_update.deb"              "$@" ; }
-test_kernel_pkgs_func()           { "test_kernel_pkgs_func.default" "$@" ; }
+dist_init_container_debian()      { "dist_init_container_deb"      "$@" ; }
+pkg_files_to_kernel_dirs_debian() { "pkg_files_to_kernel_dirs_deb" "$@" ; }
+pkg_files_to_names_debian()       { "pkg_files_to_names_deb"       "$@" ; }
+install_pkgs_debian()             { "install_pkgs_deb"             "$@" ; }
+install_pkg_files_debian()        { "install_pkg_files_deb"        "$@" ; }
+uninstall_pkgs_debian()           { "uninstall_pkgs_deb"           "$@" ; }
+pkgs_update_debian()              { "pkgs_update_deb"              "$@" ; }
+test_kernel_pkgs_func()           { "test_kernel_pkgs_func_default" "$@" ; }
 
 debian_pkgs_to_dependencies() {
     local pkgfile
