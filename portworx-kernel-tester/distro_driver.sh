@@ -60,7 +60,7 @@ test_kernel_pkgs_func_default() {
     in_container sh -c \
 	"cd ${container_tmpdir}/pxfuse_dir && autoreconf && ./configure"
 
-    headers_dir=$(get_kernel_headers_dir "$@")
+    headers_dir=$(pkg_files_to_kernel_dirs "$@" | sort -u | head -1)
     in_container make -C ${container_tmpdir}/pxfuse_dir \
 	 KERNELPATH="$headers_dir"
     
