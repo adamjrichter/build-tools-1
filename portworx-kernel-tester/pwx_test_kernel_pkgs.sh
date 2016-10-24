@@ -11,22 +11,23 @@ usage() {
 . ${scriptsdir}/container_driver.sh
 . ${scriptsdir}/distro_driver.sh
 
+arch=amd64
 distro=ubuntu
 container_system=docker
 logdir=$PWD
 
 while [[ $# -gt 0 ]] ; do
     case "$1" in
-	--distribution=* ) distro=${1#--distribution=} ;;
+	--arch=* ) arch=${1#--arch=} ;;
 	--containers=* ) container_system=${1#--container-system=} ;;
+	--distribution=* ) distro=${1#--distribution=} ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
+	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
+	--* ) usage >&2 ; exit 1 ;;
 	* ) break ;;
     esac
     shift
 done
-
-pxfuse_dir="$1"
-shift
 
 if [[ $# -lt 1 ]] ; then
     usage >&2
