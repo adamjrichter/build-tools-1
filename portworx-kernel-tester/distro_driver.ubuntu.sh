@@ -11,7 +11,7 @@ install_pkgs_ubuntu()             { "install_pkgs_deb"              "$@" ; }
 install_pkg_files_ubuntu()        { "install_pkg_files_deb"         "$@" ; }
 uninstall_pkgs_ubuntu()           { "uninstall_pkgs_deb"            "$@" ; }
 pkgs_update_ubuntu()              { "pkgs_update_deb"               "$@" ; }
-test_kernel_pkgs_func()           { "test_kernel_pkgs_func.default" "$@" ; }
+test_kernel_pkgs_func_ubuntu()    { "test_kernel_pkgs_func_default" "$@" ; }
 
 ubuntu_process_non_arch_file()
 {
