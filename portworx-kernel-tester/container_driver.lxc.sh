@@ -25,7 +25,7 @@ start_container_lxc() {
 	lxc-create --name "${container_name}" --template download -- \
 		     --dist "$distro" --arch "$arch" --release "$release"
 
-	in_container_lxc "$@"
+	"$@"
     fi
 
     # lxc-start --name "${container_name}" --daemon
