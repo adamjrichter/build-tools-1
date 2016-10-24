@@ -15,10 +15,17 @@ test_kernel_pkgs_func()           { "test_kernel_pkgs_func.default" "$@" ; }
 walk_mirror_centos() {
     local mirror_tree="$1"
     local file
+    local rpm_arch
 
     shift 1
 
-    ( cd "$mirror_tree" && find "$mirror_tree" -name "kernel-*-headers-*.${arch}.rpm" -type f -print0 ) |
+    if [ ".$arch" = ".amd64" ] ; then
+	rpm_arch=x86_64
+    else
+	rpm_arch="$arch"
+    fi
+
+    ( cd "$mirror_tree" && find "$mirror_tree" -name "kernel-*-headers-*.${rpm_arch}.rpm" -type f -print0 ) |
     while read -r -d $'\0' file ; do
         "$@" "$mirror_tree" "$file"
     done

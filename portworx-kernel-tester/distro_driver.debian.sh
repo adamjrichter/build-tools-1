@@ -3,14 +3,14 @@
 
 # For now, just default everything to the common Debian drivers.
 
-dist_init_container_debian()      { "dist_init_container.deb"      "$@" ; }
-pkg_files_to_kernel_dirs_debian() { "pkg_files_to_kernel_dirs.deb" "$@" ; }
-pkg_files_to_names_debian()       { "pkg_files_to_names.deb"       "$@" ; }
-install_pkgs_debian()             { "install_pkgs.deb"             "$@" ; }
-install_pkg_files_debian()        { "install_pkg_files.deb"        "$@" ; }
-uninstall_pkgs_debian()           { "uninstall_pkgs.deb"           "$@" ; }
-pkgs_update_debian()              { "pkgs_update.deb"              "$@" ; }
-test_kernel_pkgs_func()           { "test_kernel_pkgs_func.default" "$@" ; }
+dist_init_container_debian()      { "dist_init_container_deb"      "$@" ; }
+pkg_files_to_kernel_dirs_debian() { "pkg_files_to_kernel_dirs_deb" "$@" ; }
+pkg_files_to_names_debian()       { "pkg_files_to_names_deb"       "$@" ; }
+install_pkgs_debian()             { "install_pkgs_deb"             "$@" ; }
+install_pkg_files_debian()        { "install_pkg_files_deb"        "$@" ; }
+uninstall_pkgs_debian()           { "uninstall_pkgs_deb"           "$@" ; }
+pkgs_update_debian()              { "pkgs_update_deb"              "$@" ; }
+test_kernel_pkgs_func()           { "test_kernel_pkgs_func_default" "$@" ; }
 
 debian_pkgs_to_dependencies() {
     local pkgfile
@@ -53,7 +53,7 @@ debian_process_common_deb_file()
 	prefix="${file%-common_*}"
 	suffix="${file#*-common_}"
 
-        pkg_name=$(dpkg_file_to_pkg_name "$file")
+        pkg_name=$(pkg_files_to_names_deb "${mirror_tree}/${file}")
         dir=${file%/*}
 
 	header_files=""
@@ -64,10 +64,10 @@ debian_process_common_deb_file()
 	    fi
 	done
 
-	deps=$(debian_pkgs_to_dependencies $files)
+	deps=$(debian_pkgs_to_dependencies $header_files)
 	depfiles=$(debian_find_pkgs_in_mirror "$mirror_tree" $deps)
 
-	"$@" $(echo_word_per_line $files $depfiles | sort --unique)
+	"$@" $(echo_word_per_line $header_files $depfiles | sort --unique)
 }
 
 walk_mirror_debian() {

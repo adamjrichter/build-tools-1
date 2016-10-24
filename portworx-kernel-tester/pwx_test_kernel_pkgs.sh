@@ -11,22 +11,27 @@ usage() {
 . ${scriptsdir}/container_driver.sh
 . ${scriptsdir}/distro_driver.sh
 
+arch=amd64
 distro=ubuntu
 container_system=docker
 logdir=$PWD
 
+exit_handler() {
+    rm -rf "$local_tmp_dir"
+}
+
 while [[ $# -gt 0 ]] ; do
     case "$1" in
+	--arch=* ) arch=${1#--arch=} ;;
+	--containers=* ) container_system=${1#--containers=} ;;
 	--distribution=* ) distro=${1#--distribution=} ;;
-	--containers=* ) container_system=${1#--container-system=} ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
+	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
+	--* ) usage >&2 ; exit 1 ;;
 	* ) break ;;
     esac
     shift
 done
-
-pxfuse_dir="$1"
-shift
 
 if [[ $# -lt 1 ]] ; then
     usage >&2
@@ -36,6 +41,18 @@ fi
 local_tmp_dir=/tmp/test-kernels.ubuntu.$$
 remote_tmp_dir=/tmp/test-portworx-kernels
 results_logdir=${scriptsdir}/../build/results/$distro
+
+prepare_pxfuse_dir() {
+    trap exit_handler EXIT
+
+    mkdir -p "$local_tmp_dir"
+    if [ -z "$pxfuse_dir" ] ; then
+	(cd "$local_tmp_dir" &&
+	 git clone https://github.com/portworx/px-fuse.git )
+
+	pxfuse_dir="$local_tmp_dir/px-fuse"
+    fi
+}
 
 main() {
     local kernel_dir
@@ -49,4 +66,5 @@ main() {
     return $result
 }
 
+prepare_pxfuse_dir
 main "$@"
