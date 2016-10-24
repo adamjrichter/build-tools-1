@@ -21,6 +21,9 @@ install_scripts "${scriptsdir}" \
 		distro_driver.*.sh \
 		distro_driver.sh
 
+chmod a+x pwx_test_kernel_pkgs.sh pwx_test_kernels_in_mirror.sh
+
 install_scripts "${bindir}" \
 		pwx_test_kernel_pkgs.sh \
 		pwx_test_kernels_in_mirror.sh
+
