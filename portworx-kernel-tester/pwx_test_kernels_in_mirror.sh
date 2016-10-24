@@ -52,9 +52,9 @@ done
 
 if [ $# = 0 ] ; then
     case "$distro" in
-	centos ) set /home/ftp/mirrors/http/elrepo.org ;;
-	debian ) set /home/ftp/mirrors/http/snapshot.debian.org ;;
-	ubuntu ) set /home/ftp/mirrors/http/kernel.ubuntu.com  ;;
+	centos ) set /home/ftp/mirrors/http/elrepo.org/linux/kernel ;;
+	debian ) set /home/ftp/mirrors/http/snapshot.debian.org/archive/debian ;;
+	ubuntu ) set /home/ftp/mirrors/http/kernel.ubuntu.com/~kernel-ppa/mainline  ;;
 	* ) echo "Unable to choose default mirror directory for unknown distribution \"$distro\"." >&2 ; exit 1 ;;
     esac
 fi
@@ -75,22 +75,28 @@ fi
 PATH=$PATH:/usr/local/bin
 
 mirror_callback() {
-    local log_subdir="$1"
-    shift 1
+    local mirror_dir="$1"
+    local log_subdir="$2"
+    local pkg1="$3"
+    local pkg_subdir=${pkg1#$mirror_dir}
+    local pkg_subdir_no_ext=${pkg_subdir%.*}	# Remove trailing .rpm or .deb
+
+    shift 2
+
     $command \
 	"--arch=$arch" \
 	"--containers=${container_system}" \
 	"--distribution=$distro" \
-	"--logdir=${log_subdir}" \
+	"--logdir=${log_subdir}/${pkg_subdir_no_ext}" \
 	"--pxfuse=$pxfuse_dir" \
 	"$@"
 }
 
-checksum=$(cd "pxfuse_dir" && checksum_current_directory)
+checksum=$(cd "$pxfuse_dir" && checksum_current_directory)
 log_subdir="$logdir/pxfuse-${checksum}/${distro}"
 exit_status=0
 for mirror_dir in "$@" ; do
-	walk_mirror "$mirror_dir" mirror_callback
+	walk_mirror "$mirror_dir" mirror_callback "$mirror_dir" "$log_subdir"
 	tmp_exit_status=$?
 	if [ "$tmp_exit_status" != 0 ] ; then
 	    exit_status=$tmp_exit_status
