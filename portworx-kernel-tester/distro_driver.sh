@@ -57,13 +57,23 @@ test_kernel_pkgs_func_default() {
 
     install_pkgs_dir "${container_tmpdir}/header_pkgs"
 
-    in_container sh -c \
-	"cd ${container_tmpdir}/pxfuse_dir && autoreconf && ./configure"
-
-    headers_dir=$(pkg_files_to_kernel_dirs "$@" | sort -u | head -1)
-    in_container make -C ${container_tmpdir}/pxfuse_dir \
-	 KERNELPATH="$headers_dir"
+    headers_dir=$(pkg_files_to_kernel_dirs "$@" | sort -u | tail -1)
+    # Use "tail" to get the last kernel directory that is alphabetically
+    # last because Ubuntu unpacks and requires an architecure-independnt
+    # kernel header directory that is a prefix architecture-specific
+    # kernel header directory that should be passed to the pxfuse build.
+    #
+    # "sort -u | tail -1" is used rather than "sort -ur | head -1" to
+    # avoid generating a broken pipe signal if the list were somehow
+    # to become longer than a pipe buffer, although this would probably
+    # never happen.
     
+    in_container sh -c \
+		 "cd ${container_tmpdir}/pxfuse_dir && \
+                  autoreconf && \
+                  ./configure && \
+                  make KERNELPATH=$headers_dir"
+
     result=$?
     echo "test_kernel_pkgs_func_default: build_exit_code=$result" >&2
     if [ "$result" = 0 ] ; then
