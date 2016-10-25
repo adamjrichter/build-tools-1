@@ -20,27 +20,23 @@ walk_mirror()              { "walk_mirror_$distro"              "$@" ; }
 test_kernel_pkgs_func()    { "test_kernel_pkgs_func_$distro"    "$@" ; }
 
 
-test_kernel_pkgs_func_default() {
+test_kernel_pkgs_func_loggable() {
     local container_tmpdir result_logdir
     local result filename real dirname basename headers_dir
     local force=false
-
-    while [[ $# -gt 0 ]] ; do
-	case "$1" in
-	    --force ) force=true ;;
-	    * ) break ;;
-	esac
-	shift
-    done
 
     container_tmpdir="$1"
     result_logdir="$2"
 
     shift 2
 
-    if [[ -e "$result_logdir/done" ]] ; then
+    if [[ -e "$result_logdir/done" ]] && ! $force ; then
 	echo "test_kernel_pkgs_func_default: $result_logdir/done exists.  Skipping."
     fi
+
+    echo "AJR test_kenrel_pkgs_func_default: result_logdir=$result_logdir." >&2
+    mkdir -p "$result_logdir"
+    exec > "$result_logdir/build.log" 2>&1
 
     in_container mkdir -p "$container_tmpdir/pxfuse_dir" "$container_tmpdir/header_pkgs"
 
@@ -56,6 +52,11 @@ test_kernel_pkgs_func_default() {
     done
 
     install_pkgs_dir "${container_tmpdir}/header_pkgs"
+    result=$?
+    if [ $result != 0 ] ; then
+	uninstall_pkgs $(pkg_files_to_names "$@")
+	return $result
+    fi
 
     headers_dir=$(pkg_files_to_kernel_dirs "$@" | sort -u | tail -1)
     # Use "tail" to get the last kernel directory that is alphabetically
@@ -81,5 +82,31 @@ test_kernel_pkgs_func_default() {
 	    tar -C "${results_log_dir}" -xpv
     fi
     uninstall_pkgs $(pkg_files_to_names "$@")
+    echo "$result" > "${result_logdir}/exit_code"
+    touch "${result_logdir}/done"
+    # ^^ We have a "done" file in addition to an "exit_code" file, because
+    # creating the empty "done" file is atomic.
     return $result
+}
+
+test_kernel_pkgs_func_default() {
+    local result_logdir
+    local force=false
+
+    while [[ $# -gt 0 ]] ; do
+	case "$1" in
+	    --force ) force=true ;;
+	    * ) break ;;
+	esac
+	shift
+    done
+
+    result_logdir="$2"
+
+    if [[ -e "$result_logdir/done" ]] && ! $force ; then
+	echo "test_kernel_pkgs_func_default: $result_logdir/done exists.  Skipping."
+    fi
+
+    test_kernel_pkgs_func_loggable "$@" \
+	> "$result_logdir/build.log" 2>&1
 }
