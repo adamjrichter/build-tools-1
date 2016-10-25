@@ -37,7 +37,7 @@ start_container_lxc() {
 
 stop_container_lxc() {
     if $use_lxc_attach ; then
-	lxc-stop "$container_name"
+	lxc-stop --name "$container_name"
     fi
     true
 }
