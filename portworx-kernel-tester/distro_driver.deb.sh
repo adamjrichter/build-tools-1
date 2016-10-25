@@ -2,7 +2,6 @@
 # script.
 
 dist_init_container_deb() {
-    echo "AJR distro_driver.deb.sh dist_init_container_deb $* called." >&2
     in_container apt-get update
     # ^^^ Skip this for binary reproducibility ??
 
