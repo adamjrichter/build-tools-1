@@ -40,7 +40,6 @@ fi
 
 local_tmp_dir=/tmp/test-kernels.ubuntu.$$
 remote_tmp_dir=/tmp/test-portworx-kernels
-results_logdir=${scriptsdir}/../build/results/$distro
 
 prepare_pxfuse_dir() {
     trap exit_handler EXIT
