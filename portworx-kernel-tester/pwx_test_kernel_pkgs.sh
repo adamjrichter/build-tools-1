@@ -60,7 +60,7 @@ main() {
     kernel_dir=$(pkg_files_to_kernel_dirs "$@" | head -1)
 
     start_container dist_init_container
-    test_kernel_pkgs_func "$remote_tmpdir" "$logdir" "$@"
+    test_kernel_pkgs_func "$remote_tmp_dir" "$logdir" "$@"
     result=$?
     stop_container
     return $result
