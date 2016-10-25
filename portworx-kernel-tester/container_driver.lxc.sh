@@ -5,6 +5,8 @@ container_name=
 
 # To use LXC containers, for now, the script must be running as superuser.
 
+use_lxc_attach=true
+
 start_container_lxc() {
     local release
     container_name="pwx_test_${distro}"
@@ -28,14 +30,22 @@ start_container_lxc() {
 	"$@"
     fi
 
-    # lxc-start --name "${container_name}" --daemon
+    if $use_lxc_attach ; then
+        lxc-start --name "${container_name}" --daemon
+    fi
 }
 
 stop_container_lxc() {
-    # lxc-stop "$container_name"
+    if $use_lxc_attach ; then
+	lxc-stop "$container_name"
+    fi
     true
 }
 
 in_container_lxc() {
-    lxc-execute --name "$container_name" -- "$@"
+    if $use_lxc_attach ; then
+        lxc-attach --name "$container_name" -- "$@"
+    else
+        lxc-execute --name "$container_name" -- "$@"
+    fi
 }
