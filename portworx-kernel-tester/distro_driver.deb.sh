@@ -5,7 +5,8 @@ dist_init_container_deb() {
     in_container apt-get update
     # ^^^ Skip this for binary reproducibility ??
 
-    in_container apt-get install -y autoconf gcc g++ make tar libssl1.0
+    in_container apt-get install -y autoconf g++ gcc git libssl1.0 make tar
+    # Why px-fuse wants git is unclear to me.
 }
 
 pkg_files_to_kernel_dirs_deb() {
@@ -28,7 +29,7 @@ pkg_files_to_names_deb () {
     done
 }
 
-install_pkgs_deb()      { in_container apt-get install -y "$@" ; }
-install_pkgs_dir_deb()  { in_container dpkg --install --force-all "$1/*" ; }
+install_pkgs_deb()      { in_container apt-get install --quiet --yes "$@" ; }
+install_pkgs_dir_deb()  { in_container sh -c "dpkg --install --force-all $1/*" ; }
 uninstall_pkgs_deb()    { in_container dpkg --remove "$@" ; }
-pkgs_update_deb()       { in_container apt-get update -y ; }
+pkgs_update_deb()       { in_container apt-get update --quiet --yes ; }

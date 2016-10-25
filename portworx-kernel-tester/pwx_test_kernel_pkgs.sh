@@ -40,7 +40,6 @@ fi
 
 local_tmp_dir=/tmp/test-kernels.ubuntu.$$
 remote_tmp_dir=/tmp/test-portworx-kernels
-results_logdir=${scriptsdir}/../build/results/$distro
 
 prepare_pxfuse_dir() {
     trap exit_handler EXIT
@@ -60,7 +59,7 @@ main() {
     kernel_dir=$(pkg_files_to_kernel_dirs "$@" | head -1)
 
     start_container dist_init_container
-    test_kernel_pkgs_func "$remote_tmpdir" "$logdir" "$@"
+    test_kernel_pkgs_func "$remote_tmp_dir" "$logdir" "$@"
     result=$?
     stop_container
     return $result
