@@ -2,10 +2,11 @@
 # script.
 
 dist_init_container_deb() {
-    in_container apt-get update
+    in_container apt-get update --quiet --yes
     # ^^^ Skip this for binary reproducibility ??
 
-    in_container apt-get install -y autoconf g++ gcc git libssl1.0 make tar
+    in_container apt-get install --quiet --yes \
+		 autoconf g++ gcc git libssl1.0 make tar
     # Why px-fuse wants git is unclear to me.
 }
 
