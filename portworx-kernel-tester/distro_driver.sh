@@ -34,10 +34,6 @@ test_kernel_pkgs_func_loggable() {
 	echo "test_kernel_pkgs_func_default: $result_logdir/done exists.  Skipping."
     fi
 
-    echo "AJR test_kenrel_pkgs_func_default: result_logdir=$result_logdir." >&2
-    mkdir -p "$result_logdir"
-    exec > "$result_logdir/build.log" 2>&1
-
     in_container mkdir -p "$container_tmpdir/pxfuse_dir" "$container_tmpdir/header_pkgs"
 
     ( cd "$pxfuse_dir" && tar c . ) |
@@ -107,6 +103,7 @@ test_kernel_pkgs_func_default() {
 	echo "test_kernel_pkgs_func_default: $result_logdir/done exists.  Skipping."
     fi
 
+    mkdir -p "$result_logdir"
     test_kernel_pkgs_func_loggable "$@" \
 	> "$result_logdir/build.log" 2>&1
 }
