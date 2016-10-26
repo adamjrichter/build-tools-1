@@ -35,9 +35,9 @@ debian_find_pkgs_in_mirror() {
 
     shift 1
     for pkgname in "$@" ; do
-	find "$mirror_tree" -name "${pkgname}-*.deb"
-    done |
-	sort --unique
+	find "$mirror_tree" -name "${pkgname}-*.deb" | sort --unique | tail -1
+	# "sort | tail -1" selects the latest revision.
+    done
 }
 
 debian_process_common_deb_file()
@@ -63,6 +63,8 @@ debian_process_common_deb_file()
 		header_files="$header_files $possible_file"
 	    fi
 	done
+
+	# FIXME.  Skip here if the build was already done.
 
 	deps=$(debian_pkgs_to_dependencies $header_files)
 	depfiles=$(debian_find_pkgs_in_mirror "$mirror_tree" $deps)
