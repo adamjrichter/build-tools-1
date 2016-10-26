@@ -1,9 +1,6 @@
 # build-tools
 
-These directory tree is likely to be rearranged substantially.  Right now,
-its purpose is primarily to provide and easy code browsing.
-
-There are currently two subdirectories:
+This directory tree currently has two subdirectories:
 
 portworx-mirror-server :
 	The older all-in-one package of mirroring
