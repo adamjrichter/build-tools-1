@@ -31,6 +31,10 @@ await_dns() {
     return 1
 }
 
+is_container_running() {
+    lxc-info --name "$1" | egrep --silent '^State: *RUNNING$'
+}
+
 start_container_lxc() {
     local release must_initialize
     container_name="pwx_test_${distro}"
@@ -59,7 +63,9 @@ start_container_lxc() {
     fi
 
     if $use_lxc_attach ; then
-        lxc-start --name "${container_name}" --daemon
+	if ! is_container_running "${container_name}" ; then
+            lxc-start --name "${container_name}" --daemon
+	fi
 	await_default_route
 	if ! await_dns ; then
 	    in_container_lxc tee /etc/resolve.conf \
