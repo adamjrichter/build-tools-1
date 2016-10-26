@@ -10,7 +10,7 @@ install_pkgs_debian()             { "install_pkgs_deb"             "$@" ; }
 install_pkg_files_debian()        { "install_pkg_files_deb"        "$@" ; }
 uninstall_pkgs_debian()           { "uninstall_pkgs_deb"           "$@" ; }
 pkgs_update_debian()              { "pkgs_update_deb"              "$@" ; }
-test_kernel_pkgs_func()           { "test_kernel_pkgs_func_default" "$@" ; }
+test_kernel_pkgs_func_debian()    { "test_kernel_pkgs_func_default" "$@" ; }
 
 debian_pkgs_to_dependencies() {
     local pkgfile
