@@ -44,21 +44,14 @@ on_or_after_linux_3_10_release_date() {
     egrep '^(2013051[1-9]|201305[23]|20130[6-9]|20131|201[4-9]|2[1-9]|[3-9])'
 }
 
-list_kernel_dir_urls_old() {
-    for file in "${top_dir}"/index.html\?year=* ; do
-        extract_subdirs < "$file" |
-            egrep '^20[0-9]+(T[0-9]+)?+Z/$' |
-            on_or_after_linux_3_10_release_date |
-            sed "s|^|${top_url}/|;s|\$|pool/main/l/linux/|"
-    done
-}
-
 list_kernel_dir_urls() {
     cat "${top_dir}"/index.html\?year=* |
         extract_subdirs |
         egrep '^20[0-9]+(T[0-9]+)?+Z/$' |
         on_or_after_linux_3_10_release_date |
-        sed "s|^|${top_url}/|;s|\$|pool/main/l/linux/|"
+	sed "s|^\(.*\)\$|\
+${top_url}/\1/pool/main/l/linux/\\
+${top_url}/\1/pool/main/l/linux-tools/|"
 }
 
 directory_url_to_filename() {
@@ -78,24 +71,8 @@ echo_word_per_line() {
     done
 }
 
-print_compiler_if_headers_found() {
-    local compilers=""
-    local headers_found=false
-    while read line ; do
-	case "$line" in
-	    linux-headers-* ) echo "$line" ; headers_found=true ;;
-	    linux-compiler-* ) compilers="$compilers $line" ;;
-	    linux-kbuild-* ) compilers="$compilers $line" ;;
-	    * ) echo "print_compiler_if_headers_found: unrecognized line $line" >&2 ;;
-	esac
-    done
-    echo_word_per_line $compilers
-}
-
-
 linux_headers_after_3_9() {
-    egrep '^linux-(compiler-|kbuild-|headers-(3\.[1-9][0-9]|[4-9]))' |
-	print_compiler_if_headers_found
+    egrep '^linux-(compiler-|kbuild-|headers-(3\.[1-9][0-9]|[4-9]))'
 }
 
 remember_kernel_header_names() {
@@ -228,7 +205,10 @@ mirror_top_level_directories() {
 
 list_kernel_filenames_plus_directories() {
     local index_filename pkg_filename dir 
-    for index_filename in "${top_dir}"/*/pool/main/l/linux/index.html ; do
+    for index_filename in \
+	"${top_dir}"/*/pool/main/l/linux/index.html \
+	"${top_dir}"/*/pool/main/l/linux-tools/index.html
+    do
 	dir=${index_filename%/index.html}
 	extract_subdirs < "$index_filename" |
 	    linux_headers_after_3_9 |
