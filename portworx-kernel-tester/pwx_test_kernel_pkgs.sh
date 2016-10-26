@@ -61,6 +61,7 @@ main() {
     start_container dist_init_container
     test_kernel_pkgs_func "$remote_tmp_dir" "$logdir" "$@"
     result=$?
+
     stop_container
     return $result
 }
