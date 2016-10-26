@@ -236,6 +236,7 @@ list_kernel_filenames_plus_directories() {
 		case "$pkg_filename" in
 		    linux-headers-*  ) echo "$pkg_filename" "$dir" ;;
 		    linux-compiler-* ) echo "$pkg_filename" "$dir" ;;
+		    linux-kbuild-* ) echo "$pkg_filename" "$dir" ;;
 		esac
 	    done
     done
