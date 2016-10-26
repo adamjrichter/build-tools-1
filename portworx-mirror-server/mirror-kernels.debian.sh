@@ -94,7 +94,7 @@ print_compiler_if_headers_found() {
 
 
 linux_headers_after_3_9() {
-    egrep '^linux-(compiler-|kbuild-|headers-(3\.[1-9][0-9]|[4-9])|)' |
+    egrep '^linux-(compiler-|kbuild-|headers-(3\.[1-9][0-9]|[4-9]))' |
 	print_compiler_if_headers_found
 }
 
