@@ -114,7 +114,7 @@ remember_kernel_header_names() {
 
 extract_kernel_header_names() {
     local index="$1"
-    if [ -z "${kernel_header_names[$index]}" ] ; then
+    if [[ -z "${kernel_header_names[$index]}" ]] ; then
         remember_kernel_header_names "$@"
     fi
     echo "${kernel_header_names[$index]}"
@@ -261,7 +261,7 @@ list_first_relative_paths() {
 skip_existing_filenames() {
     local filename
     while read filename ; do
-	if [ ! -e "$filename" ] ; then
+	if [[ ! -e "$filename" ]] ; then
 	    echo "$filename"
 	fi
     done
