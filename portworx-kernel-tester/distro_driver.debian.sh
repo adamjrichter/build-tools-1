@@ -74,11 +74,15 @@ debian_process_common_deb_file()
 
 walk_mirror_debian() {
     local mirror_tree="$1"
-    local file
+    local file return_status
 
     shift 1
+    return_status=0
     ( cd "$mirror_tree" && find . -name "linux-headers-*-common_*_${arch}.deb" -type f -print0 ) |
     while read -r -d $'\0' file ; do
-        debian_process_common_deb_file "$mirror_tree" "$file" "$@" < /dev/null
+        if ! debian_process_common_deb_file "$mirror_tree" "$file" "$@" < /dev/null ; then
+	    return_status=$?
+	fi
     done
+    return $return_status
 }
