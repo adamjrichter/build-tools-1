@@ -64,7 +64,10 @@ url_to_dir()
 
 mirror_one_dir() {
     local url="$1"
-    wget ${TIMESTAMPING} --protocol-directories --force-directories --mirror --level=1 --accept-regexp=".*/index.html|/|linux-headers-${above_3_9_regexp}.*(${arch}|all)\.deb" "$url"
+    wget ${TIMESTAMPING} --protocol-directories --force-directories \
+	 --recursive --level=1 \
+	 --accept-regex=".*/index.html|(linux-headers-${above_3_9_regexp}.*(${arch}|all)\.deb)\$" \
+	 "$url"
 }
 
 mirror_subdirs() {
