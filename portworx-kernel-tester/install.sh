@@ -2,7 +2,8 @@
 
 prefix=/usr/local
 scriptsdir=${prefix}/share/portworx-kernel-tester/scripts
-build_results_dir=/var/lib/portworx-kernel-tester/build-results
+#build_results_dir=/var/lib/portworx-kernel-tester/build-results
+build_results_dir=/home/ftp/build-results
 bindir=${prefix}/bin
 
 set -e
