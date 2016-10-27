@@ -57,7 +57,7 @@ url_to_dir()
 {
     local url="$1"
     local prefix="${url%%://*}"
-    local suffix="${url#:*//}"
+    local suffix="${url#*://}"
     echo "$prefix/$suffix"
 }
 
