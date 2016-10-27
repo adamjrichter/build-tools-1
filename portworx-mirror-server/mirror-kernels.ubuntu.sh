@@ -51,6 +51,7 @@ echo_one_per_line() {
 }
 
 get_subdir_index_files() {
+    local top_url="$1"
     echo_one_per_line $subdirs |
         subdirs_to_urls "${top_url}"  |
         xargs -- wget ${TIMESTAMPING} \
@@ -61,7 +62,7 @@ get_subdir_index_files() {
 # FIXME.  This breaks for subdirectory names containing spaces.
 subdirs=$(extract_subdirs <  ${top_dir}/index.html | versions_above_3_9)
 
-get_subdir_index_files
+get_subdir_index_files "$top_url"
 
 # TODO: Change "image" to "headers"
 for subdir in $subdirs ; do
