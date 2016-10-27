@@ -10,7 +10,7 @@ install_pkgs_centos()             { install_pkgs_rpm              "$@" ; }
 install_pkg_files_centos()        { install_pkg_files_rpm         "$@" ; }
 uninstall_pkgs_centos()           { uninstall_pkgs_rpm            "$@" ; }
 pkgs_update_centos()              { pkgs_update_rpm               "$@" ; }
-test_kernel_pkgs_func()           { test_kernel_pkgs_func_default "$@" ; }
+test_kernel_pkgs_func_centos()    { test_kernel_pkgs_func_default "$@" ; }
 
 walk_mirror_centos() {
     local mirror_tree="$1"
