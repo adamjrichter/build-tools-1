@@ -34,3 +34,7 @@ install_scripts "${bindir}" \
 
 chmod a+x "${bindir}/pwx_test_kernel_pkgs.sh" "${bindir}/pwx_test_kernels_in_mirror.sh"
 
+old_crontab=$(crontab -u root -l | egrep -v pwx_test_kernels.cron_script.sh | egrep -v '^#' )
+( echo "$old_crontab" ;
+  echo "15 1 * * * $scriptsdir/pwx_test_kernels.cron_script.sh" ) |
+    crontab -u root -
