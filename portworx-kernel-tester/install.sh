@@ -25,7 +25,8 @@ install_scripts "${scriptsdir}" \
 		container_driver.*.sh \
 		container_driver.sh \
 		distro_driver.*.sh \
-		distro_driver.sh
+		distro_driver.sh \
+		pwx_test_kernels.cron_script.sh
 
 install_scripts "${bindir}" \
 		pwx_test_kernel_pkgs.sh \
