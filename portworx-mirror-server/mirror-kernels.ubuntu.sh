@@ -40,9 +40,6 @@ subdirs_to_urls() {
     done
 }
 
-rm -f ${top_dir}/index.html
-wget --force-directories --protocol-directories ${top_url}/
-
 echo_one_per_line() {
     local word
     for word in "$@" ; do
@@ -58,6 +55,9 @@ get_subdir_index_files() {
 	      --protocol-directories --force-directories \
 	      --accept=index.html --recursive
 }
+
+rm -f ${top_dir}/index.html
+wget --force-directories --protocol-directories ${top_url}/
 
 # FIXME.  This breaks for subdirectory names containing spaces.
 subdirs=$(extract_subdirs <  ${top_dir}/index.html | versions_above_3_9)
