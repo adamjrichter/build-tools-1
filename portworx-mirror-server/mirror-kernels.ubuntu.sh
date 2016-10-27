@@ -110,5 +110,5 @@ mirror_subdirs() {
 
 mirror_one_dir "http://security.ubuntu.com/ubuntu/pool/main/l/linux/"
 mirror_subdirs "http://kernel.ubuntu.com/~kernel-ppa/mainline"
-# TODO?: mirror https://bugs.launchpad.net/~ canonical-kernel-team/+ archive/ubuntu/ppa
-# TODO?: Investigate  linux-headers-4.2.0-36-generic_4.2.0-36.41_amd64.deb found by Ankit on https://bugs.launchpad.net/ ~canonical-kernel-team/+ archive/ubuntu/ppa/+build/ 9593535
+# TODO?: mirror https://bugs.launchpad.net/~canonical-kernel-team/+archive/ubuntu/ppa
+# TODO?: Investigate linux-headers-4.2.0-36-generic_4.2.0-36.41_amd64.deb found by Ankit on https://bugs.launchpad.net/~canonical-kernel-team/+archive/ubuntu/ppa/+build/9593535
