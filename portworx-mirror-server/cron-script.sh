@@ -5,18 +5,20 @@ scriptsdir=$PWD
 logdir=${scriptsdir}/logs
 logfile=${logdir}/$(date +%Y%m%d.%H:%M:%S).log
 
-update_web_mirrors()
+copy_link_tree_remove_index_html()
 {
+    local from="$1"
+    local to="$2"
+
     set +e
-    symlinks -d "${web_mirrordir}"
+    symlinks -d "${to}"
 
-    cp --symbolic-link --recursive --remove-destination \
-       "${mirrordir}/." "${web_mirrordir}"
+    cp --symbolic-link --recursive --remove-destination "$from/." "$to"
 
-    find "${web_mirrordir}" -name index.html -print0 | xargs --null -- rm -f
-    find "${web_mirrordir}" -type d | sort -r | xargs rmdir 2> /dev/null || true
+    find "$to" -name index.html -print0 | xargs --null -- rm -f
+    find "$to" -type d | sort -r | xargs rmdir 2> /dev/null || true
 
-    symlinks -cs "${web_mirrordir}"
+    symlinks -cs "$to"
 }
 
 run_all_verb_scripts()
@@ -31,7 +33,8 @@ run_all_verb_scripts()
 run_all_mirror_scripts()
 {
     run_all_verb_scripts mirror
-    update_web_mirrors
+    copy_link_tree_remove_index_html "${mirrordir}" "${web_mirrordir}"
+    copy_link_tree_remove_index_html "${ftp_top}/build-results" "${web_top}/build-results"
 }
 
 run_all_test_scripts()
