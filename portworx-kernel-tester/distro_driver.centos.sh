@@ -14,8 +14,7 @@ test_kernel_pkgs_func_centos()    { test_kernel_pkgs_func_default "$@" ; }
 
 walk_mirror_centos() {
     local mirror_tree="$1"
-    local file
-    local rpm_arch
+    local file rpm_arch return_status
 
     shift 1
 
@@ -25,8 +24,12 @@ walk_mirror_centos() {
 	rpm_arch="$arch"
     fi
 
+    return_status=0
     ( cd "$mirror_tree" && find "$mirror_tree" -name "kernel-*-headers-*.${rpm_arch}.rpm" -type f -print0 ) |
     while read -r -d $'\0' file ; do
-        "$@" "$mirror_tree" "$file"
+        if ! "$@" "$mirror_tree" "$file" ; then
+	    return_status=$?
+	fi
     done
+    return $return_status
 }

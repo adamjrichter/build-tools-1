@@ -34,11 +34,16 @@ ubuntu_process_non_arch_file()
 
 walk_mirror_ubuntu() {
     local mirror_tree="$1"
-    local file
+    local file return_status
+
 
     shift 1
+    return_status=0
     find "$mirror_tree" -name 'linux-headers-*_all.deb' -type f -print0 |
     while read -r -d $'\0' file ; do
-        ubuntu_process_non_arch_file "$file" "$@" < /dev/null
+        if ! ubuntu_process_non_arch_file "$file" "$@" < /dev/null ; then
+	    return_status=$?
+	fi
     done
+    return $return_status
 }
