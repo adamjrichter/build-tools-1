@@ -5,8 +5,9 @@ scriptsdir=$PWD
 build_results_dir=$PWD/build-results
 
 usage() {
-    echo "Usage: test_kernels_in_mirror.sh [--distribution=dist] "
-    echo "       [--containers=container_system] [--logdir=dir] "
+    echo "Usage: test_kernels_in_mirror.sh [ --distribution=dist ] "
+    echo "       [ --containers=container_system] [ --logdir=dir ] "
+    echo "       [ --mirror-top=topdir ]"
     echo "       [ --pxfuse=pxfuse_src_directory ] [ mirror_dirs... ]"
     echo ""
     echo "If pxfuse_src_directory is not specified, it is downloaded from"
@@ -37,6 +38,7 @@ pxfuse_dir=""
 command=pwx_test_kernel_pkgs.sh
 # Global variables set later:
 #   log_subdir
+mirror_top=
 
 while [[ $# -gt 0 ]] ; do
     case "$1" in
@@ -45,6 +47,7 @@ while [[ $# -gt 0 ]] ; do
 	--containers=* ) container_system=${1#--containers=} ;;
 	--distribution=* ) distro=${1#--distribution=} ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
+	--mirror-top=* ) mirror_top=${1#--mirror-top=} ;;
 	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
 	--* ) usage >&2 ; exit 1 ;;
 	* ) break ;;
@@ -56,7 +59,10 @@ if [ $# = 0 ] ; then
     case "$distro" in
 	centos ) set /home/ftp/mirrors/http/elrepo.org/linux/kernel ;;
 	debian ) set /home/ftp/mirrors/http/snapshot.debian.org/archive/debian ;;
-	ubuntu ) set /home/ftp/mirrors/http/kernel.ubuntu.com/~kernel-ppa/mainline /home/ftp/mirrors/http/security.ubuntu.com/ubuntu/pool/main/l/linux/ ;;
+	ubuntu ) set \
+		     /home/ftp/mirrors/http/security.ubuntu.com/ubuntu/pool/main/l/linux/ \
+		     /home/ftp/mirrors/http/kernel.ubuntu.com/~kernel-ppa/mainline
+		 ;;
 	* ) echo "Unable to choose default mirror directory for unknown distribution \"$distro\"." >&2 ; exit 1 ;;
     esac
 fi
@@ -82,8 +88,13 @@ mirror_callback() {
     local mirror_dir="$1"
     local log_subdir="$2"
     local pkg1="$3"
-    local pkg_subdir=${pkg1#$mirror_dir}
-    local pkg_subdir_no_ext=${pkg_subdir%.*}	# Remove trailing .rpm or .deb
+    local pkg_subdir
+
+    if [[ -n "$mirror_top" ]] ; then
+	pkg_subdir=${pkg1#$mirror_top}
+    else
+	pkg_subdir=${pkg1#$mirror_dir}
+    fi
 
     shift 2
 
@@ -91,7 +102,7 @@ mirror_callback() {
 	"--arch=$arch" \
 	"--containers=${container_system}" \
 	"--distribution=$distro" \
-	"--logdir=${log_subdir}/${pkg_subdir_no_ext}" \
+	"--logdir=${log_subdir}/${pkg_subdir}" \
 	"--pxfuse=$pxfuse_dir" \
 	"$@"
 }
