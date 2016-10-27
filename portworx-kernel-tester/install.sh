@@ -19,6 +19,8 @@ install_scripts() {
     done
 }
 
+mkdir -p "${scriptsdir}" "${bindir}" "${build_results_dir}"
+
 install_scripts "${scriptsdir}" \
 		container_driver.*.sh \
 		container_driver.sh \
