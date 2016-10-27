@@ -49,9 +49,8 @@ get_subdir_index_files() {
     local top_url="$1"
     echo_one_per_line $subdirs |
         subdirs_to_urls "${top_url}"  |
-        xargs -- wget ${TIMESTAMPING} \
-	      --protocol-directories --force-directories \
-	      --accept=index.html --recursive
+        xargs -- wget ${TIMESTAMPING} --quiet --protocol-directories \
+	      --force-directories --accept=index.html --recursive
 }
 
 url_to_dir()
@@ -78,7 +77,7 @@ mirror_one_dir() {
 	remove_index_html_mirror_files "$@"
     fi
 
-    wget ${TIMESTAMPING} --protocol-directories --force-directories \
+    wget ${TIMESTAMPING} --quiet --protocol-directories --force-directories \
 	 --recursive --level=1 \
 	 --accept-regex=".*/index.html|(linux-headers-${above_3_9_regexp}.*(${arch}|all)\.deb)\$" \
 	 "$@"
@@ -89,7 +88,7 @@ mirror_subdirs() {
     local top_dir
     top_dir=$(url_to_dir "$top_url")
     rm -f ${top_dir}/index.html
-    wget --force-directories --protocol-directories ${top_url}/
+    wget --quiet --force-directories --protocol-directories ${top_url}/
 
     # FIXME.  This breaks for subdirectory names containing spaces.
     subdirs=$(extract_subdirs <  ${top_dir}/index.html | versions_above_3_9)
@@ -105,7 +104,8 @@ mirror_subdirs() {
 	    egrep "linux-${which}-[0-9].*_(${arch}|all).deb" |
 	    subdirs_to_urls "${top_url}/${subdir_no_slash}"
     done |
-	xargs -- wget ${TIMESTAMPING} --protocol-directories --force-directories
+	xargs -- wget ${TIMESTAMPING} --quiet \
+	      --protocol-directories --force-directories
 }
 
 mirror_one_dir "http://security.ubuntu.com/ubuntu/pool/main/l/linux/"
