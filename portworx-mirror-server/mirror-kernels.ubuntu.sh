@@ -62,8 +62,23 @@ url_to_dir()
     echo "$prefix/$suffix"
 }
 
+remove_index_html_mirror_files() {
+    local url dir
+    for url in "$@" ; do
+	case "$url" in
+	    *://* )
+		dir=$(url_to_dir "$url")
+		rm -f "$dir/index.html" || true ;;
+	esac
+    done
+}
+
 mirror_one_dir() {
-     wget ${TIMESTAMPING} --protocol-directories --force-directories \
+    if [ ".${TIMESTAMPING}" = ".--no-clobber" ] ; then
+	remove_index_html_mirror_files "$@"
+    fi
+
+    wget ${TIMESTAMPING} --protocol-directories --force-directories \
 	 --recursive --level=1 \
 	 --accept-regex=".*/index.html|(linux-headers-${above_3_9_regexp}.*(${arch}|all)\.deb)\$" \
 	 "$@"
