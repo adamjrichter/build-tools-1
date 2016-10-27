@@ -42,3 +42,6 @@ old_crontab=$( ( crontab -u root -l 2> /dev/null ) |
 ( echo "$old_crontab" ;
   echo "15 1 * * * $scriptsdir/pwx_test_kernels.cron_script.sh" ) |
     crontab -u root -
+
+rm -f /var/www/html/build-results
+ln -s ${build_results_dir} /var/www/html/build-results
