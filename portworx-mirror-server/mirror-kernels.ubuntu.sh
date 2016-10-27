@@ -8,13 +8,13 @@ cd ${mirrordir} || exit $?
 mirrordir=/home/ftp/mirrors
 
 
-top_url=http://kernel.ubuntu.com/~kernel-ppa/mainline
-
 #arch=i386
 arch=amd64
 
 #TIMESTAMPING=--timestamping
 TIMESTAMPING=--no-clobber
+
+above_3_9_regexp='(3\.[1-9][0-9]|[4-9]|[1-9][0-9])'
 
 newlines_around_angle_brackets() {
     sed 's/</\'$'\n''</g;s/>/>\'$'\n''/g;'
@@ -27,7 +27,7 @@ extract_subdirs() {
 }
 
 versions_above_3_9 () {
-    egrep '^v(4|3\.[1-9][0-9]).*/$'
+    egrep "^v${above_3_9_regexp}.*/\$"
 }
 
 subdirs_to_urls() {
@@ -62,6 +62,11 @@ url_to_dir()
     echo "$prefix/$suffix"
 }
 
+mirror_one_dir() {
+    local url="$1"
+    wget ${TIMESTAMPING} --protocol-directories --force-directories --mirror --level=1 --accept-regexp=".*/index.html|/|linux-headers-${above_3_9_regexp}.*(${arch}|all)\.deb" "$url"
+}
+
 mirror_subdirs() {
     local top_url="$1"
     local top_dir
@@ -86,4 +91,5 @@ mirror_subdirs() {
 	xargs -- wget ${TIMESTAMPING} --protocol-directories --force-directories
 }
 
-mirror_subdirs "$top_url"
+mirror_one_dir "http://security.ubuntu.com/ ubuntu/pool/main/l/linux/"
+mirror_subdirs "http://kernel.ubuntu.com/~kernel-ppa/mainline"
