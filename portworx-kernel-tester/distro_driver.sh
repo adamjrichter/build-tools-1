@@ -75,7 +75,7 @@ test_kernel_pkgs_func_loggable() {
     echo "test_kernel_pkgs_func_default: build_exit_code=$result" >&2
     if [ "$result" = 0 ] ; then
 	in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
-	    tar -C "${results_log_dir}" -xpv
+	    tar -C "${result_logdir}" -xpv
     fi
     uninstall_pkgs $(pkg_files_to_names "$@")
     echo "$result" > "${result_logdir}/exit_code"

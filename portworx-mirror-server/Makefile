@@ -41,7 +41,7 @@ install_mirror_ubuntu: install_mirror_scripts install_httpd_ubuntu install_ftpd_
 	adduser --system pwxmirror
 	crontab -u pwxmirror ${scriptsdir}/crontab.txt
 	( . ${scriptsdir}/pwx-mirror-config.sh && \
-	  mkdir -p $$mirrordir && chown -R pwxmirror $$mirrordir )
+	  mkdir -p $$mirrordir/misc/centos $$mirrordir/misc/debian $$mirrordir/misc/ubuntu && for subdir in centos debian ubuntu ; do dir=$$mirrordir/misc/$$subdir ; file=$$dir/README.txt ; if [ ! -e "$$file" ] ; then echo "This directory is for unmirrored kernel header packages and support files related to $$subdir." > $$file ; fi ; done && chown -R pwxmirror $$mirrordir )
 
 install_mirror: install_mirror_scripts install_mirror_ubuntu
 
