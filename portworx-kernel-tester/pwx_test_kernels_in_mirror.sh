@@ -36,9 +36,10 @@ container_system=docker
 logdir="$build_results_dir"
 pxfuse_dir=""
 command=pwx_test_kernel_pkgs.sh
+mirror_top=/home/ftp/mirrors
 # Global variables set later:
 #   log_subdir
-mirror_top=
+
 
 while [[ $# -gt 0 ]] ; do
     case "$1" in
