@@ -7,7 +7,7 @@ build_results_dir=$PWD/build-results
 usage() {
     echo "Usage: test_kernels_in_mirror.sh [--distribution=dist] "
     echo "       [--containers=container_system] [--logdir=dir] "
-    echo "       [ --pxfuse=pxfuse_src_directory ] [ mirror_urls... ]"
+    echo "       [ --pxfuse=pxfuse_src_directory ] [ mirror_dirs... ]"
     echo ""
     echo "If pxfuse_src_directory is not specified, it is downloaded from"
     echo "github into a temporary directory."
