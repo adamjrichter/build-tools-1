@@ -34,7 +34,7 @@ run_all_mirror_scripts()
 {
     run_all_verb_scripts mirror
     copy_link_tree_remove_index_html "${mirrordir}" "${web_mirrordir}"
-    copy_link_tree_remove_index_html "${ftp_top}/build-results" "${web_top}/build-results"
+    # copy_link_tree_remove_index_html "${ftp_top}/build-results" "${web_top}/build-results"
 }
 
 run_all_test_scripts()
