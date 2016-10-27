@@ -46,7 +46,6 @@ run_all_test_scripts()
     #
     # run_all_verb_scripts test
     true
-    
 }
 
 mkdir -p "$logdir"
