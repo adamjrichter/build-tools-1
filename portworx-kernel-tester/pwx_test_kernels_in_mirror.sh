@@ -56,7 +56,7 @@ if [ $# = 0 ] ; then
     case "$distro" in
 	centos ) set /home/ftp/mirrors/http/elrepo.org/linux/kernel ;;
 	debian ) set /home/ftp/mirrors/http/snapshot.debian.org/archive/debian ;;
-	ubuntu ) set /home/ftp/mirrors/http/kernel.ubuntu.com/~kernel-ppa/mainline  ;;
+	ubuntu ) set /home/ftp/mirrors/http/kernel.ubuntu.com/~kernel-ppa/mainline /home/ftp/mirrors/http/security.ubuntu.com/ubuntu/pool/main/l/linux/" ;;
 	* ) echo "Unable to choose default mirror directory for unknown distribution \"$distro\"." >&2 ; exit 1 ;;
     esac
 fi
