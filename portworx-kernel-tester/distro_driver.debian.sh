@@ -35,7 +35,7 @@ debian_find_pkgs_in_mirror() {
 
     shift 1
     for pkgname in "$@" ; do
-	find "$mirror_tree" -name "${pkgname}-*.deb" | sort --unique | tail -1
+	find "$mirror_tree" -name "${pkgname}_*_${arch}.deb" | sort --unique | tail -1
 	# "sort | tail -1" selects the latest revision.
     done
 }
