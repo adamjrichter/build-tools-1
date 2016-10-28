@@ -54,6 +54,7 @@ prepare_pxfuse_dir() {
 }
 
 main() {
+    local result
     start_container dist_init_container
 
     test_kernel_pkgs_func "$remote_tmp_dir" "$logdir" "$@"
