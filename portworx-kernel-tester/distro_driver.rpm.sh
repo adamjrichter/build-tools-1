@@ -20,6 +20,6 @@ pkg_files_to_names_rpm () {
 }
 
 install_pkgs_rpm() { in_container yum --assumeyes --quiet install "$@" ; }
-install_pkg_dir_rpm() { in_container sh -c "rpm --install $1/*" ; }
+install_pkgs_dir_rpm() { in_container sh -c "rpm --install $1/*" ; }
 uninstall_pkgs_rpm() { in_container rpm --erase "$@" ; }
 pkgs_update_rpm() { in_container yum --assumeyes --quiet update ; }
