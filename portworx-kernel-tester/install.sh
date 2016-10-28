@@ -19,6 +19,9 @@ install_scripts() {
     done
 }
 
+apt-get install -y rpm
+# Needed for Centos support, for extracting information from .rpm files.
+
 mkdir -p "${scriptsdir}" "${bindir}" "${build_results_dir}"
 
 install_scripts "${scriptsdir}" \
