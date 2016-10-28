@@ -17,6 +17,6 @@ pkg_files_to_names_rpm () {
 
 install_pkgs_rpm()            { in_container yum install "$@" ; }
 install_pkg_files_rpm()       { in_container rpm --install "$@" ; }
-uninstall_pkgs_rpm()          { in_container rpm --remove "$@" ; }
+uninstall_pkgs_rpm()          { in_container rpm --erase "$@" ; }
 
 pkgs_update_rpm() { in_container "yum update" ; }
