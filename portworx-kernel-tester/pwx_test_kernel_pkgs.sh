@@ -54,9 +54,7 @@ prepare_pxfuse_dir() {
 }
 
 main() {
-    local kernel_dir
     start_container dist_init_container
-    kernel_dir=$(pkg_files_to_kernel_dirs "$@" | head -1)
 
     test_kernel_pkgs_func "$remote_tmp_dir" "$logdir" "$@"
     result=$?
