@@ -27,7 +27,7 @@ walk_mirror_centos() {
     return_status=0
     ( cd "$mirror_tree" && find "$mirror_tree" -name "kernel-*-headers-*.${rpm_arch}.rpm" -type f -print0 ) |
     while read -r -d $'\0' file ; do
-        if ! "$@" "$mirror_tree" "$file" ; then
+        if ! "$@" "$file" ; then
 	    return_status=$?
 	fi
     done
