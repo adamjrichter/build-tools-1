@@ -64,8 +64,6 @@ debian_process_common_deb_file()
 	    fi
 	done
 
-	# FIXME.  Skip here if the build was already done.
-
 	deps=$(debian_pkgs_to_dependencies $header_files)
 	depfiles=$(debian_find_pkgs_in_mirror "$mirror_tree" $deps)
 
