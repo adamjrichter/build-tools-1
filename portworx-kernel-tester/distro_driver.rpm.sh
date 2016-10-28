@@ -1,6 +1,10 @@
 # This is not a standalone program.  It is a library to be sourced by a shell
 # script.
 
+dist_init_container_rpm() {
+    install_pkgs_rpm autoconf g++ gcc git make tar
+}
+
 pkg_files_to_kernel_dirs_rpm() {
     rpm --query --list --package "$@" |
 	egrep ^d |
