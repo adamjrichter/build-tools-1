@@ -25,8 +25,6 @@ test_kernel_pkgs_func_loggable() {
     local result filename real dirname basename headers_dir
     local force=false
 
-    echo "AJR test_kernel_pkgs_func_loggable called with arguments $*" >&2
-
     container_tmpdir="$1"
     result_logdir="$2"
 
