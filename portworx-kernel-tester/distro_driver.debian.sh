@@ -18,7 +18,7 @@ debian_pkgs_to_dependencies() {
 	dpkg --info "$pkgfile"
     done |
 	egrep '^ Depends: ' |
-	sed 's/^ Depends: //;s/ /\n/g' |
+	sed 's/(.*)/ /g;s/,/ /g;s/^ Depends: //;s/ /\n/g' |
 	sort -u
 }
 
