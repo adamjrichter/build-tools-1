@@ -29,7 +29,8 @@ install_scripts "${scriptsdir}" \
 		container_driver.sh \
 		distro_driver.*.sh \
 		distro_driver.sh \
-		pwx_test_kernels.cron_script.sh
+		pwx_test_kernels.cron_script.sh \
+		pwx_update_pxfuse_by_date.sh
 
 install_scripts "${bindir}" \
 		pwx_test_kernel_pkgs.sh \
@@ -37,7 +38,8 @@ install_scripts "${bindir}" \
 
 chmod a+x "${bindir}/pwx_test_kernel_pkgs.sh" \
       "${bindir}/pwx_test_kernels_in_mirror.sh" \
-      "${scriptsdir}/pwx_test_kernels.cron_script.sh"
+      "${scriptsdir}/pwx_test_kernels.cron_script.sh" \
+      "${scriptsdir}/pwx_update_pxfuse_by_date.sh"
 
 old_crontab=$( ( crontab -u root -l 2> /dev/null ) |
 	      egrep -v pwx_test_kernels.cron_script.sh |
