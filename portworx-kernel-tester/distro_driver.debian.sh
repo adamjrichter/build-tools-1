@@ -3,8 +3,10 @@
 
 # For now, just default everything to the common Debian drivers.
 
+debian_tmpdir=/tmp/pwx-kernel-tester.distro-driver.debian.$$
+debian_find_txt="${debian_tmpdir}/find.sorted.txt"
+
 dist_init_container_debian()      { dist_init_container_deb       "$@" ; }
-pkg_files_to_kernel_dirs_debian() { pkg_files_to_kernel_dirs_deb  "$@" ; }
 pkg_files_to_names_debian()       { pkg_files_to_names_deb        "$@" ; }
 install_pkgs_debian()             { install_pkgs_deb              "$@" ; }
 install_pkgs_dir_debian()         { install_pkgs_dir_deb          "$@" ; }
@@ -12,13 +14,18 @@ uninstall_pkgs_debian()           { uninstall_pkgs_deb            "$@" ; }
 pkgs_update_debian()              { pkgs_update_deb               "$@" ; }
 test_kernel_pkgs_func_debian()    { test_kernel_pkgs_func_default "$@" ; }
 
+pkg_files_to_kernel_dirs_debian() {
+    pkg_files_to_kernel_dirs_deb "$@" | egrep -v -- '-common$'
+}
+
+
 debian_pkgs_to_dependencies() {
     local pkgfile
     for pkgfile in "$@" ; do
 	dpkg --info "$pkgfile"
     done |
 	egrep '^ Depends: ' |
-	sed 's/^ Depends: //;s/ /\n/g' |
+	sed 's/(.*)/ /g;s/,/ /g;s/^ Depends: //;s/ /\n/g' |
 	sort -u
 }
 
@@ -35,9 +42,11 @@ debian_find_pkgs_in_mirror() {
 
     shift 1
     for pkgname in "$@" ; do
-	find "$mirror_tree" -name "${pkgname}-*.deb" | sort --unique | tail -1
-	# "sort | tail -1" selects the latest revision.
-    done
+	fgrep "/${pkgname}_" < "$debian_find_txt" |
+	    egrep "_${arch}.deb\$" |
+	    tail -1
+    done |
+	sort -u
 }
 
 debian_process_common_deb_file()
@@ -64,21 +73,36 @@ debian_process_common_deb_file()
 	    fi
 	done
 
-	# FIXME.  Skip here if the build was already done.
+	deps=$(debian_pkgs_to_dependencies $header_files |
+		      egrep -v '^linux-headers-' )
 
-	deps=$(debian_pkgs_to_dependencies $header_files)
 	depfiles=$(debian_find_pkgs_in_mirror "$mirror_tree" $deps)
 
-	"$@" $(echo_word_per_line $header_files $depfiles | sort --unique)
+	"$@" $header_files $depfiles
 }
 
 walk_mirror_debian() {
     local mirror_tree="$1"
-    local file
+    local file return_status
 
     shift 1
-    ( cd "$mirror_tree" && find . -name "linux-headers-*-common_*_${arch}.deb" -type f -print0 ) |
+    return_status=0
+    mkdir -p "$debian_tmpdir"
+    # ( cd "$mirror_tree" && find . -name '*.deb' -type f | sort -u ) \
+    #	> "$debian_find_txt"
+    find "$mirror_tree" -name '*.deb' -type f | sort -u > "$debian_find_txt"
+    cp "$debian_find_txt" /tmp/ # AJR
+
+    # Only process kernel headers version 3.10 and later:
+    ( cd "$mirror_tree" &&
+      find . \( -name "linux-headers-3.[1-9][0-9]*-common_*_${arch}.deb" -o \
+	        -name "linux-headers-[4-9]*-common_*_${arch}.deb" \) \
+	     -type f -print0 ) |
     while read -r -d $'\0' file ; do
-        debian_process_common_deb_file "$mirror_tree" "$file" "$@" < /dev/null
+        if ! debian_process_common_deb_file "$mirror_tree" "$file" "$@" < /dev/null ; then
+	    return_status=$?
+	fi
     done
+    rm -rf "$debian_tmpdir"
+    return $return_status
 }

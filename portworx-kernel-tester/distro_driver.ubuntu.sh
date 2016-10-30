@@ -16,29 +16,38 @@ test_kernel_pkgs_func_ubuntu()    { test_kernel_pkgs_func_default "$@" ; }
 ubuntu_process_non_arch_file()
 {
         local file="$1"
-        local dir pkg_name dir arch_file
+        local dir pkg_name dir arch_file return_status
 
 	shift 1
 
         pkg_name=$(pkg_files_to_names_ubuntu "$file" | head -1)
         dir=${file%/*}
 
+	return_status=0
         for arch_file in ${dir}/${pkg_name}-*_${arch}.deb ; do
             if [[ ! -e "$arch_file" ]] ; then
                 echo "No architecuture-specific matches for $file" >&2
                 continue
             fi
-	    "$@" "$arch_file" "$file"
+	    if ! "$@" "$arch_file" "$file" ; then
+		return_status=$?
+	    fi
         done
+	return $return_status
 }
 
 walk_mirror_ubuntu() {
     local mirror_tree="$1"
-    local file
+    local file return_status
+
 
     shift 1
+    return_status=0
     find "$mirror_tree" -name 'linux-headers-*_all.deb' -type f -print0 |
     while read -r -d $'\0' file ; do
-        ubuntu_process_non_arch_file "$file" "$@" < /dev/null
+        if ! ubuntu_process_non_arch_file "$file" "$@" < /dev/null ; then
+	    return_status=$?
+	fi
     done
+    return $return_status
 }

@@ -7,15 +7,14 @@ dist_init_container_centos()      { dist_init_container_rpm       "$@" ; }
 pkg_files_to_kernel_dirs_centos() { pkg_files_to_kernel_dirs_rpm  "$@" ; }
 pkg_files_to_names_centos()       { pkg_files_to_names_rpm        "$@" ; }
 install_pkgs_centos()             { install_pkgs_rpm              "$@" ; }
-install_pkg_files_centos()        { install_pkg_files_rpm         "$@" ; }
+install_pkgs_dir_centos()         { install_pkgs_dir_rpm          "$@" ; }
 uninstall_pkgs_centos()           { uninstall_pkgs_rpm            "$@" ; }
 pkgs_update_centos()              { pkgs_update_rpm               "$@" ; }
-test_kernel_pkgs_func()           { test_kernel_pkgs_func_default "$@" ; }
+test_kernel_pkgs_func_centos()    { test_kernel_pkgs_func_default "$@" ; }
 
 walk_mirror_centos() {
     local mirror_tree="$1"
-    local file
-    local rpm_arch
+    local file rpm_arch return_status
 
     shift 1
 
@@ -25,8 +24,12 @@ walk_mirror_centos() {
 	rpm_arch="$arch"
     fi
 
+    return_status=0
     ( cd "$mirror_tree" && find "$mirror_tree" -name "kernel-*-headers-*.${rpm_arch}.rpm" -type f -print0 ) |
     while read -r -d $'\0' file ; do
-        "$@" "$mirror_tree" "$file"
+        if ! "$@" "$file" ; then
+	    return_status=$?
+	fi
     done
+    return $return_status
 }
