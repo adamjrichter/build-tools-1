@@ -91,7 +91,11 @@ walk_mirror_debian() {
     find "$mirror_tree" -name '*.deb' -type f | sort -u > "$debian_find_txt"
     cp "$debian_find_txt" /tmp/ # AJR
 
-    ( cd "$mirror_tree" && find . -name "linux-headers-*-common_*_${arch}.deb" -type f -print0 ) |
+    # Only process kernel headers version 3.10 and later:
+    ( cd "$mirror_tree" &&
+      find . \( -name "linux-headers-3.[1-9][0-9]*-common_*_${arch}.deb" -o \
+	        -name "linux-headers-[4-9]*-common_*_${arch}.deb" \) \
+	     -type f -print0 ) |
     while read -r -d $'\0' file ; do
         if ! debian_process_common_deb_file "$mirror_tree" "$file" "$@" < /dev/null ; then
 	    return_status=$?
