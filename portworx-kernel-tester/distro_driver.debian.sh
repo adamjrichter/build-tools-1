@@ -73,7 +73,9 @@ debian_process_common_deb_file()
 	    fi
 	done
 
-	deps=$(debian_pkgs_to_dependencies $header_files)
+	deps=$(debian_pkgs_to_dependencies $header_files |
+		      egrep -v '^linux-headers-' )
+
 	depfiles=$(debian_find_pkgs_in_mirror "$mirror_tree" $deps)
 
 	"$@" $header_files $depfiles
