@@ -1,5 +1,7 @@
 #!/bin/sh
 
+scriptsdir=$PWD
+
 logdir=/home/ubuntu/pwx_test_kernels.cron_script.sh.log
 
 exec > "$logdir" 2>&1
@@ -10,5 +12,7 @@ for distribution in centos debian ubuntu ; do
 	result=$?
     fi
 done
+
+$scriptsdir/pwx_update_pxfuse_by_date.sh
 
 exit $result
