@@ -5,8 +5,8 @@ scriptsdir=$PWD
 build_results_dir=$PWD/build-results
 
 usage() {
-    echo "Usage: test_kernels_in_mirror.sh [ --distribution=dist ] "
-    echo "       [ --containers=container_system] [ --logdir=dir ] "
+    echo "Usage: test_kernels_in_mirror.sh [ --distribution=dist ]"
+    echo "       [ --containers=container_system] [ --logdir=dir ]"
     echo "       [ --mirror-top=topdir ]"
     echo "       [ --pxfuse=pxfuse_src_directory ] [ mirror_dirs... ]"
     echo ""
