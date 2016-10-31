@@ -11,25 +11,3 @@ install_pkgs_dir_centos()         { install_pkgs_dir_rpm          "$@" ; }
 uninstall_pkgs_centos()           { uninstall_pkgs_rpm            "$@" ; }
 pkgs_update_centos()              { pkgs_update_rpm               "$@" ; }
 test_kernel_pkgs_func_centos()    { test_kernel_pkgs_func_default "$@" ; }
-
-walk_mirror_centos() {
-    local mirror_tree="$1"
-    local file rpm_arch return_status
-
-    shift 1
-
-    if [ ".$arch" = ".amd64" ] ; then
-	rpm_arch=x86_64
-    else
-	rpm_arch="$arch"
-    fi
-
-    return_status=0
-    ( cd "$mirror_tree" && find "$mirror_tree" -name "kernel-*-headers-*.${rpm_arch}.rpm" -type f -print0 ) |
-    while read -r -d $'\0' file ; do
-        if ! "$@" "$file" ; then
-	    return_status=$?
-	fi
-    done
-    return $return_status
-}

@@ -15,8 +15,7 @@ usage() {
     echo ""
 }
 
-. ${scriptsdir}/container_driver.sh
-. ${scriptsdir}/distro_driver.sh
+. ${scriptsdir}/mirror_walk_driver.sh
 
 checksum_current_directory() {
     find . \( -name .git -type d -prune \) -o \( -type f -print0 \) |

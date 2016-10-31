@@ -69,10 +69,8 @@ process_non_arch_file()
 	prefix="${file%-common_*}"
 	suffix="${file#*-common_}"
 
-        echo "AJR read file=$file"
         pkg_name=$(dpkg_file_to_pkg_name "$file")
         dir=${file%/*}
-        echo "AJR dir=$dir pkg_name = $pkg_name"
 
 	files=""
 	for middle in common all all-${arch} ${arch} ; do
@@ -128,7 +126,6 @@ set_up_pxfuse()
 	 git clone https://github.com/portworx/px-fuse.git )
     fi
     pxfuse_checksum=$(cd "$local_tmp_dir/px-fuse" && checksum_current_directory)
-    echo "AJR pxfuse_checksum=$pxfuse_checksum." >&2
 
     results_dir="${scriptsdir}/../build-results/pxfuse-checksum-${pxfuse_checksum}/debian"
 

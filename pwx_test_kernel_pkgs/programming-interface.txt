@@ -9,6 +9,13 @@ Top level scripts, installed in /usr/local/bin:
 	Each of the following scripts accepts a common set of options,
 	listed below.
 
+
+
+
+	pwx_test_kernel_pkgs.sh [options] pkg_files...
+
+	    Options:
+		
 		--arch=architecture            [default: amd64]
 		--distribution=dist            [default: ubuntu]
 		--containers=container_system  [default: docker]
@@ -16,8 +23,7 @@ Top level scripts, installed in /usr/local/bin:
 		--pfxuse=pxfuse_src_dir        [default: download tempoary
 					        directory from github]
 
-
-	pwx_test_kernel_pkgs.sh [options] pkg_files...
+	    Description:
 
 		If logdir/done exists, then do nothing.
 
@@ -27,36 +33,6 @@ Top level scripts, installed in /usr/local/bin:
 		logdir/build.log. On success, also save the resultant
 		px.ko file in logdir.  Returns 0 on success, non-zero
 		on any failure.
-
-	pwx_test_kernels_in_mirror.sh [options] mirror_dirs_relative_paths...
-
-		Additional options:
-
-		--command=subcommand	[default: pwx_test_kernel_pkgs.sh]
-
-		Descent into all subdirectories of mirror_dirs, finding
-		kernel head packages that should be grouped together,
-		and pass each group of packages to subcommand (usually
-		pwx_test_kernel_pkgs.sh) with the arguments --distribution,
-		--containers, --logdir, and --pxfuse explicitly passed.
-
-		The value of logdir passed to the command is changed to
-		logdir/pxfuse-checksum-$CHECKSUM/distro/mirror_dir/subdir/pkg
-		where mirror_dir/subdir/pkg is the relative path from
-		the current working directory to the first package file
-		that will be passed to the subcommd.
-
-		Note that mirror_dirs should be specified as paths
-		relative to the current working directory, preferably
-		without	using ".." so that build reuslts will be
-		recorded in the problem directories.
-
-		The tests are invoked even if one of the subcommands
-		(tests) fails.
-
-		pwx_test_kernels_in_mirror.sh exits with exit code 0
-		(success) only if all subcommands (tests) succeeded.
-		Otherwise, it exists non-zero (failure).
 
 
 DESCRIPTION OF INTERNAL FUNCTIONS
@@ -93,22 +69,6 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 	pkgs_update		- Do something like
 				  "apt-get update" or "yum update".
 				  Perhaps unnecessary.
-
-	walk_mirror dir command [args..]
-				- Descend into subdirectories of a
-				  mirror tree, finding the relevant
-				  kernel packages and invoking
-				  comand with args followed by package
-				  files that refers to a single set of
-				  kernel headers.  Typically command
-				  and args is something like
-				  "test_kernel_pkgs_log_results
-				  $pxfuse_src_dir $log_dir_top".
-				  This function relies on the global
-				  variable $arch (which currently should
-				  be "x86_64").  In the future, this
-				  function might be moved to a separate
-				  file related to mirror operations.
 
 	test_kernel_pkgs_func container_tmpdir results_logdir
 			       - This is the main function of
@@ -161,9 +121,5 @@ Directories on host:
 	/var/lib/pwx-mirror	- Contains crontab.txt
 	/var/lib/portworx-kernel-tester/build-results
 
-	/sur/local/share/portworx-kernel-tester/scripts
+	/usr/local/share/portworx-kernel-tester/scripts
 		- All script libraries used by portworx-test-kernels-in-mirror
-
-TODO:
-	Commands to compare list of old a new kernel compilations, and
-	notify people about new compilation results.

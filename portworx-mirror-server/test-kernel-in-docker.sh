@@ -108,7 +108,6 @@ result=$?
 echo "test-kernels.docker.sh: build_exit_code=$result"
 if [ "$result" = 0 ] ; then
     # Retrieve px.ko file:
-    echo "AJR test-kernel-in-docker.sh retrieving px.ko: in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko" >&2
     in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
 	( tar -C "${results_log_dir}" -xpv )
 fi

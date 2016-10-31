@@ -66,10 +66,8 @@ process_non_arch_file()
         local file="$1"
         local pkg_name dir arch_file log_file results_log_dir results_log_file
 
-        echo "AJR read file=$file"
         pkg_name=$(dpkg_file_to_pkg_name "$file")
         dir=${file%/*}
-        echo "AJR dir=$dir pkg_name = $pkg_name"
 
         for arch_file in ${dir}/${pkg_name}-*_${arch}.deb ; do
             if [ ! -e "$arch_file" ] ; then
@@ -121,7 +119,6 @@ set_up_pxfuse()
 	 git clone https://github.com/portworx/px-fuse.git )
     fi
     pxfuse_checksum=$(cd "$local_tmp_dir/px-fuse" && checksum_current_directory)
-    echo "AJR pxfuse_checksum=$pxfuse_checksum." >&2
 
     results_dir="${scriptsdir}/../build-results/pxfuse-checksum-${pxfuse_checksum}/ubuntu"
 
