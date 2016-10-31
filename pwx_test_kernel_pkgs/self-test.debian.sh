@@ -13,7 +13,7 @@ logdir=/tmp/self-test.debian.logdir
 
 rm -f ${logdir}/done
 
-sudo /home/ubuntu/build-tools/portworx-kernel-tester/install.sh &&
+sudo /home/ubuntu/build-tools/pwx_test_kernel_pkgs/install.sh &&
     sudo -- pwx_test_kernel_pkgs.sh \
 	 --arch=amd64 --containers=lxc --distribution=debian \
 	 --logdir="$logdir" \

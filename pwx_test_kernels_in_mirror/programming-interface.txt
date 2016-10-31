@@ -46,7 +46,7 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 
 
     Distribution interface (defined by sourcing
-    /usr/local/share/portworx-kernel-tester/mirror_walk_driver.sh ):
+    /usr/local/share/pwx_test_kernels_in_mirror/mirror_walk_driver.sh ):
 
 	The distribution interface uses the $distribution shell global
 	variable to select the distribution type.  Currently, "ubuntu",
@@ -77,9 +77,9 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 Directories on host:
 
 	/var/lib/pwx-mirror	- Contains crontab.txt
-	/var/lib/portworx-kernel-tester/build-results
+	/home/ftp/build-results
 
-	/usr/local/share/portworx-kernel-tester/scripts
+	/usr/local/share/test_kernels_in_mirror/scripts
 		- All script libraries used by portworx-test-kernels-in-mirror
 
 TODO:
