@@ -23,7 +23,7 @@ versions_above_3_9 () {
 
 get_subdir_index_files() {
     local top_url="$1"
-    echo_word_per_line $subdirs |
+    echo_word_per_line "$@" |
         subdirs_to_urls "${top_url}"  |
         xargs -- wget ${TIMESTAMPING} --quiet --protocol-directories \
 	      --force-directories --accept=index.html --recursive
@@ -53,7 +53,8 @@ mirror_one_dir() {
 
 mirror_subdirs() {
     local top_url="$1"
-    local top_dir
+    local top_dir subdirs
+
     top_dir=$(url_to_dir "$top_url")
     rm -f ${top_dir}/index.html
     wget --quiet --force-directories --protocol-directories ${top_url}/
@@ -61,7 +62,7 @@ mirror_subdirs() {
     # FIXME.  This breaks for subdirectory names containing spaces.
     subdirs=$(extract_subdirs <  ${top_dir}/index.html | versions_above_3_9)
 
-    get_subdir_index_files "$top_url"
+    get_subdir_index_files "$top_url" $subdirs
 
     # TODO: Change "image" to "headers"
     for subdir in $subdirs ; do
