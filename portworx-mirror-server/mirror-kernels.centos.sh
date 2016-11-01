@@ -12,10 +12,6 @@ mkdir -p ${mirrordir}
 # TIMESTAMPING=--timestamping
 TIMESTAMPING='--no-clobber --no-use-server-timestamps'
 
-do_wget() {
-    wget --no-parent ${TIMESTAMPING} "$@"
-}
-
 newlines_around_angle_brackets() {
     sed 's/</\'$'\n''</g;s/>/>\'$'\n''/g;'
 }
