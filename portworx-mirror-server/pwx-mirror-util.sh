@@ -29,6 +29,7 @@ extract_subdirs() {
 
 subdirs_to_urls() {
     local top_url="$1"
+    local subdir
 
     while read subdir ; do
         echo "$top_url/$subdir"
