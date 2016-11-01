@@ -5,61 +5,69 @@ arch=x86_64
 
 scriptsdir=$PWD
 . ${scriptsdir}/pwx-mirror-config.sh
+. ${scriptsdir}/pwx-mirror-util.sh
 cd ${mirrordir} || exit $?
 mkdir -p ${mirrordir}
 
 # TIMESTAMPING=--timestamping
 TIMESTAMPING='--no-clobber --no-use-server-timestamps'
 
-top=elrepo.org/linux/kernel/
-top_dir=http/$top
-top_url=http://$top
-
-do_wget() {
-    wget --no-parent ${TIMESTAMPING} "$@"
-}
-
-newlines_around_angle_brackets() {
-    sed 's/</\'$'\n''</g;s/>/>\'$'\n''/g;'
-}
-
-# I think there is a perl program named extract-urls that will do this better.
-extract_subdirs() {
-    newlines_around_angle_brackets |
-	egrep '^<a href="' | sed 's/^[^"]*"//;s/"[^"]*$//'
-}
-
 versions_above_3_9 () {
     egrep '^v(4|3\.[1-9][0-9]).*/$'
 }
 
-subdirs_to_urls() {
-    local top_url="$1"
+mirror_el_repo() {
+    local top_url=http://elrepo.org/linux/kernel/
+    local top_dir=$(url_to_dir "$top_url")
 
-    while read subdir ; do
-        echo "$top_url/$subdir"
-    done
+    local rpm_arch
+
+    case "$arch" in
+	amd64 ) rpm_arch="x86_64" ;;
+	* ) rpm_arch="$arch" ;;
+    esac
+
+    wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
+	 --protocol-directories --force-directories --recursive \
+	 --accept-regex='.*/(index.html)?$' \
+	 ${top_url}
+
+    for dir in ${top_dir}/*/${rpm_arch}/RPMS/ ; do
+	echo ''
+	extract_subdirs < $dir/index.html |
+	    egrep "^kernel-.*headers-.*.${rpm_arch}.rpm$" |
+	    subdirs_to_urls http://${dir#http/}
+    done |
+	xargs -- wget --no-parent ${TIMESTAMPING} \
+	      --protocol-directories --force-directories
 }
 
-echo_one_per_line() {
-    local word
-    for word in "$@" ; do
-	echo "$word"
-    done
+mirror_mirror_centos_org() {
+    local top_url=http://mirror.centos.org/centos/
+    local top_dir=$(url_to_dir "$top_url")
+
+    wget --quiet --protocol-directories --force-directories \
+	  "${top_url}"
+
+    extract_subdirs < "$top_dir/index.html" |
+	egrep '^[0-9]' |
+	sed "s|^|${top_url}|;s|\$|/os/x86_64/Packages/|" |
+	xargs wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
+	 --protocol-directories --force-directories --recursive --level=1 \
+	 --accept-regex="/(index.html)|(kernel-.*headers.*\.rpm)"
+
+    # FIXME.  The following regular expresion might filter out kernels before
+    # 3.10.  It is modified from one that was not working, but maybe this
+    # version might work.
+    #
+    # --accept-regex="/(index.html)|(kernel-(.*-)?headers-${above_3_9_regexp}(.*-.*-.*)?\..*\.rpm)"
 }
 
-cd /home/ftp/mirrors || exit $?
 
-wget --no-parent ${TIMESTAMPING} -e robots=off \
-     --protocol-directories --force-directories --recursive \
-     --accept-regex='.*/(index.html)?$' \
-     ${top_url}
+# TODO? mirror vault.centos.org, but it only contains source RPM's.  The
+# kernel-headers RPM's that we use are apparently non-source RPM's
+# generated from kernel source RPM's.
 
-for dir in ${top_dir}/*/${arch}/RPMS/ ; do
-    echo ''
-    extract_subdirs < $dir/index.html |
-	egrep "^kernel-.*headers-.*.${arch}.rpm$" |
-	subdirs_to_urls http://${dir#http/}
-done |
-    xargs -- wget --no-parent ${TIMESTAMPING} \
-	  --protocol-directories --force-directories
+# mirror_vault_centos_org
+mirror_mirror_centos_org
+mirror_el_repo

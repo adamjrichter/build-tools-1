@@ -5,6 +5,7 @@
 
 scriptsdir=$PWD
 . ${scriptsdir}/pwx-mirror-config.sh
+. ${scriptsdir}/pwx-mirror-util.sh
 mkdir -p ${mirrordir}
 cd ${mirrordir} || exit $?
 
@@ -23,17 +24,6 @@ TIMESTAMPING=--timestamping
 
 declare -A url_array
 declare -A kernel_header_names
-
-newlines_around_angle_brackets() {
-    sed 's/</\'$'\n''</g;s/>/>\'$'\n''/g;'
-}
-
-# I think there is a perl program named extract-urls that will do this better.
-extract_subdirs() {
-    newlines_around_angle_brackets |
-        egrep '^<a href="' |
-	sed 's/^<a href="//;s/".*$//'
-}
 
 on_or_after_linux_3_10_release_date() {
     # Linux 3.10 was released on 2013.06.30, maybe the day before in some time
@@ -62,13 +52,6 @@ directory_url_to_filename() {
 directory_index_to_filename() {
     local index="$1"
     directory_url_to_filename "${url_array[$index]}"
-}
-
-echo_word_per_line() {
-    local word
-    for word in "$@" ; do
-	echo "$word"
-    done
 }
 
 linux_headers_after_3_9() {

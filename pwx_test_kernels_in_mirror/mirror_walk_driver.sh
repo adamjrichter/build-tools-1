@@ -7,6 +7,7 @@
 . $scriptsdir/mirror_walk_driver.debian.sh
 . $scriptsdir/mirror_walk_driver.ubuntu.sh
 . $scriptsdir/mirror_walk_driver.centos.sh
+. $scriptsdir/mirror_walk_driver.fedora.sh
 
 
 pkg_files_to_names()       { "pkg_files_to_names_$distro"       "$@" ; }

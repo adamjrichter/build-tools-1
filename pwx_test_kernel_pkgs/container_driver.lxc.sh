@@ -45,6 +45,7 @@ start_container_lxc() {
 	ubuntu ) release="xenial" ;;
 	debian ) release="jessie" ;;
 	centos ) release="7" ;;
+	fedora ) release="24" ;;
 	* )
 	    echo "start_container_lxc: Unknown distribution \"${distro}\"." >&2
 	    echo "Failing." >&2
