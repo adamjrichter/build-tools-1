@@ -62,6 +62,7 @@ if [ $# = 0 ] ; then
 		     /home/ftp/mirrors/http/mirror.centos.org/centos
 		 ;;
 	debian ) set /home/ftp/mirrors/http/snapshot.debian.org/archive/debian ;;
+	fedora ) set /home/ftp/mirrors/http/ftp.linux.ncsu.edu/pub/fedora/linux/releases ;;
 	ubuntu ) set \
 		     /home/ftp/mirrors/http/security.ubuntu.com/ubuntu/pool/main/l/linux/ \
 		     /home/ftp/mirrors/http/kernel.ubuntu.com/~kernel-ppa/mainline
