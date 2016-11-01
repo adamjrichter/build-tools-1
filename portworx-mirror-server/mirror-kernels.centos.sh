@@ -44,14 +44,6 @@ echo_one_per_line() {
     done
 }
 
-url_to_dir()
-{
-    local url="$1"
-    local prefix="${url%%://*}"
-    local suffix="${url#*://}"
-    echo "$prefix/$suffix"
-}
-
 mirror_el_repo() {
     local top=elrepo.org/linux/kernel/
     local top_url=http://$top
