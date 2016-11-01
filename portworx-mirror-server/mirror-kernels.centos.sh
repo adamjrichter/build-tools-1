@@ -5,6 +5,7 @@ arch=x86_64
 
 scriptsdir=$PWD
 . ${scriptsdir}/pwx-mirror-config.sh
+. ${scriptsdir}/pwx-mirror-util.sh
 cd ${mirrordir} || exit $?
 mkdir -p ${mirrordir}
 
@@ -45,9 +46,8 @@ echo_one_per_line() {
 }
 
 mirror_el_repo() {
-    local top=elrepo.org/linux/kernel/
-    local top_url=http://$top
-    local top_dir=http/$top
+    local top_url=http://elrepo.org/linux/kernel/
+    local top_dir=$(url_to_dir "$top_url")
 
     wget --no-parent ${TIMESTAMPING} -e robots=off \
 	 --protocol-directories --force-directories --recursive \
