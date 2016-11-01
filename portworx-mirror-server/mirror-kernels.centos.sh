@@ -20,15 +20,22 @@ mirror_el_repo() {
     local top_url=http://elrepo.org/linux/kernel/
     local top_dir=$(url_to_dir "$top_url")
 
+    local rpm_arch
+
+    case "$arch" in
+	amd64 ) rpm_arch="x86_64" ;;
+	* ) rpm_arch="$arch" ;;
+    esac
+
     wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
 	 --protocol-directories --force-directories --recursive \
 	 --accept-regex='.*/(index.html)?$' \
 	 ${top_url}
 
-    for dir in ${top_dir}/*/${arch}/RPMS/ ; do
+    for dir in ${top_dir}/*/${rpm_arch}/RPMS/ ; do
 	echo ''
 	extract_subdirs < $dir/index.html |
-	    egrep "^kernel-.*headers-.*.${arch}.rpm$" |
+	    egrep "^kernel-.*headers-.*.${rpm_arch}.rpm$" |
 	    subdirs_to_urls http://${dir#http/}
     done |
 	xargs -- wget --no-parent ${TIMESTAMPING} \
@@ -49,10 +56,11 @@ mirror_mirror_centos_org() {
 	 --protocol-directories --force-directories --recursive --level=1 \
 	 --accept-regex="/(index.html)|(kernel-.*headers.*\.rpm)"
 
-    # FIXME.  The following URL, that should filter out kernels before
-    # 3.10, is not working:
+    # FIXME.  The following regular expresion might filter out kernels before
+    # 3.10.  It is modified from one that was not working, but maybe this
+    # version might work.
     #
-    # --accept-regex="/(index.html)|(kernel-${above_3_9_regexp}(.*-)?headers(.*-.*-.*)?\..*\.rpm)"
+    # --accept-regex="/(index.html)|(kernel-(.*-)?headers-${above_3_9_regexp}(.*-.*-.*)?\..*\.rpm)"
 }
 
 
