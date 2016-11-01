@@ -2,6 +2,7 @@
 
 scriptsdir=$PWD
 . ${scriptsdir}/pwx-mirror-config.sh
+. ${scriptsdir}/pwx-mirror-util.sh
 mkdir -p ${mirrordir}
 cd ${mirrordir} || exit $?
 
@@ -51,14 +52,6 @@ get_subdir_index_files() {
         subdirs_to_urls "${top_url}"  |
         xargs -- wget ${TIMESTAMPING} --quiet --protocol-directories \
 	      --force-directories --accept=index.html --recursive
-}
-
-url_to_dir()
-{
-    local url="$1"
-    local prefix="${url%%://*}"
-    local suffix="${url#*://}"
-    echo "$prefix/$suffix"
 }
 
 remove_index_html_mirror_files() {
