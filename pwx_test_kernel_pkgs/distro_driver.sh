@@ -16,7 +16,6 @@ install_pkgs()             { "install_pkgs_$distro"             "$@" ; }
 install_pkgs_dir()         { "install_pkgs_dir_$distro"         "$@" ; }
 uninstall_pkgs()           { "uninstall_pkgs_$distro"           "$@" ; }
 pkgs_update()              { "pkgs_update_$distro"              "$@" ; }
-walk_mirror()              { "walk_mirror_$distro"              "$@" ; }
 test_kernel_pkgs_func()    { "test_kernel_pkgs_func_$distro"    "$@" ; }
 
 

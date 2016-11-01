@@ -18,7 +18,6 @@ get_dpkg_name() {
 }
 
 exit_func() {
-    echo "AJR exit_func $* called."
     dpkg --remove $pkg_names
     touch -f "${results_dir}/done"
 }
