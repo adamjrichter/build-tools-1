@@ -20,7 +20,7 @@ mirror_el_repo() {
     local top_url=http://elrepo.org/linux/kernel/
     local top_dir=$(url_to_dir "$top_url")
 
-    wget --no-parent ${TIMESTAMPING} -e robots=off \
+    wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
 	 --protocol-directories --force-directories --recursive \
 	 --accept-regex='.*/(index.html)?$' \
 	 ${top_url}
@@ -35,4 +35,31 @@ mirror_el_repo() {
 	      --protocol-directories --force-directories
 }
 
+mirror_mirror_centos_org() {
+    local top_url=http://mirror.centos.org/centos/
+    local top_dir=$(url_to_dir "$top_url")
+
+    wget --quiet --protocol-directories --force-directories \
+	  "${top_url}"
+
+    extract_subdirs < "$top_dir/index.html" |
+	egrep '^[0-9]' |
+	sed "s|^|${top_url}|;s|\$|/os/x86_64/Packages/|" |
+	xargs wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
+	 --protocol-directories --force-directories --recursive --level=1 \
+	 --accept-regex="/(index.html)|(kernel-.*headers.*\.rpm)"
+
+    # FIXME.  The following URL, that should filter out kernels before
+    # 3.10, is not working:
+    #
+    # --accept-regex="/(index.html)|(kernel-${above_3_9_regexp}(.*-)?headers(.*-.*-.*)?\..*\.rpm)"
+}
+
+
+# TODO? mirror vault.centos.org, but it only contains source RPM's.  The
+# kernel-headers RPM's that we use are apparently non-source RPM's
+# generated from kernel source RPM's.
+
+# mirror_vault_centos_org
+mirror_mirror_centos_org
 mirror_el_repo
