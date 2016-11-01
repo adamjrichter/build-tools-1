@@ -11,10 +11,6 @@ mkdir -p ${mirrordir}
 # TIMESTAMPING=--timestamping
 TIMESTAMPING='--no-clobber --no-use-server-timestamps'
 
-top=elrepo.org/linux/kernel/
-top_dir=http/$top
-top_url=http://$top
-
 do_wget() {
     wget --no-parent ${TIMESTAMPING} "$@"
 }
@@ -48,18 +44,32 @@ echo_one_per_line() {
     done
 }
 
-cd /home/ftp/mirrors || exit $?
+url_to_dir()
+{
+    local url="$1"
+    local prefix="${url%%://*}"
+    local suffix="${url#*://}"
+    echo "$prefix/$suffix"
+}
 
-wget --no-parent ${TIMESTAMPING} -e robots=off \
-     --protocol-directories --force-directories --recursive \
-     --accept-regex='.*/(index.html)?$' \
-     ${top_url}
+mirror_el_repo() {
+    local top=elrepo.org/linux/kernel/
+    local top_url=http://$top
+    local top_dir=http/$top
 
-for dir in ${top_dir}/*/${arch}/RPMS/ ; do
-    echo ''
-    extract_subdirs < $dir/index.html |
-	egrep "^kernel-.*headers-.*.${arch}.rpm$" |
-	subdirs_to_urls http://${dir#http/}
-done |
-    xargs -- wget --no-parent ${TIMESTAMPING} \
-	  --protocol-directories --force-directories
+    wget --no-parent ${TIMESTAMPING} -e robots=off \
+	 --protocol-directories --force-directories --recursive \
+	 --accept-regex='.*/(index.html)?$' \
+	 ${top_url}
+
+    for dir in ${top_dir}/*/${arch}/RPMS/ ; do
+	echo ''
+	extract_subdirs < $dir/index.html |
+	    egrep "^kernel-.*headers-.*.${arch}.rpm$" |
+	    subdirs_to_urls http://${dir#http/}
+    done |
+	xargs -- wget --no-parent ${TIMESTAMPING} \
+	      --protocol-directories --force-directories
+}
+
+mirror_el_repo
