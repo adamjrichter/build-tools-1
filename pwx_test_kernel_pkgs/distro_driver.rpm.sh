@@ -2,7 +2,7 @@
 # script.
 
 dist_init_container_rpm() {
-    install_pkgs_rpm autoconf g++ gcc git make tar
+    install_pkgs_rpm autoconf automake gcc git make tar
 }
 
 pkg_files_to_kernel_dirs_rpm() {
