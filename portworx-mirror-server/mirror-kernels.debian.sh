@@ -5,6 +5,7 @@
 
 scriptsdir=$PWD
 . ${scriptsdir}/pwx-mirror-config.sh
+. ${scriptsdir}/pwx-mirror-util.sh
 mkdir -p ${mirrordir}
 cd ${mirrordir} || exit $?
 
@@ -62,13 +63,6 @@ directory_url_to_filename() {
 directory_index_to_filename() {
     local index="$1"
     directory_url_to_filename "${url_array[$index]}"
-}
-
-echo_word_per_line() {
-    local word
-    for word in "$@" ; do
-	echo "$word"
-    done
 }
 
 linux_headers_after_3_9() {

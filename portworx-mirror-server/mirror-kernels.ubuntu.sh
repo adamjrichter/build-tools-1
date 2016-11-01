@@ -39,16 +39,9 @@ subdirs_to_urls() {
     done
 }
 
-echo_one_per_line() {
-    local word
-    for word in "$@" ; do
-	echo "$word"
-    done
-}
-
 get_subdir_index_files() {
     local top_url="$1"
-    echo_one_per_line $subdirs |
+    echo_word_per_line $subdirs |
         subdirs_to_urls "${top_url}"  |
         xargs -- wget ${TIMESTAMPING} --quiet --protocol-directories \
 	      --force-directories --accept=index.html --recursive

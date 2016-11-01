@@ -38,13 +38,6 @@ subdirs_to_urls() {
     done
 }
 
-echo_one_per_line() {
-    local word
-    for word in "$@" ; do
-	echo "$word"
-    done
-}
-
 mirror_el_repo() {
     local top_url=http://elrepo.org/linux/kernel/
     local top_dir=$(url_to_dir "$top_url")
