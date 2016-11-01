@@ -1,5 +1,10 @@
 #
 # This file is intended to be sourced from a shell script.
+#
+# This file contains common declarations used by mirror-kernels.*.sh.
+
+# Used for selecting kernels version 3.10 or later:
+above_3_9_regexp='(3\.[1-9][0-9]|[4-9]|[1-9][0-9])'
 
 url_to_dir()
 {

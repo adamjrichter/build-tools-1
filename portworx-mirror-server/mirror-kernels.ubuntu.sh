@@ -15,8 +15,6 @@ arch=amd64
 #TIMESTAMPING=--timestamping
 TIMESTAMPING=--no-clobber
 
-above_3_9_regexp='(3\.[1-9][0-9]|[4-9]|[1-9][0-9])'
-
 versions_above_3_9 () {
     egrep "^v${above_3_9_regexp}.*/\$"
 }
