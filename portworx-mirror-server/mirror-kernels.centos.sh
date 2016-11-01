@@ -12,26 +12,8 @@ mkdir -p ${mirrordir}
 # TIMESTAMPING=--timestamping
 TIMESTAMPING='--no-clobber --no-use-server-timestamps'
 
-newlines_around_angle_brackets() {
-    sed 's/</\'$'\n''</g;s/>/>\'$'\n''/g;'
-}
-
-# I think there is a perl program named extract-urls that will do this better.
-extract_subdirs() {
-    newlines_around_angle_brackets |
-	egrep '^<a href="' | sed 's/^[^"]*"//;s/"[^"]*$//'
-}
-
 versions_above_3_9 () {
     egrep '^v(4|3\.[1-9][0-9]).*/$'
-}
-
-subdirs_to_urls() {
-    local top_url="$1"
-
-    while read subdir ; do
-        echo "$top_url/$subdir"
-    done
 }
 
 mirror_el_repo() {

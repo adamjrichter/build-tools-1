@@ -25,17 +25,6 @@ TIMESTAMPING=--timestamping
 declare -A url_array
 declare -A kernel_header_names
 
-newlines_around_angle_brackets() {
-    sed 's/</\'$'\n''</g;s/>/>\'$'\n''/g;'
-}
-
-# I think there is a perl program named extract-urls that will do this better.
-extract_subdirs() {
-    newlines_around_angle_brackets |
-        egrep '^<a href="' |
-	sed 's/^<a href="//;s/".*$//'
-}
-
 on_or_after_linux_3_10_release_date() {
     # Linux 3.10 was released on 2013.06.30, maybe the day before in some time
     # zone)

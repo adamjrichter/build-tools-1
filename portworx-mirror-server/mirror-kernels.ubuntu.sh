@@ -17,26 +17,8 @@ TIMESTAMPING=--no-clobber
 
 above_3_9_regexp='(3\.[1-9][0-9]|[4-9]|[1-9][0-9])'
 
-newlines_around_angle_brackets() {
-    sed 's/</\'$'\n''</g;s/>/>\'$'\n''/g;'
-}
-
-# I think there is a perl program named extract-urls that will do thisb better.
-extract_subdirs() {
-    newlines_around_angle_brackets |
-	egrep '^<a href="' | sed 's/^[^"]*"//;s/"[^"]*$//'
-}
-
 versions_above_3_9 () {
     egrep "^v${above_3_9_regexp}.*/\$"
-}
-
-subdirs_to_urls() {
-    local top_url="$1"
-
-    while read subdir ; do
-        echo "$top_url/$subdir"
-    done
 }
 
 get_subdir_index_files() {
