@@ -4,7 +4,7 @@ scriptsdir=$PWD
 
 log_file=/home/ubuntu/pwx_test_kernels.cron_script.sh.log
 
-exec > "$log_file" 2>&1
+exec > "$log_file" 2>&1 < /dev/null
 
 result=0
 for dist in centos debian fedora ubuntu ; do
