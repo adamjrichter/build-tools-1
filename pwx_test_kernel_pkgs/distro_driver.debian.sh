@@ -8,6 +8,7 @@ debian_find_txt="${debian_tmpdir}/find.sorted.txt"
 
 dist_init_container_debian()      { dist_init_container_deb       "$@" ; }
 pkg_files_to_names_debian()       { pkg_files_to_names_deb        "$@" ; }
+pkg_files_to_dependencies_debian() { pkg_files_to_dependencies_deb "$@" ; }
 install_pkgs_debian()             { install_pkgs_deb              "$@" ; }
 install_pkgs_dir_debian()         { install_pkgs_dir_deb          "$@" ; }
 uninstall_pkgs_debian()           { uninstall_pkgs_deb            "$@" ; }

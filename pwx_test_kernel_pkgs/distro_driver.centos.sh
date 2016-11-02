@@ -5,6 +5,7 @@
 
 pkg_files_to_kernel_dirs_centos() { pkg_files_to_kernel_dirs_rpm  "$@" ; }
 pkg_files_to_names_centos()       { pkg_files_to_names_rpm        "$@" ; }
+pkg_files_to_dependencies_centos() { pkg_files_to_dependencies_rpm "$@" ; }
 install_pkgs_centos()             { install_pkgs_rpm              "$@" ; }
 install_pkgs_dir_centos()         { install_pkgs_dir_rpm          "$@" ; }
 install_pkgs_centos()             { install_pkgs_rpm              "$@" ; }

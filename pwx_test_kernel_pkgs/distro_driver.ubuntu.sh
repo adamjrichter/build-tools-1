@@ -5,6 +5,7 @@
 
 dist_init_container_ubuntu()      { dist_init_container_deb       "$@" ; }
 pkg_files_to_kernel_dirs_ubuntu() { pkg_files_to_kernel_dirs_deb  "$@" ; }
+pkg_files_to_dependencies_ubuntu() { pkg_files_to_dependencies_deb "$@" ; }
 pkg_files_to_names_ubuntu()       { pkg_files_to_names_deb        "$@" ; }
 install_pkgs_ubuntu()             { install_pkgs_deb              "$@" ; }
 install_pkgs_dir_ubuntu()         { install_pkgs_dir_deb          "$@" ; }

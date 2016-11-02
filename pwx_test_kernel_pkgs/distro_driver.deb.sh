@@ -31,6 +31,16 @@ pkg_files_to_names_deb () {
     done
 }
 
+pkg_files_to_dependencies_deb() {
+    local pkgfile
+    for pkgfile in "$@" ; do
+	dpkg --info "$pkgfile"
+    done |
+	egrep '^ Depends: ' |
+	sed 's/(.*)/ /g;s/,/ /g;s/^ Depends: //;s/ /\n/g' |
+	sort -u
+}
+
 install_pkgs_deb()      {
     in_container apt-get install --quiet --yes --force-yes "$@"
 }

@@ -5,6 +5,7 @@
 
 pkg_files_to_kernel_dirs_fedora() { pkg_files_to_kernel_dirs_rpm  "$@" ; }
 pkg_files_to_names_fedora()       { pkg_files_to_names_rpm        "$@" ; }
+pkg_files_to_dependencies_fedora() { pkg_files_to_dependencies_rpm "$@" ; }
 install_pkgs_fedora()             { install_pkgs_rpm              "$@" ; }
 install_pkgs_dir_fedora()         { install_pkgs_dir_rpm          "$@" ; }
 uninstall_pkgs_fedora()           { uninstall_pkgs_rpm            "$@" ; }
