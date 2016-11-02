@@ -39,7 +39,6 @@ if [[ $# -lt 1 ]] ; then
 fi
 
 local_tmp_dir=/tmp/test-kernels.ubuntu.$$
-remote_tmp_dir=/tmp/test-portworx-kernels
 
 prepare_pxfuse_dir() {
     trap exit_handler EXIT
@@ -50,6 +49,7 @@ prepare_pxfuse_dir() {
 	 git clone https://github.com/portworx/px-fuse.git )
 
 	pxfuse_dir="$local_tmp_dir/px-fuse"
+	# ^^^^^^^ Global variable.
     fi
 }
 
@@ -57,7 +57,7 @@ main() {
     local result
     start_container dist_init_container
 
-    test_kernel_pkgs_func "$remote_tmp_dir" "$logdir" "$@"
+    test_kernel_pkgs_func "$pxfuse_dir" "$logdir" "$@"
     result=$?
 
     stop_container
