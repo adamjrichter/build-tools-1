@@ -47,6 +47,6 @@ pkgs_update_deb()       {
 install_pkgs_dir_deb()  {
     in_container sh -c "dpkg --install --force-all $1/*"
     # in_container apt-get --fix-broken install --quiet --yes --force-yes || true
-    in_container apt-get --fix-broken install --yes --force-yes || true
+    # in_container apt-get --fix-broken install --yes --force-yes || true
     # ^^^ Try to install any missing dependencies.
 }
