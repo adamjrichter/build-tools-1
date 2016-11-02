@@ -70,7 +70,7 @@ test_kernel_pkgs_func_loggable() {
 		 "cd ${container_tmpdir}/pxfuse_dir && \
                   autoreconf && \
                   ./configure && \
-                  make KERNELPATH=$headers_dir"
+                  make KERNELPATH=$headers_dir CC=\"gcc -fno-pie\""
 
     result=$?
     echo "test_kernel_pkgs_func_default: build_exit_code=$result" >&2
