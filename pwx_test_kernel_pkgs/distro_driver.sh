@@ -102,9 +102,8 @@ test_kernel_pkgs_func_default() {
 
     if [[ -e "$result_logdir/done" ]] && ! $force ; then
 	echo "test_kernel_pkgs_func_default: $result_logdir/done exists.  Skipping."
+    else
+	mkdir -p "$result_logdir"
+	test_kernel_pkgs_func_loggable "$@" > "$result_logdir/build.log" 2>&1
     fi
-
-    mkdir -p "$result_logdir"
-    test_kernel_pkgs_func_loggable "$@" \
-	> "$result_logdir/build.log" 2>&1
 }
