@@ -70,7 +70,7 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 				  "apt-get update" or "yum update".
 				  Perhaps unnecessary.
 
-	test_kernel_pkgs_func container_tmpdir results_logdir
+	test_kernel_pkgs_func pxfuse_source_dir results_logdir
 			       - This is the main function of
 				  ./test_kernel_pkgs.  There is
 				  a default version of this function,
