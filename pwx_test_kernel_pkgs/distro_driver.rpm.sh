@@ -27,7 +27,6 @@ pkg_files_to_dependencies_rpm() {
 	sort -u
 }
 
-
 install_pkgs_rpm()     { in_container yum --assumeyes --quiet install "$@" ; }
 install_pkgs_dir_rpm() { in_container sh -c "rpm --install $1/*" ; }
 uninstall_pkgs_rpm()   { in_container rpm --erase "$@" ; }
