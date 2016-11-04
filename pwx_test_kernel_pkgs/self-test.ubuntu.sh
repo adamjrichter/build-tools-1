@@ -6,10 +6,10 @@
 pxfuse_dir=/home/ubuntu/git/px-fuse
 
 if [ ! -e "$pxfuse_dir" ] ; then
-    cd ${pxfuse_dir%/*} && git clone https://github.com/portworx/px-fuse.git
+    ( cd ${pxfuse_dir%/*} && git clone https://github.com/portworx/px-fuse.git )
 fi
 
-logdir=/var/lib/pwx_test_kernel_pkgs/build-results/pxfuse-f90140c0e14979943e34d1b2fdcb0656/ubuntu//v3.13.11-ckt35-trusty/linux-headers-3.13.11-031311ckt35-generic_3.13.11-031311ckt35.201602161330_amd64
+logdir=/tmp/self-test.ubuntu.logdir
 
 rm -f ${logdir}/done
 

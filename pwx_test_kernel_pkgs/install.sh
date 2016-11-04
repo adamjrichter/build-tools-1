@@ -1,9 +1,7 @@
 #!/bin/sh
 
 prefix=/usr/local
-scriptsdir=${prefix}/share/portworx-kernel-tester/scripts
-#build_results_dir=/var/lib/portworx-kernel-tester/build-results
-build_results_dir=/home/ftp/build-results
+scriptsdir=${prefix}/share/pwx_test_kernel_pkgs/scripts
 bindir=${prefix}/bin
 
 set -e
@@ -14,15 +12,14 @@ install_scripts() {
     mkdir -p "$dir"
     for file in "$@" ; do
 	sed -e "s|^scriptsdir=.*\$|scriptsdir=${scriptsdir}|" \
-	    -e "s|^build_results_dir=.*\$|build_results_dir=${build_results_dir}|" \
 	    < "$file" > "$dir/$file"
     done
 }
 
-apt-get install --yes --quiet rpm
-# Needed for Centos support, for extracting information from .rpm files.
+apt-get install --yes --quiet rpm lxc
+# rpm is needed for Centos support, for extracting information from .rpm files.
 
-mkdir -p "${scriptsdir}" "${bindir}" "${build_results_dir}"
+mkdir -p "${scriptsdir}" "${bindir}"
 
 install_scripts "${scriptsdir}" \
 		container_driver.*.sh \

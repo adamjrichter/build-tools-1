@@ -31,6 +31,16 @@ pkg_files_to_names_deb () {
     done
 }
 
+pkg_files_to_dependencies_deb() {
+    local pkgfile
+    for pkgfile in "$@" ; do
+	dpkg --info "$pkgfile"
+    done |
+	egrep '^ Depends: ' |
+	sed 's/(.*)/ /g;s/,/ /g;s/^ Depends: //;s/ /\n/g' |
+	sort -u
+}
+
 install_pkgs_deb()      {
     in_container apt-get install --quiet --yes --force-yes "$@"
 }
@@ -47,6 +57,6 @@ pkgs_update_deb()       {
 install_pkgs_dir_deb()  {
     in_container sh -c "dpkg --install --force-all $1/*"
     # in_container apt-get --fix-broken install --quiet --yes --force-yes || true
-    in_container apt-get --fix-broken install --yes --force-yes || true
+    # in_container apt-get --fix-broken install --yes --force-yes || true
     # ^^^ Try to install any missing dependencies.
 }

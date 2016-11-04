@@ -6,7 +6,7 @@
 pxfuse_dir=/home/ubuntu/git/px-fuse
 
 if [ ! -e "$pxfuse_dir" ] ; then
-    cd ${pxfuse_dir%/*} && git clone https://github.com/portworx/px-fuse.git
+    ( cd ${pxfuse_dir%/*} && git clone https://github.com/portworx/px-fuse.git )
 fi
 
 logdir=/tmp/self-test.debian.logdir

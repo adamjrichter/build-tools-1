@@ -19,6 +19,14 @@ pkg_files_to_names_rpm () {
     rpm --query --package "$@"
 }
 
+pkg_files_to_dependencies_rpm() {
+    local pkgfile
+    for pkgfile in "$@" ; do
+	rpm -qpR "$pkgfile"
+    done |
+	sort -u
+}
+
 install_pkgs_rpm()     { in_container yum --assumeyes --quiet install "$@" ; }
 install_pkgs_dir_rpm() { in_container sh -c "rpm --install $1/*" ; }
 uninstall_pkgs_rpm()   { in_container rpm --erase "$@" ; }

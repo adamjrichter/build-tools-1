@@ -13,7 +13,9 @@ usage() {
 
 arch=amd64
 distro=ubuntu
+distro_releases=""
 container_system=docker
+force=false
 logdir=$PWD
 
 exit_handler() {
@@ -25,6 +27,8 @@ while [[ $# -gt 0 ]] ; do
 	--arch=* ) arch=${1#--arch=} ;;
 	--containers=* ) container_system=${1#--containers=} ;;
 	--distribution=* ) distro=${1#--distribution=} ;;
+	--force ) force=true ;;
+	--releases=* ) distro_release=${1#--releases=} ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
 	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
 	--* ) usage >&2 ; exit 1 ;;
@@ -39,7 +43,6 @@ if [[ $# -lt 1 ]] ; then
 fi
 
 local_tmp_dir=/tmp/test-kernels.ubuntu.$$
-remote_tmp_dir=/tmp/test-portworx-kernels
 
 prepare_pxfuse_dir() {
     trap exit_handler EXIT
@@ -50,19 +53,40 @@ prepare_pxfuse_dir() {
 	 git clone https://github.com/portworx/px-fuse.git )
 
 	pxfuse_dir="$local_tmp_dir/px-fuse"
+	# ^^^^^^^ Global variable.
     fi
 }
 
-main() {
-    local result
-    start_container dist_init_container
+test_kernel_pkgs() {
+    local result release releases
 
-    test_kernel_pkgs_func "$remote_tmp_dir" "$logdir" "$@"
-    result=$?
+    if [[ -e "$logdir/done" ]] && ! $force ; then
+	echo "test_kernel_pkgs_func_default: $logdir/done exists.  Skipping."
+	return 0
+    fi
 
-    stop_container
+    if [[ -n "$distro_releases" ]] ; then
+	releases=$(echo "$distro_releases" | sed 's/,/ /g')
+    else
+	releases=$(get_dist_releases)
+    fi
+    mkdir -p "$logdir"
+    for release in $releases ; do
+	echo "test_kernel_pkgs: Attempting to test kernel package(s) on distribution $distro, release $release."
+
+	start_container --release="$release" dist_init_container
+
+	test_kernel_pkgs_func "$pxfuse_dir" "$logdir" "$@"
+	result=$?
+
+	stop_container
+	if [[ $result = 0 ]] ; then
+	    break
+	fi
+	force="--force"
+    done > "$logdir/build.log" 2>&1
     return $result
 }
 
 prepare_pxfuse_dir
-main "$@"
+test_kernel_pkgs "$@"

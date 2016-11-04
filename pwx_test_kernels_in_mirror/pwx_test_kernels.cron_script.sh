@@ -2,12 +2,12 @@
 
 scriptsdir=$PWD
 
-logdir=/home/ubuntu/pwx_test_kernels.cron_script.sh.log
+log_file=/home/ubuntu/pwx_test_kernels.cron_script.sh.log
 
-exec > "$logdir" 2>&1
+exec > "$log_file" 2>&1 < /dev/null
 
 result=0
-for distribution in centos debian ubuntu ; do
+for dist in centos debian fedora ubuntu ; do
     if ! pwx_test_kernels_in_mirror.sh --containers=lxc --distribution="$dist" ; then
 	result=$?
     fi

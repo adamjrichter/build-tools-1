@@ -18,6 +18,8 @@ Top level scripts, installed in /usr/local/bin:
 		
 		--arch=architecture            [default: amd64]
 		--distribution=dist            [default: ubuntu]
+		--force
+		--release=dist_release         [default: based on distribution]
 		--containers=container_system  [default: docker]
 		--logdir=logdir                [default: based on distribution]
 		--pfxuse=pxfuse_src_dir        [default: download tempoary
@@ -25,7 +27,8 @@ Top level scripts, installed in /usr/local/bin:
 
 	    Description:
 
-		If logdir/done exists, then do nothing.
+		If logdir/done exists and "--force" was not specified,
+		then do nothing.
 
 		Otherwise, based on values of distribution and
 		container_system, test that the contents of
@@ -39,12 +42,18 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 
 
     Distribution interface (defined by sourcing
-    /usr/local/share/portworx-kernel-tester/distro_driver.sh ):
+    /usr/local/share/pwx_test_kernel_pkgs/distro_driver.sh ):
 
 	The distribution interface uses the $distribution shell global
 	variable to select the distribution type.  Currently, "ubuntu",
 	"debian" and "centos" are supported.  Every shell function func
 	listed below is just a wrapper that invokes func_$distribution.
+
+	dist_releases      -       Print a list of available releases
+				   (e.g., "jessie", "stretch" for Debian),
+				   in the order in which they should be
+				   tried.  The first one is used as the
+				   default by init_container drivers.
 
 	dist_init_container	-  Install any needed initial
 				   packages in the initial container.
@@ -70,7 +79,7 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 				  "apt-get update" or "yum update".
 				  Perhaps unnecessary.
 
-	test_kernel_pkgs_func container_tmpdir results_logdir
+	test_kernel_pkgs_func pxfuse_source_dir results_logdir
 			       - This is the main function of
 				  ./test_kernel_pkgs.  There is
 				  a default version of this function,
@@ -83,7 +92,7 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 
 
     Container interface (defined by sourcing
-    /usr/local/share/portworx-kernel-tester/container_driver.sh ):
+    /usr/local/share/pwx_test_kernel_pkgs/container_driver.sh ):
 
 	The container interface uses the $container_system shell global
 	variable to select the container type.  Currently "docker" is the
@@ -98,14 +107,17 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 	function takes an argument that is the function to be called
 	to do the distrbitution-specific initialization of the container.
 
-	start_containter init_command [args...]
+	start_containter [--release=dist_release] init_command [args...]
 			 	  Makes sure a container
 				  is available for in_container.  Uses the
 				  the $distribution shell variables to which
 				  container template to use.  If a new
 				  container had to be created, invoke
 				  init_command [args...] to do the
-				  distribution-specific initialization
+				  distribution-specific initialization.
+				  If "--release=dist_release" is specified,
+				  use that release of the Linux distribution
+				  instead of the default.
 
 	in_container shell_command - Run the shell command in the container.
 		     		   standard input, standard output, standard
@@ -119,7 +131,6 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 Directories on host:
 
 	/var/lib/pwx-mirror	- Contains crontab.txt
-	/var/lib/portworx-kernel-tester/build-results
 
-	/usr/local/share/portworx-kernel-tester/scripts
+	/usr/local/share/pwx_test_kernel_pkgs/scripts
 		- All script libraries used by portworx-test-kernels-in-mirror
