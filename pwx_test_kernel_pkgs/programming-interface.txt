@@ -119,7 +119,6 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 Directories on host:
 
 	/var/lib/pwx-mirror	- Contains crontab.txt
-	/var/lib/portworx-kernel-tester/build-results
 
 	/usr/local/share/portworx-kernel-tester/scripts
 		- All script libraries used by portworx-test-kernels-in-mirror
