@@ -21,7 +21,7 @@ install_scripts() {
 apt-get install --yes --quiet rpm
 # Needed for Centos support, for extracting information from .rpm files.
 
-mkdir -p "${scriptsdir}" "${bindir}" "${build_results_dir}"
+mkdir -p "${scriptsdir}" "${bindir}" "${build_results_dir}/pxfuse/by-checksum"
 
 install_scripts "${scriptsdir}" \
 		mirror_walk_driver.*.sh \

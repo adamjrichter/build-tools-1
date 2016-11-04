@@ -32,7 +32,7 @@ exit_handler() {
 distro=ubuntu
 arch=amd64
 container_system=docker
-logdir="$build_results_dir"
+logdir="$build_results_dir/pxfuse/by-checksum"
 pxfuse_dir=""
 command=pwx_test_kernel_pkgs.sh
 mirror_top=/home/ftp/mirrors
