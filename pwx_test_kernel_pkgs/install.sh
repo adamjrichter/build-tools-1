@@ -16,8 +16,8 @@ install_scripts() {
     done
 }
 
-apt-get install --yes --quiet rpm
-# Needed for Centos support, for extracting information from .rpm files.
+apt-get install --yes --quiet rpm lxc
+# rpm is needed for Centos support, for extracting information from .rpm files.
 
 mkdir -p "${scriptsdir}" "${bindir}"
 
