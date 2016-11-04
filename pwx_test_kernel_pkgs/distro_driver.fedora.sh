@@ -16,3 +16,8 @@ dist_init_container_fedora() {
     dist_init_container_rpm "$@" &&
 	install_pkgs_rpm gcc-c++
 }
+
+get_dist_releases_fedora()
+{
+    echo "24"
+}

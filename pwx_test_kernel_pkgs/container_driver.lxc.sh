@@ -36,21 +36,25 @@ is_container_running() {
 }
 
 start_container_lxc() {
-    local release must_initialize
-    container_name="pwx_test_${distro}"
+    local must_initialize
+    local release=""
 
-    apt-get install -y lxc
+    while [[ $# -gt 0 ]] ; do
+	case "$1" in
+	    --release=* ) release="${1#--release=}" ;;
+	    --* ) echo "start_container_lxc: Unrecognized argument \"$1\"." >&2 ;;
+	    -- ) shift ; break ;;
+	    * ) break ;;
+	esac
+	shift
+    done
 
-    case "$distro" in
-	ubuntu ) release="xenial" ;;
-	debian ) release="jessie" ;;
-	centos ) release="7" ;;
-	fedora ) release="24" ;;
-	* )
-	    echo "start_container_lxc: Unknown distribution \"${distro}\"." >&2
-	    echo "Failing." >&2
-	    return 1 ;;
-    esac
+    if [[ -z "$release" ]] ; then
+	echo "start_container_lxc: --release=dist_release missing." >&2
+	return 1
+    fi
+
+    container_name="pwx_test_${distro}_${release}"
 
     lxc-ls > /dev/null 2>&1 || true
     # ^^^ Removes incompletely initialized containters
@@ -80,9 +84,9 @@ start_container_lxc() {
 }
 
 stop_container_lxc() {
-    if $use_lxc_attach ; then
-	lxc-stop --name "$container_name"
-    fi
+#    if $use_lxc_attach ; then
+#	lxc-stop --name "$container_name"
+#    fi
     true
 }
 

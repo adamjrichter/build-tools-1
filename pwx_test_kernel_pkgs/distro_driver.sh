@@ -10,6 +10,7 @@
 . $scriptsdir/distro_driver.fedora.sh
 
 
+get_dist_releases()        { "get_dist_releases_$distro"        "$@" ; }
 dist_init_container()      { "dist_init_container_$distro"      "$@" ; }
 pkg_files_to_kernel_dirs() { "pkg_files_to_kernel_dirs_$distro" "$@" ; }
 pkg_files_to_names()       { "pkg_files_to_names_$distro"       "$@" ; }
@@ -33,10 +34,9 @@ filter_word() {
     echo "$first"
 }
 
-test_kernel_pkgs_func_loggable() {
+test_kernel_pkgs_func_default() {
     local container_tmpdir result_logdir
     local result filename real dirname basename headers_dir
-    local force=false
     local pkg_names deps_unfiltered dep_names arg
     local container_tmpdir=/tmp/test-portworx-kernels.$$
     local pxfuse_dir
@@ -51,10 +51,6 @@ test_kernel_pkgs_func_loggable() {
     pxfuse_dir="$1"
     result_logdir="$2"
     shift 2
-
-    if [[ -e "$result_logdir/done" ]] && ! $force ; then
-	echo "test_kernel_pkgs_func_default: $result_logdir/done exists.  Skipping."
-    fi
 
     in_container rm -rf "$container_tmpdir"
     in_container mkdir -p "$container_tmpdir/pxfuse_dir" "$container_tmpdir/header_pkgs"
@@ -79,7 +75,7 @@ test_kernel_pkgs_func_loggable() {
     done
 
     install_pkgs $dep_names
-    uninstall_pkgs $pkg_names
+    uninstall_pkgs $pkg_names > /dev/null 2>&1 || true
 
     install_pkgs_dir "${container_tmpdir}/header_pkgs"
     result=$?
@@ -106,7 +102,8 @@ test_kernel_pkgs_func_loggable() {
 		     "cd ${container_tmpdir}/pxfuse_dir && \
                   autoreconf && \
                   ./configure && \
-                  make KERNELPATH=$headers_dir CC=\"gcc -fno-pie\""
+                  make KERNELPATH=$headers_dir"
+                  # make KERNELPATH=$headers_dir CC=\"gcc -fno-pie\"
 
 	result=$?
 	if [ "$result" = 0 ] ; then
@@ -131,26 +128,4 @@ test_kernel_pkgs_func_loggable() {
     # fi
 
     return $result
-}
-
-test_kernel_pkgs_func_default() {
-    local result_logdir
-    local force=false
-
-    while [[ $# -gt 0 ]] ; do
-	case "$1" in
-	    --force ) force=true ;;
-	    * ) break ;;
-	esac
-	shift
-    done
-
-    result_logdir="$2"
-
-    if [[ -e "$result_logdir/done" ]] && ! $force ; then
-	echo "test_kernel_pkgs_func_default: $result_logdir/done exists.  Skipping."
-    else
-	mkdir -p "$result_logdir"
-	test_kernel_pkgs_func_loggable "$@" > "$result_logdir/build.log" 2>&1
-    fi
 }

@@ -17,3 +17,8 @@ dist_init_container_centos() {
     dist_init_container_rpm "$@" &&
 	install_pkgs_rpm g++
 }
+
+get_dist_releases_centos()
+{
+    echo "7 6"
+}

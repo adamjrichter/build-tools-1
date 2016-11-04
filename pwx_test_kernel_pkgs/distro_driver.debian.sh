@@ -15,6 +15,11 @@ uninstall_pkgs_debian()           { uninstall_pkgs_deb            "$@" ; }
 pkgs_update_debian()              { pkgs_update_deb               "$@" ; }
 test_kernel_pkgs_func_debian()    { test_kernel_pkgs_func_default "$@" ; }
 
+get_dist_releases_debian()
+{
+    echo "jessie stretch"
+}
+
 pkg_files_to_kernel_dirs_debian() {
     local result=$(pkg_files_to_kernel_dirs_deb "$@" | egrep -v -- '-common$')
     pkg_files_to_kernel_dirs_deb "$@" | egrep -v -- '-common$'

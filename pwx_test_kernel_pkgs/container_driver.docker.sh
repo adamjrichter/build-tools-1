@@ -4,8 +4,27 @@
 docker_pid=
 
 start_container_docker() {
-    local container_name="pwx_test_${distribution}"
-    local id
+    local container_name id
+    local release=""
+
+    while [[ $# -gt 0 ]] ; do
+	case "$1" in
+	    --release=* ) release="${1#--release=}" ;;
+	    --* ) echo "start_container_lxc: Unrecognized argument \"$1\"." >&2 ;;
+	    -- ) shift ; break ;;
+	    * ) break ;;
+	esac
+	shift
+    done
+
+    if [[ -z "$release" ]] ; then
+	echo "start_container_lxc: --release=dist_release missing." >&2
+	return 1
+    fi
+
+    # FIXME.  Support selection of distribution release.
+    # container_name="pwx_test_${distribution}_${release}"
+    container_name="pwx_test_${distribution}"
 
     systemctl start docker
     id=$(docker ps --quiet=true --all=true --filter name="${container_name}")
