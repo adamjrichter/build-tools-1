@@ -1,7 +1,7 @@
 #!/bin/sh
 
 prefix=/usr/local
-scriptsdir=${prefix}/share/portworx-kernel-tester/scripts
+scriptsdir=${prefix}/share/pwx_test_kernel_pkgs/scripts
 bindir=${prefix}/bin
 
 set -e

@@ -39,7 +39,7 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 
 
     Distribution interface (defined by sourcing
-    /usr/local/share/portworx-kernel-tester/distro_driver.sh ):
+    /usr/local/share/pwx_test_kernel_pkgs/distro_driver.sh ):
 
 	The distribution interface uses the $distribution shell global
 	variable to select the distribution type.  Currently, "ubuntu",
@@ -83,7 +83,7 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 
 
     Container interface (defined by sourcing
-    /usr/local/share/portworx-kernel-tester/container_driver.sh ):
+    /usr/local/share/pwx_test_kernel_pkgs/container_driver.sh ):
 
 	The container interface uses the $container_system shell global
 	variable to select the container type.  Currently "docker" is the
@@ -120,5 +120,5 @@ Directories on host:
 
 	/var/lib/pwx-mirror	- Contains crontab.txt
 
-	/usr/local/share/portworx-kernel-tester/scripts
+	/usr/local/share/pwx_test_kernel_pkgs/scripts
 		- All script libraries used by portworx-test-kernels-in-mirror
