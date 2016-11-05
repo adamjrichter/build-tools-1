@@ -18,7 +18,7 @@ walk_mirror_centos() {
 
     shift 1
 
-    if [ ".$arch" = ".amd64" ] ; then
+    if [[ ".$arch" = ".amd64" ]] ; then
 	rpm_arch=x86_64
     else
 	rpm_arch="$arch"
