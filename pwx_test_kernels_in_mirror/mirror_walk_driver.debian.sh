@@ -6,6 +6,11 @@
 debian_tmpdir=/tmp/pwx-kernel-tester.distro-driver.debian.$$
 debian_find_txt="${debian_tmpdir}/find.sorted.txt"
 
+get_default_mirror_dirs_debian()
+{
+    echo /home/ftp/mirrors/http/snapshot.debian.org/archive/debian
+}
+
 pkg_files_to_names_debian()       { pkg_files_to_names_deb        "$@" ; }
 
 debian_pkgs_to_dependencies() {

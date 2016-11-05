@@ -10,5 +10,6 @@
 . $scriptsdir/mirror_walk_driver.fedora.sh
 
 
+get_default_mirror_dirs()  { "get_default_mirror_dirs_$distro"  "$@" ; }
 pkg_files_to_names()       { "pkg_files_to_names_$distro"       "$@" ; }
 walk_mirror()              { "walk_mirror_$distro"              "$@" ; }

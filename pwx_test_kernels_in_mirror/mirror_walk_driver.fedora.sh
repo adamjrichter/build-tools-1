@@ -5,6 +5,11 @@
 
 pkg_files_to_names_fedora()       { pkg_files_to_names_rpm        "$@" ; }
 
+get_default_mirror_dirs_fedora()
+{
+    echo /home/ftp/mirrors/http/ftp.linux.ncsu.edu/pub/fedora/linux/releases
+}
+
 walk_mirror_fedora() {
     local mirror_tree="$1"
     local file rpm_arch return_status

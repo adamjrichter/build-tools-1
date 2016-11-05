@@ -5,6 +5,13 @@
 
 pkg_files_to_names_centos()       { pkg_files_to_names_rpm        "$@" ; }
 
+get_default_mirror_dirs_centos()
+{
+    echo \
+	/home/ftp/mirrors/http/elrepo.org/linux/kernel \
+	/home/ftp/mirrors/http/mirror.centos.org/centos
+}
+
 walk_mirror_centos() {
     local mirror_tree="$1"
     local file rpm_arch return_status

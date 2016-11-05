@@ -56,19 +56,11 @@ while [[ $# -gt 0 ]] ; do
 done
 
 if [ $# = 0 ] ; then
-    case "$distro" in
-	centos ) set \
-		     /home/ftp/mirrors/http/elrepo.org/linux/kernel \
-		     /home/ftp/mirrors/http/mirror.centos.org/centos
-		 ;;
-	debian ) set /home/ftp/mirrors/http/snapshot.debian.org/archive/debian ;;
-	fedora ) set /home/ftp/mirrors/http/ftp.linux.ncsu.edu/pub/fedora/linux/releases ;;
-	ubuntu ) set \
-		     /home/ftp/mirrors/http/security.ubuntu.com/ubuntu/pool/main/l/linux/ \
-		     /home/ftp/mirrors/http/kernel.ubuntu.com/~kernel-ppa/mainline
-		 ;;
-	* ) echo "Unable to choose default mirror directory for unknown distribution \"$distro\"." >&2 ; exit 1 ;;
-    esac
+    set $(get_default_mirror_dirs)
+    if [ $# = 0 ] ; then
+	echo "Unable to choose default mirror directory for unknown distribution \"$distro\"." >&2
+	exit 1
+    fi
 fi
 
 local_tmp_dir=/tmp/test-kernels.ubuntu.$$
