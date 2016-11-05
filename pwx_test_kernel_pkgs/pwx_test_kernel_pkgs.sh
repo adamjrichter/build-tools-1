@@ -48,7 +48,7 @@ prepare_pxfuse_dir() {
     trap exit_handler EXIT
 
     mkdir -p "$local_tmp_dir"
-    if [ -z "$pxfuse_dir" ] ; then
+    if [[ -z "$pxfuse_dir" ]] ; then
 	(cd "$local_tmp_dir" &&
 	 git clone https://github.com/portworx/px-fuse.git )
 
