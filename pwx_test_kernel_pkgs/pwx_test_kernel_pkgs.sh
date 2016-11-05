@@ -81,6 +81,7 @@ test_kernel_pkgs() {
 
 	stop_container
 	if [[ $result = 0 ]] ; then
+	    echo "$distro $release" > "$logdir/distribution_release"
 	    break
 	fi
 	force="--force"
