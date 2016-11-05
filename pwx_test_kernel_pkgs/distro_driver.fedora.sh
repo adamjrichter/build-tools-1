@@ -19,5 +19,5 @@ dist_init_container_fedora() {
 
 get_dist_releases_fedora()
 {
-    echo "24"
+    echo 24 23 22
 }
