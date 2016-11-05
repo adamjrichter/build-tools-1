@@ -1,5 +1,15 @@
 # build-tools
 
+# Quick install
+
+To install this directory tree, unpack it anywhere, cd to the top of the
+tree and do:
+
+     	sudo ./install.sh
+
+
+# Organization of this directory tree
+
 This directory tree currently has three subdirectories:
 
 portworx-mirror-server :
