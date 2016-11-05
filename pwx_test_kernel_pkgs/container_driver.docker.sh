@@ -28,7 +28,7 @@ start_container_docker() {
 
     systemctl start docker
     id=$(docker ps --quiet=true --all=true --filter name="${container_name}")
-    if [ -n "$id" ] ; then
+    if [[ -n "$id" ]] ; then
 	docker start "$id"
 	docker_pid="$id"
 	return 0
