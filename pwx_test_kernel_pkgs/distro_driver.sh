@@ -27,7 +27,7 @@ filter_word() {
     local other
     shift
     for other in "$@" ; do
-	if [ ".$first" = "$.other" ] ; then
+	if [[ ".$first" = "$.other" ]] ; then
 	    return 0
 	fi
     done
@@ -80,13 +80,13 @@ test_kernel_pkgs_func_default() {
     install_pkgs_dir "${container_tmpdir}/header_pkgs"
     result=$?
 
-    if [ $result != 0 ] ; then
+    if [[ $result != 0 ]] ; then
 	uninstall_pkgs $pkg_names
 	in_container rm -rf "$container_tmpdir"
 	return $result
     fi
 
-    if [ $result = 0 ] ; then
+    if [[ $result = 0 ]] ; then
 	headers_dir=$(pkg_files_to_kernel_dirs "$@" | sort -u | tail -1)
 	# Use "tail" to get the last kernel directory that is alphabetically
 	# last because Ubuntu unpacks and requires an architecure-independnt
@@ -106,7 +106,7 @@ test_kernel_pkgs_func_default() {
                   # make KERNELPATH=$headers_dir CC=\"gcc -fno-pie\"
 
 	result=$?
-	if [ "$result" = 0 ] ; then
+	if [[ "$result" = 0 ]] ; then
 	    in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
 		tar -C "${result_logdir}" -xpv
 	fi # result = 0
