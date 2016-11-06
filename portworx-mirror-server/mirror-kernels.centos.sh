@@ -50,7 +50,7 @@ mirror_mirror_centos_org() {
 	  "${top_url}"
 
     extract_subdirs < "$top_dir/index.html" |
-	egrep '^[0-9]' |
+	egrep '^[1-9][0-9]*\.[0-9]+' |
 	sed "s|^|${top_url}|;s|\$|/os/x86_64/Packages/|" |
 	xargs wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
 	 --protocol-directories --force-directories --recursive --level=1 \
