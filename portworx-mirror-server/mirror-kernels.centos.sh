@@ -35,7 +35,7 @@ mirror_el_repo() {
     for dir in ${top_dir}/*/${rpm_arch}/RPMS/ ; do
 	echo ''
 	extract_subdirs < $dir/index.html |
-	    egrep "^kernel-.*headers-.*.${rpm_arch}.rpm$" |
+	    egrep "^kernel-.*(headers|devel)-.*.${rpm_arch}.rpm$" |
 	    subdirs_to_urls http://${dir#http/}
     done |
 	xargs -- wget --no-parent ${TIMESTAMPING} \
@@ -54,7 +54,7 @@ mirror_mirror_centos_org() {
 	sed "s|^|${top_url}|;s|\$|/os/x86_64/Packages/|" |
 	xargs wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
 	 --protocol-directories --force-directories --recursive --level=1 \
-	 --accept-regex="/(index.html)|(kernel-.*headers.*\.rpm)"
+	 --accept-regex="/(index.html)|(kernel-.*(headers|devel).*\.rpm)"
 
     # FIXME.  The following regular expresion might filter out kernels before
     # 3.10.  It is modified from one that was not working, but maybe this
