@@ -17,13 +17,13 @@ Top level scripts, installed in /usr/local/bin:
 	    Options:
 		
 		--arch=architecture            [default: amd64]
+		--containers=container_system  [default: docker]
 		--distribution=dist            [default: ubuntu]
 		--force
-		--release=dist_release         [default: based on distribution]
-		--containers=container_system  [default: docker]
 		--logdir=logdir                [default: based on distribution]
 		--pfxuse=pxfuse_src_dir        [default: download tempoary
 					        directory from github]
+		--release=dist_release         [default: based on distribution]
 
 	    Description:
 
