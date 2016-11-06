@@ -58,32 +58,55 @@ prepare_pxfuse_dir() {
 }
 
 test_kernel_pkgs() {
-    local result release releases
+    local result release releases local make_args
 
-    if [[ -e "$logdir/done" ]] && ! $force ; then
-	echo "test_kernel_pkgs: $logdir/done exists.  Skipping."
-	return 0
-    fi
+    ran_test=false	# global variable
 
     if [[ -n "$distro_releases" ]] ; then
 	releases=$(echo "$distro_releases" | sed 's/,/ /g')
     else
 	releases=$(get_dist_releases)
     fi
-    mkdir -p "$logdir"
-    for release in $releases ; do
-	echo "test_kernel_pkgs: Attempting to test kernel package(s) on distribution $distro, release $release."
 
-	start_container --release="$release" dist_init_container
+    result=1 # in case one of the loops should be empty for some reason.
 
-	test_kernel_pkgs_func "$pxfuse_dir" "$logdir" "$@"
-	result=$?
+    for make_args in "" "CC=\"gcc -fno-pie\"" ; do
+	for release in $releases ; do
+	    echo "test_kernel_pkgs: Attempting to test kernel package(s) on distribution $distro, release $release, make_args=$make_args."
 
-	stop_container
-	force="--force"
-    done > "$logdir/build.log" 2>&1
+	    start_container --release="$release" dist_init_container
+
+	    test_kernel_pkgs_func "$pxfuse_dir" "$logdir" "$make_args" "$@"
+	    result=$?
+
+	    stop_container
+	    if [[ $result = 0 ]] ; then
+		break
+	    fi
+	done
+	if [[ $result = 0 ]] ; then
+	    break
+	fi
+    done
+    echo "$result $distro $release make_args=$make_args" > "$logdir/exit_code"
+    if $ran_test ; then
+	touch "$logdir/done"
+	# ^^ We have a "done" file in addition to an "exit_code" file, because
+	# creating the empty "done" file is atomic.
+    fi
     return $result
 }
 
-prepare_pxfuse_dir
-test_kernel_pkgs "$@"
+main()
+{
+    if [[ -e "$logdir/done" ]] && ! $force ; then
+	echo "test_kernel_pkgs: $logdir/done exists.  Skipping."
+    else
+	prepare_pxfuse_dir
+	mkdir -p "$logdir"
+	test_kernel_pkgs "$@" > "$logdir/build.log" 2>&1
+    fi
+}
+
+main "$@"
+
