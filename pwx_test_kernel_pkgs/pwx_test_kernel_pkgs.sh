@@ -80,10 +80,6 @@ test_kernel_pkgs() {
 	result=$?
 
 	stop_container
-	if [[ $result = 0 ]] ; then
-	    echo "$distro $release" > "$logdir/distribution_release"
-	    break
-	fi
 	force="--force"
     done > "$logdir/build.log" 2>&1
     return $result
