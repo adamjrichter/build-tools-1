@@ -61,7 +61,7 @@ test_kernel_pkgs() {
     local result release releases
 
     if [[ -e "$logdir/done" ]] && ! $force ; then
-	echo "test_kernel_pkgs_func_default: $logdir/done exists.  Skipping."
+	echo "test_kernel_pkgs: $logdir/done exists.  Skipping."
 	return 0
     fi
 
