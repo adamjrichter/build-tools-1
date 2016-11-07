@@ -17,7 +17,7 @@ test_kernel_pkgs_func_debian()    { test_kernel_pkgs_func_default "$@" ; }
 
 get_dist_releases_debian()
 {
-    echo "jessie stretch"
+    echo "jessie stretch wheezy sid"
 }
 
 pkg_files_to_kernel_dirs_debian() {

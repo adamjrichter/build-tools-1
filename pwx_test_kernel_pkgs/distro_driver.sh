@@ -27,20 +27,21 @@ filter_word() {
     local other
     shift
     for other in "$@" ; do
-	if [ ".$first" = "$.other" ] ; then
+	if [[ ".$first" = "$.other" ]] ; then
 	    return 0
 	fi
     done
     echo "$first"
 }
 
+# test_kernel_pkgs_func_default also sets the global variable ran_test
 test_kernel_pkgs_func_default() {
     local container_tmpdir result_logdir
     local result filename real dirname basename headers_dir
     local pkg_names deps_unfiltered dep_names arg
     local container_tmpdir=/tmp/test-portworx-kernels.$$
     local pxfuse_dir
-    local ran_test=false
+    local make_args=
 
     for arg in "$@" ; do
 	echo "    $arg"
@@ -50,7 +51,8 @@ test_kernel_pkgs_func_default() {
 
     pxfuse_dir="$1"
     result_logdir="$2"
-    shift 2
+    make_args="$3"
+    shift 3
 
     in_container rm -rf "$container_tmpdir"
     in_container mkdir -p "$container_tmpdir/pxfuse_dir" "$container_tmpdir/header_pkgs"
@@ -80,13 +82,13 @@ test_kernel_pkgs_func_default() {
     install_pkgs_dir "${container_tmpdir}/header_pkgs"
     result=$?
 
-    if [ $result != 0 ] ; then
+    if [[ $result != 0 ]] ; then
 	uninstall_pkgs $pkg_names
 	in_container rm -rf "$container_tmpdir"
 	return $result
     fi
 
-    if [ $result = 0 ] ; then
+    if [[ $result = 0 ]] ; then
 	headers_dir=$(pkg_files_to_kernel_dirs "$@" | sort -u | tail -1)
 	# Use "tail" to get the last kernel directory that is alphabetically
 	# last because Ubuntu unpacks and requires an architecure-independnt
@@ -102,27 +104,21 @@ test_kernel_pkgs_func_default() {
 		     "cd ${container_tmpdir}/pxfuse_dir && \
                   autoreconf && \
                   ./configure && \
-                  make KERNELPATH=$headers_dir"
+                  make KERNELPATH=$headers_dir $make_args"
                   # make KERNELPATH=$headers_dir CC=\"gcc -fno-pie\"
 
 	result=$?
-	if [ "$result" = 0 ] ; then
+	if [[ "$result" = 0 ]] ; then
 	    in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
 		tar -C "${result_logdir}" -xpv
 	fi # result = 0
-	ran_test=true
+	ran_test=true	# Global variable
     fi # result = 0
 
     uninstall_pkgs $pkg_names
     in_container rm -rf "$container_tmpdir"
 
     echo "test_kernel_pkgs_func_default: build_exit_code=$result" >&2
-    echo "$result" > "${result_logdir}/exit_code"
-    if $ran_test ; then
-	touch "${result_logdir}/done"
-	# ^^ We have a "done" file in addition to an "exit_code" file, because
-	# creating the empty "done" file is atomic.
-    fi
     # if [[ "$result" != 0 ]] ; then
     #	sleep 3600
     # fi

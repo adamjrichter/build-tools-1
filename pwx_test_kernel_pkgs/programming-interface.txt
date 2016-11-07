@@ -17,13 +17,13 @@ Top level scripts, installed in /usr/local/bin:
 	    Options:
 		
 		--arch=architecture            [default: amd64]
+		--containers=container_system  [default: docker]
 		--distribution=dist            [default: ubuntu]
 		--force
-		--release=dist_release         [default: based on distribution]
-		--containers=container_system  [default: docker]
 		--logdir=logdir                [default: based on distribution]
 		--pfxuse=pxfuse_src_dir        [default: download tempoary
 					        directory from github]
+		--release=dist_release         [default: based on distribution]
 
 	    Description:
 
@@ -79,7 +79,7 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 				  "apt-get update" or "yum update".
 				  Perhaps unnecessary.
 
-	test_kernel_pkgs_func pxfuse_source_dir results_logdir
+	test_kernel_pkgs_func pxfuse_source_dir results_logdir make_args pkgs
 			       - This is the main function of
 				  ./test_kernel_pkgs.  There is
 				  a default version of this function,
@@ -89,6 +89,14 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 				  copies px.ko into the directory
 				  $results_logdir.
 
+				  If the function was able to execute
+				  at least one test, regardless of
+				  whether the test succeeded, it sets
+				  the global variable ran_test to
+				  "true".  This is used in determining
+			 	  whether to write the "done" file,
+				  after running potentially multiple
+				  tests.
 
 
     Container interface (defined by sourcing

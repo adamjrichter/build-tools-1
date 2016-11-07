@@ -8,7 +8,7 @@ crontab.txt: crontab.txt.in
 
 install_mirror_scripts: all
 	mkdir -p ${scriptsdir}
-	for file in mirror-kernels.*.sh test-kernels.*.sh docker-host-test-kernel-build.sh cron-script.sh test-kernel-in-docker.sh pwx-mirror-config.sh pwx-mirror-util.sh ; do \
+	for file in mirror-kernels.*.sh cron-script.sh pwx-mirror-config.sh pwx-mirror-util.sh ; do \
 	    sed "s|^scriptsdir=.*$$|scriptsdir=${scriptsdir}|g" \
 		< "$$file" > "${scriptsdir}/$$file" ; \
 	done

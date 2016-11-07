@@ -58,6 +58,10 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 				  the packages that those package files
 				  provide.
 
+        get_default_mirror_dirs - Output a list of mirror directories,
+				  separated by white space, corresponding
+				  to the selected Linux distribution.
+
 	walk_mirror dir command [args..]
 				- Descend into subdirectories of a
 				  mirror tree, finding the relevant

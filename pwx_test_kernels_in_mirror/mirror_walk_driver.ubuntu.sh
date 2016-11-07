@@ -6,6 +6,13 @@
 pkg_files_to_contents_ubuntu()    { pkg_files_to_contents_deb     "$@" ; }
 pkg_files_to_names_ubuntu()       { pkg_files_to_names_deb        "$@" ; }
 
+get_default_mirror_dirs_ubuntu()
+{
+    echo \
+	/home/ftp/mirrors/http/security.ubuntu.com/ubuntu/pool/main/l/linux/ \
+	/home/ftp/mirrors/http/kernel.ubuntu.com/~kernel-ppa/mainline
+}
+
 ubuntu_process_non_arch_file()
 {
         local file="$1"

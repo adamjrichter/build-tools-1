@@ -1,13 +1,23 @@
 # build-tools
 
+# Quick install
+
+To install this directory tree, unpack it anywhere, cd to the top of the
+tree and do:
+
+     	sudo ./install.sh
+
+
+# Organization of this directory tree
+
 This directory tree currently has three subdirectories:
 
 portworx-mirror-server :
-	The older all-in-one package of mirroring
-	scripts and automated kernel testing (although only the Ubuntu
-	version is known to work).  To install this software on
-	your intended server machine (or virtual machine), cd to
-	this subdirectory and do "sudo ./install.sh".
+	The scripts that do the mirroring.  The scripts in this
+	directory install in /home/pwxmirror, and are the only
+	ones that know anything about the pwxmirror user, which
+	exists so the mirror scripts do not have to run
+	as superuser.
 
 pwx_test_kernel_pkgs :
 	Attempts to do a compilation test in a container on the a set of

@@ -15,5 +15,10 @@ test_kernel_pkgs_func_ubuntu()    { test_kernel_pkgs_func_default "$@" ; }
 
 get_dist_releases_ubuntu()
 {
-    echo "xenial"
+    # Linux 3.10 was released on 2013-06-30, at which point the latest
+    # official Ubuntu release 12.04 ("precise"). Yakkety is currently
+    # (as of 2016-11-04) in test releases.
+    echo xenial yakkety trusty precise zesty
+    # The following are currently depreciated, but occurred after Precise.
+    # echo wily vivid utopic saucy raring quantal
 }
