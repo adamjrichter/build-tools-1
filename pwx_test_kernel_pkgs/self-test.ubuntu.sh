@@ -14,7 +14,7 @@ logdir=/tmp/self-test.ubuntu.logdir
 rm -f ${logdir}/done
 
 sudo /home/ubuntu/build-tools/pwx_test_kernel_pkgs/install.sh &&
-    sudo pwx_test_kernel_pkgs.sh \
+    sudo pwx_test_kernel_pkgs \
 	 --arch=amd64 --containers=lxc --distribution=ubuntu \
 	 --logdir="$logdir" \
 	 --pxfuse="${pxfuse_dir}" \

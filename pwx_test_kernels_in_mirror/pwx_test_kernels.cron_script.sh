@@ -21,8 +21,8 @@ stop_lxc_test_containers() {
 
 result=0
 for dist in centos debian fedora ubuntu ; do
-    if ! pwx_test_kernels_in_mirror.sh --distribution="$dist" \
-	 --command="pwx_test_kernel_pkgs.sh --leave-containers-running --containers=lxc" ; then
+    if ! pwx_test_kernels_in_mirror --distribution="$dist" \
+	 --command="pwx_test_kernel_pkgs --leave-containers-running --containers=lxc" ; then
 	result=$?
     fi
     stop_lxc_test_containers "$dist"

@@ -12,7 +12,7 @@ Top level scripts, installed in /usr/local/bin:
 
 
 
-	pwx_test_kernel_pkgs.sh [options] pkg_files...
+	pwx_test_kernel_pkgs [options] pkg_files...
 
 	    Options:
 		

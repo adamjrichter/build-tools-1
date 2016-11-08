@@ -6,10 +6,10 @@ build_results_dir=$PWD/build-results
 
 usage() {
     cat <<EOF
-Usage: pwx_test_kernels_in_mirror.sh [options] mirror_dirs_relative_paths...
+Usage: pwx_test_kernels_in_mirror [options] mirror_dirs_relative_paths...
 Options:
         --arch=architecture            [default: amd64]
-        --command=subcommand           [default: pwx_test_kernel_pkgs.sh]
+        --command=subcommand           [default: pwx_test_kernel_pkgs]
         --command-args=args            [default: ""]
         --distribution=dist            [default: ubuntu]
         --help
@@ -38,7 +38,7 @@ distro=ubuntu
 arch=amd64
 logdir="$build_results_dir/pxfuse/by-checksum"
 pxfuse_dir=""
-command=pwx_test_kernel_pkgs.sh
+command=pwx_test_kernel_pkgs
 command_args=""
 mirror_top=/home/ftp/mirrors
 # Global variables set later:

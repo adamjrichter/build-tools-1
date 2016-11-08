@@ -5,7 +5,7 @@ scriptsdir=$PWD
 
 usage() {
     cat <<EOF
-Usage: pwx_test_kernel_pkgs.sh [options] pkg_files...
+Usage: pwx_test_kernel_pkgs [options] pkg_files...
     options:
 	--arch=architecture            [default: amd64]
 	--containers=container_system  [default: docker]

@@ -5,12 +5,12 @@
 
 Top level scripts, installed in /usr/local/bin:
 
-	pwx_test_kernels_in_mirror.sh [options] mirror_dirs_relative_paths...
+	pwx_test_kernels_in_mirror [options] mirror_dirs_relative_paths...
 
 		Additional options:
 
 		--arch=architecture            [default: amd64]
-		--command=subcommand	       [default: pwx_test_kernel_pkgs.sh]
+		--command=subcommand	       [default: pwx_test_kernel_pkgs]
 		--command-args=args	       [default: ""]
 		--distribution=dist            [default: ubuntu]
 		--help
@@ -21,7 +21,7 @@ Top level scripts, installed in /usr/local/bin:
 		Descent into all subdirectories of mirror_dirs, finding
 		kernel head packages that should be grouped together,
 		and pass each group of packages to subcommand (usually
-		pwx_test_kernel_pkgs.sh) with the arguments --distribution,
+		pwx_test_kernel_pkgs) with the arguments --distribution,
 		--logdir, and --pxfuse explicitly passed, along with any
 		additional arguments passwd with "--command-args" (although it
 		is also possible to pass arguments by passing a
@@ -42,7 +42,7 @@ Top level scripts, installed in /usr/local/bin:
 		The tests are invoked even if one of the subcommands
 		(tests) fails.
 
-		pwx_test_kernels_in_mirror.sh exits with exit code 0
+		pwx_test_kernels_in_mirror exits with exit code 0
 		(success) only if all subcommands (tests) succeeded.
 		Otherwise, it exists non-zero (failure).
 
