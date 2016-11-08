@@ -4,7 +4,21 @@
 scriptsdir=$PWD
 
 usage() {
-    echo "Usage: pwx_test_kernel_pkgs.sh [--distribution=dist] [--containers=container_system] [--logdir=dir] pxfuse_src_directory pkg_file [pkg_file...]"
+    cat <<EOF
+Usage: pwx_test_kernel_pkgs.sh [options] pkg_files...
+    options:
+	--arch=architecture            [default: amd64]
+	--containers=container_system  [default: docker]
+	--distribution=dist            [default: ubuntu]
+	--force
+        --help
+	--leave-containers-running
+	--logdir=logdir                [default: based on distribution]
+	--pfxuse=pxfuse_src_dir        [default: download tempoary
+				        directory from github]
+	--release=dist_release         [default: based on distribution]
+
+EOF
 }
 
 
@@ -29,6 +43,7 @@ while [[ $# -gt 0 ]] ; do
 	--containers=* ) container_system=${1#--containers=} ;;
 	--distribution=* ) distro=${1#--distribution=} ;;
 	--force ) force=true ;;
+	--help ) usage ; exit 0 ;;
 	--leave-containers-running ) leave_containers_running=true ;;
 	--releases=* ) distro_release=${1#--releases=} ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
