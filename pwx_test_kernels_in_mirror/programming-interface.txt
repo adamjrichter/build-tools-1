@@ -11,6 +11,7 @@ Top level scripts, installed in /usr/local/bin:
 
 		--arch=architecture            [default: amd64]
 		--command=subcommand	[default: pwx_test_kernel_pkgs.sh]
+		--command-args=args	[default: ""]
 		--distribution=dist            [default: ubuntu]
 		--help
 		--logdir=logdir                [default: based on distribution]
@@ -21,7 +22,11 @@ Top level scripts, installed in /usr/local/bin:
 		kernel head packages that should be grouped together,
 		and pass each group of packages to subcommand (usually
 		pwx_test_kernel_pkgs.sh) with the arguments --distribution,
-		--logdir, and --pxfuse explicitly passed.
+		--logdir, and --pxfuse explicitly passed, along with any
+		additional arguments passwd with "--command-args" (although it
+		is also possible to pass arguments by passing a
+		"--command=..." value that includes spaces followed
+		by arguments).
 
 		The value of logdir passed to the command is changed to
 		logdir/pxfuse-checksum-$CHECKSUM/distro/mirror_dir/subdir/pkg

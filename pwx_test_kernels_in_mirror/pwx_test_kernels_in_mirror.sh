@@ -10,6 +10,7 @@ Usage: pwx_test_kernels_in_mirror.sh [options] mirror_dirs_relative_paths...
 Options:
         --arch=architecture            [default: amd64]
         --command=subcommand           [default: pwx_test_kernel_pkgs.sh]
+        --command-args=args            [default: ""]
         --distribution=dist            [default: ubuntu]
         --help
         --logdir=logdir                [default: based on distribution]
@@ -38,6 +39,7 @@ arch=amd64
 logdir="$build_results_dir/pxfuse/by-checksum"
 pxfuse_dir=""
 command=pwx_test_kernel_pkgs.sh
+command_args=""
 mirror_top=/home/ftp/mirrors
 # Global variables set later:
 #   log_subdir
@@ -47,6 +49,7 @@ while [[ $# -gt 0 ]] ; do
     case "$1" in
 	--arch=* ) arch=${1#--arch=} ;;
 	--command=* ) command=${1#--command=} ;;
+	--command-args=* ) command_args=${1#--command-args=} ;;
 	--distribution=* ) distro=${1#--distribution=} ;;
 	--help ) usage ; exit 0 ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
@@ -97,7 +100,7 @@ mirror_callback() {
 
     shift 2
 
-    $command \
+    $command $command_args \
 	"--arch=$arch" \
 	"--distribution=$distro" \
 	"--logdir=${log_subdir}/${pkg_subdir}" \
