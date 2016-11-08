@@ -20,6 +20,7 @@ Top level scripts, installed in /usr/local/bin:
 		--containers=container_system  [default: docker]
 		--distribution=dist            [default: ubuntu]
 		--force
+		--leave-containers-running
 		--logdir=logdir                [default: based on distribution]
 		--pfxuse=pxfuse_src_dir        [default: download tempoary
 					        directory from github]
@@ -34,9 +35,17 @@ Top level scripts, installed in /usr/local/bin:
 		container_system, test that the contents of
 		pxfuse_src_dir compiles.  Record the results in
 		logdir/build.log. On success, also save the resultant
-		px.ko file in logdir.  Returns 0 on success, non-zero
-		on any failure.
+		px.ko file in logdir.
 
+		If "--leave-containers-running" is specified,
+		stop_containers() will not be called on each container
+		when the test ends.  This allows tests of multiple
+		kernel packages to be run in sequence more quickly, as
+		it currently takes, for example, about seven seconds on
+		mirror.portworx.com to stop and restart Debian Stretch
+	        container.
+
+		Returns exit code 0 on success, non-zero on any failure.
 
 DESCRIPTION OF INTERNAL FUNCTIONS
 

@@ -4,7 +4,7 @@
 scriptsdir=$PWD
 
 usage() {
-    echo "Usage: test_kernel_pkgs.sh [--distribution=dist] [--containers=container_system] [--logdir=dir] pxfuse_src_directory pkg_file [pkg_file...]"
+    echo "Usage: pwx_test_kernel_pkgs.sh [--distribution=dist] [--containers=container_system] [--logdir=dir] pxfuse_src_directory pkg_file [pkg_file...]"
 }
 
 
@@ -14,7 +14,8 @@ usage() {
 arch=amd64
 distro=ubuntu
 distro_releases=""
-container_system=docker
+container_system=lxc
+leave_containers_running=false
 force=false
 logdir=$PWD
 
@@ -28,6 +29,7 @@ while [[ $# -gt 0 ]] ; do
 	--containers=* ) container_system=${1#--containers=} ;;
 	--distribution=* ) distro=${1#--distribution=} ;;
 	--force ) force=true ;;
+	--leave-containers-running ) leave_containers_running=true ;;
 	--releases=* ) distro_release=${1#--releases=} ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
 	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
@@ -79,7 +81,9 @@ test_kernel_pkgs() {
 	    test_kernel_pkgs_func "$pxfuse_dir" "$logdir" "$make_args" "$@"
 	    result=$?
 
-	    stop_container
+	    if ! $leave_containers_running ; then
+		stop_container
+	    fi
 	    if [[ $result = 0 ]] ; then
 		break
 	    fi
