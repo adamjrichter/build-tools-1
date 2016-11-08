@@ -10,7 +10,6 @@ Usage: pwx_test_kernels_in_mirror.sh [options] mirror_dirs_relative_paths...
 Options:
         --arch=architecture            [default: amd64]
         --command=subcommand           [default: pwx_test_kernel_pkgs.sh]
-        --containers=container_system  [default: docker]
         --distribution=dist            [default: ubuntu]
         --help
         --logdir=logdir                [default: based on distribution]
@@ -36,7 +35,6 @@ exit_handler() {
 
 distro=ubuntu
 arch=amd64
-container_system=docker
 logdir="$build_results_dir/pxfuse/by-checksum"
 pxfuse_dir=""
 command=pwx_test_kernel_pkgs.sh
@@ -49,7 +47,6 @@ while [[ $# -gt 0 ]] ; do
     case "$1" in
 	--arch=* ) arch=${1#--arch=} ;;
 	--command=* ) command=${1#--command=} ;;
-	--containers=* ) container_system=${1#--containers=} ;;
 	--distribution=* ) distro=${1#--distribution=} ;;
 	--help ) usage ; exit 0 ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
@@ -102,7 +99,6 @@ mirror_callback() {
 
     $command \
 	"--arch=$arch" \
-	"--containers=${container_system}" \
 	"--distribution=$distro" \
 	"--logdir=${log_subdir}/${pkg_subdir}" \
 	"--pxfuse=$pxfuse_dir" \

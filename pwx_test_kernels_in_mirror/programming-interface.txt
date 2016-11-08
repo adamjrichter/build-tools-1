@@ -1,7 +1,6 @@
 
 	The kernel test script relies can invoke different drivers
-(for lack of a better term) for different distributions and, potentially,
-different container systems.
+(for lack of a better term) for different operating system distributions.
 
 
 Top level scripts, installed in /usr/local/bin:
@@ -22,7 +21,7 @@ Top level scripts, installed in /usr/local/bin:
 		kernel head packages that should be grouped together,
 		and pass each group of packages to subcommand (usually
 		pwx_test_kernel_pkgs.sh) with the arguments --distribution,
-		--containers, --logdir, and --pxfuse explicitly passed.
+		--logdir, and --pxfuse explicitly passed.
 
 		The value of logdir passed to the command is changed to
 		logdir/pxfuse-checksum-$CHECKSUM/distro/mirror_dir/subdir/pkg
@@ -54,10 +53,9 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 	"debian" and "centos" are supported.  Every shell function func
 	listed below is just a wrapper that invokes func_$distribution.
 
-	pkg_files_to_names	- Given a list of package files (outside
-				  of the container) output the names of
-				  the packages that those package files
-				  provide.
+	pkg_files_to_names	- Given a list of package files output
+				  the names of the packages that those
+				  package files provide.
 
         get_default_mirror_dirs - Output a list of mirror directories,
 				  separated by white space, corresponding
