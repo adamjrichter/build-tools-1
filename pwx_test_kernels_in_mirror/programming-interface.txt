@@ -10,8 +10,8 @@ Top level scripts, installed in /usr/local/bin:
 		Additional options:
 
 		--arch=architecture            [default: amd64]
-		--command=subcommand	[default: pwx_test_kernel_pkgs.sh]
-		--command-args=args	[default: ""]
+		--command=subcommand	       [default: pwx_test_kernel_pkgs.sh]
+		--command-args=args	       [default: ""]
 		--distribution=dist            [default: ubuntu]
 		--help
 		--logdir=logdir                [default: based on distribution]
