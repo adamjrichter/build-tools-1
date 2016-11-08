@@ -13,8 +13,9 @@ Top level scripts, installed in /usr/local/bin:
 		--arch=architecture            [default: amd64]
 		--command=subcommand	[default: pwx_test_kernel_pkgs.sh]
 		--distribution=dist            [default: ubuntu]
-		--containers=container_system  [default: docker]
+		--help
 		--logdir=logdir                [default: based on distribution]
+		--mirror-top=mirror_top_dir
 		--pfxuse=pxfuse_src_dir        [default: download tempoary
 
 		Descent into all subdirectories of mirror_dirs, finding

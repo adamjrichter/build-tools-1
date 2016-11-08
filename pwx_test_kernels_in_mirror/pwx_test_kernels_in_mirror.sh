@@ -5,14 +5,19 @@ scriptsdir=$PWD
 build_results_dir=$PWD/build-results
 
 usage() {
-    echo "Usage: test_kernels_in_mirror.sh [ --distribution=dist ]"
-    echo "       [ --containers=container_system] [ --logdir=dir ]"
-    echo "       [ --mirror-top=topdir ]"
-    echo "       [ --pxfuse=pxfuse_src_directory ] [ mirror_dirs... ]"
-    echo ""
-    echo "If pxfuse_src_directory is not specified, it is downloaded from"
-    echo "github into a temporary directory."
-    echo ""
+    cat <<EOF
+Usage: pwx_test_kernels_in_mirror.sh [options] mirror_dirs_relative_paths...
+Options:
+        --arch=architecture            [default: amd64]
+        --command=subcommand           [default: pwx_test_kernel_pkgs.sh]
+        --containers=container_system  [default: docker]
+        --distribution=dist            [default: ubuntu]
+        --help
+        --logdir=logdir                [default: based on distribution]
+        --mirror-top=mirror_top_dir
+        --pfxuse=pxfuse_src_dir        [default: download tempoary
+
+EOF
 }
 
 . ${scriptsdir}/mirror_walk_driver.sh
@@ -46,6 +51,7 @@ while [[ $# -gt 0 ]] ; do
 	--command=* ) command=${1#--command=} ;;
 	--containers=* ) container_system=${1#--containers=} ;;
 	--distribution=* ) distro=${1#--distribution=} ;;
+	--help ) usage ; exit 0 ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
 	--mirror-top=* ) mirror_top=${1#--mirror-top=} ;;
 	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
