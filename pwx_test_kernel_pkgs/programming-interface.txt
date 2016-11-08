@@ -20,6 +20,7 @@ Top level scripts, installed in /usr/local/bin:
 		--containers=container_system  [default: docker]
 		--distribution=dist            [default: ubuntu]
 		--force
+		--help
 		--leave-containers-running
 		--logdir=logdir                [default: based on distribution]
 		--pfxuse=pxfuse_src_dir        [default: download tempoary
