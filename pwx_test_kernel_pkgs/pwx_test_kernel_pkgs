@@ -4,7 +4,21 @@
 scriptsdir=$PWD
 
 usage() {
-    echo "Usage: test_kernel_pkgs.sh [--distribution=dist] [--containers=container_system] [--logdir=dir] pxfuse_src_directory pkg_file [pkg_file...]"
+    cat <<EOF
+Usage: pwx_test_kernel_pkgs [options] pkg_files...
+    options:
+	--arch=architecture            [default: amd64]
+	--containers=container_system  [default: docker]
+	--distribution=dist            [default: ubuntu]
+	--force
+        --help
+	--leave-containers-running
+	--logdir=logdir                [default: based on distribution]
+	--pfxuse=pxfuse_src_dir        [default: download tempoary
+				        directory from github]
+	--release=dist_release         [default: based on distribution]
+
+EOF
 }
 
 
@@ -14,7 +28,8 @@ usage() {
 arch=amd64
 distro=ubuntu
 distro_releases=""
-container_system=docker
+container_system=lxc
+leave_containers_running=false
 force=false
 logdir=$PWD
 
@@ -28,6 +43,8 @@ while [[ $# -gt 0 ]] ; do
 	--containers=* ) container_system=${1#--containers=} ;;
 	--distribution=* ) distro=${1#--distribution=} ;;
 	--force ) force=true ;;
+	--help ) usage ; exit 0 ;;
+	--leave-containers-running ) leave_containers_running=true ;;
 	--releases=* ) distro_release=${1#--releases=} ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
 	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
@@ -79,7 +96,9 @@ test_kernel_pkgs() {
 	    test_kernel_pkgs_func "$pxfuse_dir" "$logdir" "$make_args" "$@"
 	    result=$?
 
-	    stop_container
+	    if ! $leave_containers_running ; then
+		stop_container
+	    fi
 	    if [[ $result = 0 ]] ; then
 		break
 	    fi

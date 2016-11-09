@@ -11,11 +11,7 @@ install_pkgs_dir_fedora()         { install_pkgs_dir_rpm          "$@" ; }
 uninstall_pkgs_fedora()           { uninstall_pkgs_rpm            "$@" ; }
 pkgs_update_fedora()              { pkgs_update_rpm               "$@" ; }
 test_kernel_pkgs_func_fedora()    { test_kernel_pkgs_func_default "$@" ; }
-
-dist_init_container_fedora() {
-    dist_init_container_rpm "$@" &&
-	install_pkgs_rpm gcc-c++
-}
+dist_init_container_fedora()      { dist_init_container_rpm       "$@" ; }
 
 get_dist_releases_fedora()
 {

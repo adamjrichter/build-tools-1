@@ -2,32 +2,37 @@
 # script.
 
 dist_init_container_rpm() {
-    install_pkgs_rpm autoconf automake gcc git make tar
+    install_pkgs_rpm autoconf automake gcc gcc-c++ git make tar
 }
 
 pkg_files_to_kernel_dirs_rpm() {
     rpm --query --list --package "$@" |
-	egrep ^d |
 	awk '{print $NF}' |
-	egrep ^./usr/src/linux-headers- |
-	sed 's|^\.\?\(/usr/src/linux-headers-[^/]*\)/.*$|\1|' |
+	egrep '^\.?/usr/src/kernels/' |
+	sed 's|^\.\?\(/usr/src/kernels/[^/]*\)/.*$|\1|' |
 	uniq |
 	sort -u
 }
 
 pkg_files_to_names_rpm () {
-    rpm --query --package "$@"
+    rpm --query --package --qf '%{NAME}\n' "$@"
 }
 
 pkg_files_to_dependencies_rpm() {
     local pkgfile
     for pkgfile in "$@" ; do
-	rpm -qpR "$pkgfile"
+	rpm --query --package --requires "$pkgfile"
     done |
+	sed 's/[( <=].*$//' |
 	sort -u
 }
 
+#install_pkgs_dir_rpm() { in_container sh -c "rpm --install $1/*" ; }
+install_pkgs_dir_rpm() {
+    in_container sh -c "yum --assumeyes upgrade $1/*"
+    in_container sh -c "yum --assumeyes install $1/*"
+}
+
 install_pkgs_rpm()     { in_container yum --assumeyes --quiet install "$@" ; }
-install_pkgs_dir_rpm() { in_container sh -c "rpm --install $1/*" ; }
 uninstall_pkgs_rpm()   { in_container rpm --erase "$@" ; }
 pkgs_update_rpm()      { in_container yum --assumeyes --quiet update ; }

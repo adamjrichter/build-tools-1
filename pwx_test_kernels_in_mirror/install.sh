@@ -29,10 +29,10 @@ install_scripts "${scriptsdir}" \
 		pwx_test_kernels.cron_script.sh \
 		pwx_update_pxfuse_by_date.sh
 
-install_scripts "${bindir}" pwx_test_kernels_in_mirror.sh
+install_scripts "${bindir}" pwx_test_kernels_in_mirror
 
 chmod a+x \
-      "${bindir}/pwx_test_kernels_in_mirror.sh" \
+      "${bindir}/pwx_test_kernels_in_mirror" \
       "${scriptsdir}/pwx_test_kernels.cron_script.sh" \
       "${scriptsdir}/pwx_update_pxfuse_by_date.sh"
 

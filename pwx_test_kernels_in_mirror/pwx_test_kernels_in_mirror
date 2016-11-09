@@ -5,14 +5,19 @@ scriptsdir=$PWD
 build_results_dir=$PWD/build-results
 
 usage() {
-    echo "Usage: test_kernels_in_mirror.sh [ --distribution=dist ]"
-    echo "       [ --containers=container_system] [ --logdir=dir ]"
-    echo "       [ --mirror-top=topdir ]"
-    echo "       [ --pxfuse=pxfuse_src_directory ] [ mirror_dirs... ]"
-    echo ""
-    echo "If pxfuse_src_directory is not specified, it is downloaded from"
-    echo "github into a temporary directory."
-    echo ""
+    cat <<EOF
+Usage: pwx_test_kernels_in_mirror [options] mirror_dirs_relative_paths...
+Options:
+        --arch=architecture            [default: amd64]
+        --command=subcommand           [default: pwx_test_kernel_pkgs]
+        --command-args=args            [default: ""]
+        --distribution=dist            [default: ubuntu]
+        --help
+        --logdir=logdir                [default: based on distribution]
+        --mirror-top=mirror_top_dir
+        --pfxuse=pxfuse_src_dir        [default: download tempoary
+
+EOF
 }
 
 . ${scriptsdir}/mirror_walk_driver.sh
@@ -31,10 +36,10 @@ exit_handler() {
 
 distro=ubuntu
 arch=amd64
-container_system=docker
 logdir="$build_results_dir/pxfuse/by-checksum"
 pxfuse_dir=""
-command=pwx_test_kernel_pkgs.sh
+command=pwx_test_kernel_pkgs
+command_args=""
 mirror_top=/home/ftp/mirrors
 # Global variables set later:
 #   log_subdir
@@ -44,8 +49,9 @@ while [[ $# -gt 0 ]] ; do
     case "$1" in
 	--arch=* ) arch=${1#--arch=} ;;
 	--command=* ) command=${1#--command=} ;;
-	--containers=* ) container_system=${1#--containers=} ;;
+	--command-args=* ) command_args=${1#--command-args=} ;;
 	--distribution=* ) distro=${1#--distribution=} ;;
+	--help ) usage ; exit 0 ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
 	--mirror-top=* ) mirror_top=${1#--mirror-top=} ;;
 	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
@@ -94,9 +100,8 @@ mirror_callback() {
 
     shift 2
 
-    $command \
+    $command $command_args \
 	"--arch=$arch" \
-	"--containers=${container_system}" \
 	"--distribution=$distro" \
 	"--logdir=${log_subdir}/${pkg_subdir}" \
 	"--pxfuse=$pxfuse_dir" \
