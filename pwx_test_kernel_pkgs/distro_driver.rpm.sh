@@ -7,10 +7,9 @@ dist_init_container_rpm() {
 
 pkg_files_to_kernel_dirs_rpm() {
     rpm --query --list --package "$@" |
-	egrep ^d |
 	awk '{print $NF}' |
-	egrep ^./usr/src/linux-headers- |
-	sed 's|^\.\?\(/usr/src/linux-headers-[^/]*\)/.*$|\1|' |
+	egrep '^\.?/usr/src/kernels/' |
+	sed 's|^\.\?\(/usr/src/kernels/[^/]*\)/.*$|\1|' |
 	uniq |
 	sort -u
 }
