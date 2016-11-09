@@ -12,11 +12,7 @@ install_pkgs_centos()             { install_pkgs_rpm              "$@" ; }
 uninstall_pkgs_centos()           { uninstall_pkgs_rpm            "$@" ; }
 pkgs_update_centos()              { pkgs_update_rpm               "$@" ; }
 test_kernel_pkgs_func_centos()    { test_kernel_pkgs_func_default "$@" ; }
-
-dist_init_container_centos() {
-    dist_init_container_rpm "$@" &&
-	install_pkgs_rpm g++
-}
+dist_init_container_centos()      { dist_init_container_rpm       "$@" ; }
 
 get_dist_releases_centos()
 {
