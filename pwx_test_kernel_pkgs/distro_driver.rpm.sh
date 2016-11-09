@@ -22,7 +22,7 @@ pkg_files_to_names_rpm () {
 pkg_files_to_dependencies_rpm() {
     local pkgfile
     for pkgfile in "$@" ; do
-	rpm -qpR "$pkgfile"
+	rpm --query --package --requires "$pkgfile"
     done |
 	sort -u
 }
