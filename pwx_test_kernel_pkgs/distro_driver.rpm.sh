@@ -26,7 +26,12 @@ pkg_files_to_dependencies_rpm() {
 	sort -u
 }
 
+#install_pkgs_dir_rpm() { in_container sh -c "rpm --install $1/*" ; }
+install_pkgs_dir_rpm() {
+    in_container sh -c "yum --assumeyes upgrade $1/*"
+    in_container sh -c "yum --assumeyes install $1/*"
+}
+
 install_pkgs_rpm()     { in_container yum --assumeyes --quiet install "$@" ; }
-install_pkgs_dir_rpm() { in_container sh -c "rpm --install $1/*" ; }
 uninstall_pkgs_rpm()   { in_container rpm --erase "$@" ; }
 pkgs_update_rpm()      { in_container yum --assumeyes --quiet update ; }
