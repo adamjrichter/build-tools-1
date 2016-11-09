@@ -23,6 +23,7 @@ pkg_files_to_dependencies_rpm() {
     for pkgfile in "$@" ; do
 	rpm --query --package --requires "$pkgfile"
     done |
+	sed 's/[( <=].*$//' |
 	sort -u
 }
 
