@@ -16,7 +16,7 @@ pkg_files_to_kernel_dirs_rpm() {
 }
 
 pkg_files_to_names_rpm () {
-    rpm --query --package "$@"
+    rpm --query --package --qf '%{NAME}\n' "$@"
 }
 
 pkg_files_to_dependencies_rpm() {
