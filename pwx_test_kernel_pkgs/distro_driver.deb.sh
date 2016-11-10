@@ -47,7 +47,12 @@ install_pkgs_deb()      {
 
 # uninstall_pkgs_deb()    { in_container dpkg --remove "$@" ; }
 uninstall_pkgs_deb()    {
-    in_container apt-get remove --quiet --yes --force-yes "$@"
+    local pkg
+    if ! in_container apt-get remove --quiet --yes --force-yes "$@" ; then
+	for pkg in "$@" ; do
+	    in_constainer dpkg --remove --force-remove-reinstreq "$pkg"
+	done
+    fi
 }
 
 pkgs_update_deb()       {
