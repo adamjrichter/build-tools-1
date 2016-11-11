@@ -1,5 +1,6 @@
 #
-# This file is intended to be sourced from a shell script.
+# This file is intended to be sourced from a bash script (bash because it
+# currently uses "[[" ... "]]" tests).
 #
 # This file contains common declarations used by mirror-kernels.*.sh.
 
@@ -13,7 +14,7 @@ bash_stack_trace()
     depth=0
     while true ; do
 	set -- $(caller $depth)
-	if [ $# = 0 ] ; then
+	if [[ $# = 0 ]] ; then
 	    break
 	fi
 	line="$1"
@@ -28,7 +29,7 @@ save_error()
 {
     local saved_code=$?
 
-    if [ $saved_code != 0 ] ; then
+    if [[ $saved_code != 0 ]] ; then
 
 	error_code=$saved_code
 
