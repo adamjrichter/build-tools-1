@@ -2,8 +2,11 @@
 
 scriptsdir=$PWD
 . ${scriptsdir}/pwx-mirror-config.sh
+. ${scriptsdir}/pwx-mirror-util.sh
 logdir=${scriptsdir}/logs
 logfile=${logdir}/$(date +%Y%m%d.%H:%M:%S).log
+
+error_code=0
 
 copy_link_tree_remove_index_html()
 {
@@ -14,11 +17,13 @@ copy_link_tree_remove_index_html()
     symlinks -d "${to}"
 
     cp --symbolic-link --recursive --remove-destination "$from/." "$to"
+    save_error
 
     find "$to" -name index.html -print0 | xargs --null -- rm -f
     find "$to" -type d | sort -r | xargs rmdir 2> /dev/null || true
 
     symlinks -cs "$to"
+    save_error
 }
 
 run_all_verb_scripts()
@@ -51,3 +56,6 @@ run_all_test_scripts()
 mkdir -p "$logdir"
 
 ( run_all_mirror_scripts ; run_all_test_scripts ) > "$logfile" 2>&1 < /dev/null
+save_error
+
+exit $error_code
