@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+# ^^ requires bash because save_error() calls bash_stack_trace,
+# which uses bash-specific command "caller".
 
 #arch=i386
 arch=x86_64
@@ -11,6 +13,8 @@ mkdir -p ${mirrordir}
 
 # TIMESTAMPING=--timestamping
 TIMESTAMPING='--no-clobber --no-use-server-timestamps'
+
+error_code=0
 
 versions_above_3_9 () {
     egrep '^v(4|3\.[1-9][0-9]).*/$'
@@ -32,6 +36,8 @@ mirror_el_repo() {
 	 --accept-regex='.*/(index.html)?$' \
 	 ${top_url}
 
+    save_error
+
     for dir in ${top_dir}/*/${rpm_arch}/RPMS/ ; do
 	echo ''
 	extract_subdirs < $dir/index.html |
@@ -40,6 +46,8 @@ mirror_el_repo() {
     done |
 	xargs -- wget --quiet --no-parent ${TIMESTAMPING} \
 	      --protocol-directories --force-directories
+
+    save_error
 }
 
 mirror_mirror_centos_org() {
@@ -61,6 +69,8 @@ mirror_mirror_centos_org() {
     # version might work.
     #
     # --accept-regex="/(index.html)|(kernel-(.*-)?headers-${above_3_9_regexp}(.*-.*-.*)?\..*\.rpm)"
+
+    save_error
 }
 
 
@@ -70,4 +80,9 @@ mirror_mirror_centos_org() {
 
 # mirror_vault_centos_org
 mirror_mirror_centos_org
+save_error
+
 mirror_el_repo
+save_error
+
+exit $error_code

@@ -1,7 +1,7 @@
 #!/bin/bash
-# ^^^^^^^^^ This is a bash script because it uses array subscripts and
-# $'\n' for the newline character.  Since this is a bash script, it also
-# uses double brackets to internalize tests.
+# ^^^^^^^^^ This is a bash script because it uses array subscripts,
+# $'\n' for the newline character, and save_error() which calls
+# bash_stack_trace(), which uses the bash-specific "caller" command.
 
 scriptsdir=$PWD
 . ${scriptsdir}/pwx-mirror-config.sh
@@ -21,6 +21,8 @@ arch=amd64
 
 TIMESTAMPING=--timestamping
 #TIMESTAMPING=--no-clobber
+
+error_code=0
 
 declare -A url_array
 declare -A kernel_header_names
@@ -66,7 +68,8 @@ remember_kernel_header_names() {
         # echo wget $TIMESTAMPING --protocol-directories --force-directories \
         #      --quiet "$url" >&2
         wget $TIMESTAMPING --protocol-directories --force-directories \
-             --quiet "$url"
+	     --quiet "$url"
+	save_error
     fi
     kernel_header_names[$index]=$( extract_subdirs < "$file" |
 				   linux_headers_after_3_9 )
@@ -179,11 +182,13 @@ mirror_kernel_dir_index_files_all() {
         xargs --no-run-if-empty -- \
             wget $TIMESTAMPING --protocol-directories --force-directories \
 	        --quiet --accept='index.html*'
+    save_error
 }
 
 mirror_top_level_directories() {
     wget $TIMESTAMPING --protocol-directories --mirror --quiet --level=1 \
          --accept='index.html*' "$top_url/"
+    save_error
 }
 
 list_kernel_filenames_plus_directories() {
@@ -254,14 +259,20 @@ mirror_pkg_files() {
         xargs --no-run-if-empty -- \
 	    wget $TIMESTAMPING --protocol-directories --force-directories \
 	        --quiet
+    save_error
 }
 
 mirror_top_level_directories
+save_error
 
 # Do one of the following two:
 mirror_kernel_dir_index_files_binary_search
+save_error
 # mirror_kernel_dir_index_files_all
 
 # If we don't want to do the whole binary search song and dance, this
 # should download all files.
 mirror_pkg_files
+save_error
+
+exit $error_code
