@@ -38,7 +38,7 @@ mirror_el_repo() {
 	    egrep "^kernel-.*(headers|devel)-.*.${rpm_arch}.rpm$" |
 	    subdirs_to_urls http://${dir#http/}
     done |
-	xargs -- wget --no-parent ${TIMESTAMPING} \
+	xargs -- wget --quiet --no-parent ${TIMESTAMPING} \
 	      --protocol-directories --force-directories
 }
 
