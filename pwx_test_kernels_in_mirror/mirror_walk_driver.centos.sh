@@ -14,7 +14,7 @@ get_default_mirror_dirs_centos()
 
 walk_mirror_centos() {
     local mirror_tree="$1"
-    local file rpm_arch return_status
+    local file rpm_arch return_status kernel_regexp
 
     shift 1
 
@@ -25,7 +25,9 @@ walk_mirror_centos() {
     fi
 
     return_status=0
-    find "$mirror_tree" -name "kernel-*headers-*.${rpm_arch}.rpm" -type f -print0 |
+
+    kernel_regexp=".*/kernel-([a-z]+-)?devel-${above_3_9_regexp}[0-9.]*-.*${rpm_arch}.rpm"
+    find "$mirror_tree" -regextype egrep -regex "$kernel_regexp" -type f -print0 |
 	while read -r -d $'\0' file ; do
             if ! "$@" "$file" ; then
 		return_status=$?
