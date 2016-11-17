@@ -50,7 +50,7 @@ uninstall_pkgs_deb()    {
     local pkg
     if ! in_container apt-get remove --quiet --yes --force-yes "$@" ; then
 	for pkg in "$@" ; do
-	    in_constainer dpkg --remove --force-remove-reinstreq "$pkg"
+	    in_container dpkg --remove --force-remove-reinstreq "$pkg"
 	done
     fi
 }
