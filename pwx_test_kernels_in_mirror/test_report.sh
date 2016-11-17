@@ -14,11 +14,13 @@ cat <<EOF
         </title>
     </head>
 <body>
-
+    <h2>
+        $title
+    </h2>
 EOF
 }
 
-output_html_tailer() {
+output_html_trailer() {
     echo "</body>"
     echo "</html>"
 }
@@ -42,7 +44,9 @@ output_html_link_and_note_paragraph() {
 mkdir -p test_report
 rm -f test_report/test_report.txt
 
-output_html_header "Portworx kernel testing report" \
+what_we_are_doing="building Portworx px.ko kernel module"
+
+output_html_header "Test report for $what_we_are_doing" \
     > test_report/test_report.html
 
 for dir in */ ; do
@@ -57,6 +61,10 @@ for dir in */ ; do
     success_count=$(find "$distribution" -name exit_code -print0 | xargs --null --no-run-if-empty -- egrep -l '^0 ' | wc -l)
     fail_count=$(find "$distribution" -name exit_code -print0 | xargs --null --no-run-if-empty -- egrep -L '^0 ' | wc -l)
 
+    output_html_header "Successes for $what_we_are_doing on $distribution" \
+		       > "${out_dir}/successes.html"
+    output_html_header "Failures for $what_we_are_doing on $distribution" \
+		       > "${out_dir}/failures.html"
     find "$distribution" -name exit_code | sort --unique |
         while read filename ; do
             read exit_code rest < "$filename"
@@ -69,6 +77,9 @@ for dir in */ ; do
             link="../../${filename%/exit_code}"
 	    output_html_link_and_note_paragraph "$link" "$rest" >> "$out_file"
         done
+    output_html_trailer >> "${out_dir}/successes.html"
+    output_html_trailer >> "${out_dir}/failures.html"
+
     echo "${distribution}: $success_count pass, $fail_count fail." >> test_report/test_report.txt
 
     echo "
@@ -81,7 +92,4 @@ for dir in */ ; do
 
 done
 
-cat >> test_report/test_report.html <<EOF
-</body>
-</html>
-EOF
+output_html_trailer >> test_report/test_report.html
