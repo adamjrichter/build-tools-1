@@ -29,6 +29,7 @@ for dist in centos debian fedora ubuntu ; do
 done
 
 $scriptsdir/pwx_update_pxfuse_by_date.sh
+$scriptsdir/test_report.sh
 
 echo "pwx_test_kernels.cron_script.sh: result=$result"
 
