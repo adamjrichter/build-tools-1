@@ -9,8 +9,8 @@ in_container_flock_deb() {
     # of he Ubuntu rebuild tests.
     local seconds=600
     local lockfile=/var/lib/dpkg/lock
-    in_container flock --timeout $seconds -- $lockfile \
-		 flock --unlock -- $lockfile "$@"
+    in_container flock --timeout $seconds $lockfile \
+		 flock --unlock $lockfile "$@"
 }
 
 dist_init_container_deb() {
@@ -82,4 +82,3 @@ install_pkgs_dir_deb()  {
     # in_container_flock_deb apt-get --fix-broken install --yes --force-yes || true
     # ^^^ Try to install any missing dependencies.
 }
-
