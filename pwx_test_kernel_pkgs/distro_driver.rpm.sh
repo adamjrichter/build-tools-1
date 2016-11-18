@@ -36,3 +36,4 @@ install_pkgs_dir_rpm() {
 install_pkgs_rpm()     { in_container yum --assumeyes --quiet install "$@" ; }
 uninstall_pkgs_rpm()   { in_container rpm --erase "$@" ; }
 pkgs_update_rpm()      { in_container yum --assumeyes --quiet update ; }
+dist_clean_up_container_rpm() { true; }	# No-op for now.

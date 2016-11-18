@@ -71,6 +71,11 @@ pkgs_update_deb()       {
     in_container_flock_deb apt-get update --quiet --yes --force-yes
 }
 
+dist_clean_up_container_deb()
+{
+    in_container_flock_deb sh -c "pkgs=\$( dpkg --list 'linux-headers-*' | awk '\$1 != \"un\" {print \$2;}' | egrep '^linux-headers-' ) ; dpkg --remove \$pkgs"
+}
+
 install_pkgs_dir_deb()  {
     in_container_flock_deb sh -c "dpkg --install --force-all $1/*"
     # in_container_flock_deb apt-get --fix-broken install --quiet --yes --force-yes || true

@@ -20,6 +20,7 @@ install_pkgs_dir()         { "install_pkgs_dir_$distro"         "$@" ; }
 uninstall_pkgs()           { "uninstall_pkgs_$distro"           "$@" ; }
 pkgs_update()              { "pkgs_update_$distro"              "$@" ; }
 test_kernel_pkgs_func()    { "test_kernel_pkgs_func_$distro"    "$@" ; }
+dist_clean_up_container()  { "dist_clean_up_container_$distro"  "$@" ; }
 
 filter_word() {
     # Echo the first word if it does not match any of the subsequent words
