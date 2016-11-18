@@ -71,7 +71,22 @@ start_container_lxc() {
 	if ! is_container_running "${container_name}" ; then
             lxc-start --name "${container_name}" --daemon
 	fi
-	await_default_route
+
+	if ! await_default_route ; then
+	    # Centos 6 has a problem where it (sometimes?) does not get
+	    # its default route immediately after lxc-create.  Even
+	    # though doing lxc-start / lxc-start again on the container
+	    # from the command line makes it recover, doing so from
+	    # this script does not.  However, running
+	    # "/etc/initd.network restart" in the Centos 6 container
+	    # does seem to fix the problem from this script.
+	    in_container_lxc /etc/init.d/network restart
+
+	    await_default_route
+	else
+	    echo "AJR start_container_lxc: first await_default_route succeeded." >&2	    
+	fi
+
 	if ! await_dns ; then
 	    in_container_lxc tee /etc/resolve.conf \
 			     < /etc/resolv.conf > /dev/null

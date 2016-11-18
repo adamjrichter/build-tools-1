@@ -12,7 +12,7 @@ get_default_mirror_dirs_fedora()
 
 walk_mirror_fedora() {
     local mirror_tree="$1"
-    local file dir base devel_base devel_file rpm_arch return_status
+    local file rpm_arch return_status
 
     shift 1
 
@@ -23,17 +23,11 @@ walk_mirror_fedora() {
     fi
 
     return_status=0
-    find "$mirror_tree" -name "kernel-headers-*.${rpm_arch}.rpm" -type f -print0 |
+
+    kernel_regexp=".*/kernel-([a-z]+-)?devel-${above_3_9_regexp}[0-9.]*-.*${rpm_arch}.rpm"
+    find "$mirror_tree" -regextype egrep -regex "$kernel_regexp" -type f -print0 |
 	while read -r -d $'\0' file ; do
-	    dir=${file%/*}
-	    base=${file##*/}
-	    devel_base="kernel-devel-${base#kernel-headers-}"
-	    devel_file="$dir/$devel_base"
-	    if ! [[ -e "$devel_file" ]] ; then
-		devel_file=""
-	    fi
-	    # This assumes devel_file does not have spaces in its name:
-            if ! "$@" "$file" $devel_file ; then
+            if ! "$@" "$file" ; then
 		return_status=$?
 	    fi
 	done

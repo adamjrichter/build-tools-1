@@ -123,7 +123,7 @@ main()
     else
 	prepare_pxfuse_dir
 	mkdir -p "$logdir"
-	test_kernel_pkgs "$@" > "$logdir/build.log" 2>&1
+	( echo "Command: pwx_test_kernel_pkgs $*" ; test_kernel_pkgs "$@" ) > "$logdir/build.log" 2>&1
     fi
 }
 

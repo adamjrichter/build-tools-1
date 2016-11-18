@@ -10,3 +10,4 @@
 
 5. Maybe deal with kernel source-only RPM's on vault.centos.org.  Apparently the generated kernel header RPM's are not archived.  Maybe we should rebuild all of these from source.
 
+6. Why is Debian Jessie container, and perhaps others, accumulating kernel headerws that are not being removed?

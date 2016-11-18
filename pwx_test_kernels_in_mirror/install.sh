@@ -27,14 +27,16 @@ install_scripts "${scriptsdir}" \
 		mirror_walk_driver.*.sh \
 		mirror_walk_driver.sh \
 		pwx_test_kernels.cron_script.sh \
-		pwx_update_pxfuse_by_date.sh
+		pwx_update_pxfuse_by_date.sh \
+		test_report.sh
 
 install_scripts "${bindir}" pwx_test_kernels_in_mirror
 
 chmod a+x \
       "${bindir}/pwx_test_kernels_in_mirror" \
       "${scriptsdir}/pwx_test_kernels.cron_script.sh" \
-      "${scriptsdir}/pwx_update_pxfuse_by_date.sh"
+      "${scriptsdir}/pwx_update_pxfuse_by_date.sh" \
+      "${scriptsdir}/test_report.sh"
 
 old_crontab=$( ( crontab -u root -l 2> /dev/null ) |
 	      egrep -v pwx_test_kernels.cron_script.sh |
