@@ -18,7 +18,7 @@ Top level scripts, installed in /usr/local/bin:
 		--mirror-top=mirror_top_dir
 		--pfxuse=pxfuse_src_dir        [default: download tempoary
 
-		Descent into all subdirectories of mirror_dirs, finding
+		Descend into all subdirectories of mirror_dirs, finding
 		kernel head packages that should be grouped together,
 		and pass each group of packages to subcommand (usually
 		pwx_test_kernel_pkgs) with the arguments --distribution,
