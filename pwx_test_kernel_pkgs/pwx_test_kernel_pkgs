@@ -16,8 +16,7 @@ Usage: pwx_test_kernel_pkgs [options] pkg_files...
 	--logdir=logdir                [default: based on distribution]
 	--pfxuse=pxfuse_src_dir        [default: download tempoary
 				        directory from github]
-	--release=dist_release         [default: based on distribution]
-
+	--releases=dist_releases       [default: based on distribution]
 EOF
 }
 
