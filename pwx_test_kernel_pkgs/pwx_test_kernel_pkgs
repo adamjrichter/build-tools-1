@@ -45,9 +45,9 @@ while [[ $# -gt 0 ]] ; do
 	--force ) force=true ;;
 	--help ) usage ; exit 0 ;;
 	--leave-containers-running ) leave_containers_running=true ;;
-	--releases=* ) distro_release=${1#--releases=} ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
 	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
+	--releases=* ) distro_release=${1#--releases=} ;;
 	--* ) usage >&2 ; exit 1 ;;
 	* ) break ;;
     esac
