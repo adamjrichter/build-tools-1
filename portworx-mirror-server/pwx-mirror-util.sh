@@ -88,6 +88,7 @@ rename_bad_pkg_files() {
 	while read -r -d $'\0' file ; do
 	    if ! $command "$file" > /dev/null 2>&1 ; then
 		mv --force "$file" "${file}.corrupt"
+	    fi
 	done
 }
 
@@ -96,5 +97,5 @@ rename_bad_deb_files() {
 }
 
 rename_bad_rpm_files() {
-    rename_bad_pkg_files '.rpm' 'rpm --query --list' --package" "$@"
+    rename_bad_pkg_files '.rpm' 'rpm --query --list --package' "$@"
 }
