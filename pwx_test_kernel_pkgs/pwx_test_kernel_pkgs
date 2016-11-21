@@ -16,8 +16,7 @@ Usage: pwx_test_kernel_pkgs [options] pkg_files...
 	--logdir=logdir                [default: based on distribution]
 	--pfxuse=pxfuse_src_dir        [default: download tempoary
 				        directory from github]
-	--release=dist_release         [default: based on distribution]
-
+	--releases=dist_releases       [default: based on distribution]
 EOF
 }
 
@@ -29,35 +28,41 @@ arch=amd64
 distro=ubuntu
 distro_releases=""
 container_system=lxc
-leave_containers_running=false
 force=false
 logdir=$PWD
+lockdir=/var/lock/pwx_test_kernel_pkgs
+pxfuse_dir=
 
 exit_handler() {
     rm -rf "$local_tmp_dir"
 }
 
-while [[ $# -gt 0 ]] ; do
-    case "$1" in
-	--arch=* ) arch=${1#--arch=} ;;
-	--containers=* ) container_system=${1#--containers=} ;;
-	--distribution=* ) distro=${1#--distribution=} ;;
-	--force ) force=true ;;
-	--help ) usage ; exit 0 ;;
-	--leave-containers-running ) leave_containers_running=true ;;
-	--releases=* ) distro_release=${1#--releases=} ;;
-	--logdir=* ) logdir=${1#--logdir=} ;;
-	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
-	--* ) usage >&2 ; exit 1 ;;
-	* ) break ;;
-    esac
-    shift
-done
+# Use a function to parse main argument to avoid modifying them.
+parse_args() {
+    while [[ $# -gt 0 ]] ; do
+	case "$1" in
+	    --arch=* ) arch=${1#--arch=} ;;
+	    --containers=* ) container_system=${1#--containers=} ;;
+	    --distribution=* ) distro=${1#--distribution=} ;;
+	    --force ) force=true ;;
+	    --help ) usage ; exit 0 ;;
+	    --leave-containers-running ) true ;;
+	    --logdir=* ) logdir=${1#--logdir=} ;;
+	    --pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
+	    --releases=* ) distro_release=${1#--releases=} ;;
+	    --* ) usage >&2 ; exit 1 ;;
+	    * ) break ;;
+	esac
+	shift
+    done
 
-if [[ $# -lt 1 ]] ; then
-    usage >&2
-    exit 1
-fi
+    if [[ $# -lt 1 ]] ; then
+	usage >&2
+	exit 1
+    fi
+}
+
+parse_args "$@"
 
 local_tmp_dir=/tmp/test-kernels.ubuntu.$$
 
@@ -75,9 +80,9 @@ prepare_pxfuse_dir() {
 }
 
 test_kernel_pkgs() {
-    local result release releases local make_args
+    local result release releases local make_args lockfile
 
-    ran_test=false	# global variable
+    echo "Command: pwx_test_kernel_pkgs $*"
 
     if [[ -n "$distro_releases" ]] ; then
 	releases=$(echo "$distro_releases" | sed 's/,/ /g')
@@ -85,20 +90,23 @@ test_kernel_pkgs() {
 	releases=$(get_dist_releases)
     fi
 
+    mkdir -p "$lockdir"
+
     result=1 # in case one of the loops should be empty for some reason.
 
     for make_args in "" "CC=\"gcc -fno-pie\"" ; do
 	for release in $releases ; do
-	    echo "test_kernel_pkgs: Attempting to test kernel package(s) on distribution $distro, release $release, make_args=$make_args."
+	    lockfile="$lockdir/container_${container_system}_${distro}_${release}"
+	    touch -f "$lockfile"
+	    flock --exclusive --close "$lockfile" \
+		  $scriptsdir/pwx_test_kernel_pkgs_one_container.sh \
+			"--pxfuse=$pxfuse_dir" \
+			"--release=$release" \
+			"--make-args=$make_args" \
+			$@
 
-	    start_container --release="$release" dist_init_container
-
-	    test_kernel_pkgs_func "$pxfuse_dir" "$logdir" "$make_args" "$@"
 	    result=$?
 
-	    if ! $leave_containers_running ; then
-		stop_container
-	    fi
 	    if [[ $result = 0 ]] ; then
 		break
 	    fi
@@ -108,11 +116,7 @@ test_kernel_pkgs() {
 	fi
     done
     echo "$result $distro $release make_args=$make_args" > "$logdir/exit_code"
-    if $ran_test ; then
-	touch "$logdir/done"
-	# ^^ We have a "done" file in addition to an "exit_code" file, because
-	# creating the empty "done" file is atomic.
-    fi
+    mv "$logdir/ran_test" "$logdir/done" 2> /dev/null
     return $result
 }
 
@@ -123,7 +127,8 @@ main()
     else
 	prepare_pxfuse_dir
 	mkdir -p "$logdir"
-	( echo "Command: pwx_test_kernel_pkgs $*" ; test_kernel_pkgs "$@" ) > "$logdir/build.log" 2>&1
+	rm -f "$logdir/ran_test"
+	test_kernel_pkgs "$@" > "$logdir/build.log" 2>&1
     fi
 }
 

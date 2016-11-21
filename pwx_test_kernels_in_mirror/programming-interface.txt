@@ -18,7 +18,7 @@ Top level scripts, installed in /usr/local/bin:
 		--mirror-top=mirror_top_dir
 		--pfxuse=pxfuse_src_dir        [default: download tempoary
 
-		Descent into all subdirectories of mirror_dirs, finding
+		Descend into all subdirectories of mirror_dirs, finding
 		kernel head packages that should be grouped together,
 		and pass each group of packages to subcommand (usually
 		pwx_test_kernel_pkgs) with the arguments --distribution,
@@ -26,7 +26,10 @@ Top level scripts, installed in /usr/local/bin:
 		additional arguments passwd with "--command-args" (although it
 		is also possible to pass arguments by passing a
 		"--command=..." value that includes spaces followed
-		by arguments).
+		by arguments).  pwx_test_kernels_in_mirror only runs the
+		subcommand if it succeeds in making a nonblocking request
+		to flock the log directory.  The lock is held while the
+		subcommand runs.
 
 		The value of logdir passed to the command is changed to
 		logdir/pxfuse-checksum-$CHECKSUM/distro/mirror_dir/subdir/pkg

@@ -25,10 +25,10 @@ install_scripts "${scriptsdir}" \
 		container_driver.*.sh \
 		container_driver.sh \
 		distro_driver.*.sh \
-		distro_driver.sh
+		distro_driver.sh \
+		pwx_test_kernel_pkgs_one_container.sh
 
 install_scripts "${bindir}" pwx_test_kernel_pkgs
 
-chmod a+x "${bindir}/pwx_test_kernel_pkgs"
-
-
+chmod a+x "${bindir}/pwx_test_kernel_pkgs" \
+    "${scriptsdir}/pwx_test_kernel_pkgs_one_container.sh"

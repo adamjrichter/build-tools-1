@@ -36,6 +36,20 @@ on_or_after_linux_3_10_release_date() {
     egrep '^(2013051[1-9]|201305[23]|20130[6-9]|20131|201[4-9]|2[1-9]|[3-9])'
 }
 
+rename_bad_deb_files() {
+    local file
+    # FIXME?  Perhaps in the future, it would be better to maintain
+    # a list of files that have already been checked and only check new
+    # additions most of the time.  Better yet would be to have wget
+    # download files to a temporary name, and only move them into place
+    # after verifying them.
+    find "$@" -name '*.deb' -type f -print0 |
+	while read -r -d $'\0' file ; do
+	    if ! dpkg --contents "$file" > /dev/null 2>&1 ; then
+		mv --force "$file" "${file}.corrupt"
+	done
+}
+
 list_kernel_dir_urls() {
     cat "${top_dir}"/index.html\?year=* |
         extract_subdirs |
@@ -262,6 +276,7 @@ mirror_pkg_files() {
     save_error
 }
 
+rename_bad_deb_files "$top_dir"
 mirror_top_level_directories
 save_error
 

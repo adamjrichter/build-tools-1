@@ -90,7 +90,7 @@ mirror_callback() {
     local mirror_dir="$1"
     local log_subdir="$2"
     local pkg1="$3"
-    local pkg_subdir
+    local pkg_subdir command_logdir result
 
     if [[ -n "$mirror_top" ]] ; then
 	pkg_subdir=${pkg1#$mirror_top}
@@ -100,12 +100,15 @@ mirror_callback() {
 
     shift 2
 
-    $command $command_args \
-	"--arch=$arch" \
-	"--distribution=$distro" \
-	"--logdir=${log_subdir}/${pkg_subdir}" \
-	"--pxfuse=$pxfuse_dir" \
-	"$@"
+    command_logdir="${log_subdir}/${pkg_subdir}"
+    mkdir -p "$command_logdir"
+    flock --close --exclusive --nonblock "$command_logdir" \
+	  $command $command_args \
+		"--arch=$arch" \
+		"--distribution=$distro" \
+		"--logdir=${log_subdir}/${pkg_subdir}" \
+		"--pxfuse=$pxfuse_dir" \
+		"$@"
 }
 
 prepare_pxfuse_dir
