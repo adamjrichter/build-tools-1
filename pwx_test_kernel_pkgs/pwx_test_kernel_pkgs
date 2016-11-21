@@ -86,7 +86,7 @@ match_word() {
     shift
     for big in "$@" ; do
 	case "$big" in
-	    "*${small}*" ) return 0 ;;
+	    *"${small}"* ) return 0 ;;
 	esac
     done
     return 1
