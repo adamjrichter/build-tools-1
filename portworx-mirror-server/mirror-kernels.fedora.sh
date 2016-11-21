@@ -22,6 +22,8 @@ mirror_ncsu_edu() {
     local top_url=http://ftp.linux.ncsu.edu/pub/fedora/linux/releases/
     local top_dir=$(url_to_dir "$top_url")
 
+    rename_bad_rpm_files "$top_dir"
+
     wget ${QUIET} --protocol-directories --force-directories \
 	  "${top_url}"
     save_error

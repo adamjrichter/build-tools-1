@@ -31,6 +31,8 @@ mirror_el_repo() {
 	* ) rpm_arch="$arch" ;;
     esac
 
+    rename_bad_rpm_files "$top_dir"
+
     wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
 	 --protocol-directories --force-directories --recursive \
 	 --accept-regex='.*/(index.html)?$' \
@@ -53,6 +55,8 @@ mirror_el_repo() {
 mirror_mirror_centos_org() {
     local top_url=http://mirror.centos.org/centos/
     local top_dir=$(url_to_dir "$top_url")
+
+    rename_bad_rpm_files "$top_dir"
 
     wget --quiet --protocol-directories --force-directories \
 	  "${top_url}"
