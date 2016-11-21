@@ -98,7 +98,7 @@ test_kernel_pkgs() {
 	for release in $releases ; do
 	    lockfile="$lockdir/container_${container_system}_${distro}_${release}"
 	    touch -f "$lockfile"
-	    flock --exclusive "$lockfile" \
+	    flock --exclusive --close "$lockfile" \
 		  $scriptsdir/pwx_test_kernel_pkgs_one_container.sh \
 			"--pxfuse=$pxfuse_dir" \
 			"--release=$release" \
