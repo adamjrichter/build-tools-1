@@ -9,8 +9,8 @@ in_container_flock_deb() {
     # of he Ubuntu rebuild tests.
     local seconds=600
     local lockfile=/var/lib/dpkg/lock
-    in_container flock --timeout $seconds $lockfile \
-		 flock --unlock $lockfile "$@"
+    in_container flock --close --timeout $seconds $lockfile \
+		 flock --close --unlock $lockfile "$@"
 }
 
 dist_init_container_deb() {
