@@ -79,6 +79,46 @@ prepare_pxfuse_dir() {
     fi
 }
 
+match_word() {
+    local small=$1
+    local big
+
+    shift
+    for big in "$@" ; do
+	case "$big" in
+	    "*${small}*" ) return 0 ;;
+	esac
+    done
+    return 1
+}
+
+
+matches_first() {
+    local releases="$1"
+    local file first unmatched
+    unmatched=""
+
+    shift
+
+    # Skip command options to get to path names
+    while true ; do
+	case "$1" in
+	    -- ) shift ; break ;;
+	    --* ) shift ;;
+	    * ) break ;;
+	    esac
+    done
+
+    for release in $releases ; do
+	if match_word "$release" "$@" ; then
+	    echo "$release"
+	else
+	    unmatched="$unmatched $release"
+	fi
+    done
+    echo $unmatched
+}
+
 test_kernel_pkgs() {
     local result release releases local make_args lockfile
 
@@ -94,8 +134,14 @@ test_kernel_pkgs() {
 
     result=1 # in case one of the loops should be empty for some reason.
 
-    for make_args in "" "CC=\"gcc -fno-pie\"" ; do
-	for release in $releases ; do
+    # The use of matches_first is an optimization that first tries operating
+    # system releases that appear somewhere in the paths of the package
+    # files being tested.  For Centos, which has releases like "6"
+    # and "7", this probably has little effect, but for Fedora, which
+    # is up in the two digits, and the Debian-based distributions that
+    # use names, it may be a more substantial improvement.
+    for release in $(matches_first "$releases" "$@") ; do
+	for make_args in "" "CC=\"gcc -fno-pie\"" ; do
 	    lockfile="$lockdir/container_${container_system}_${distro}_${release}"
 	    touch -f "$lockfile"
 	    flock --exclusive --close "$lockfile" \
