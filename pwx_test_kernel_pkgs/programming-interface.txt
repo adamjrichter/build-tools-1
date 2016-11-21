@@ -108,9 +108,9 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 				  after running potentially multiple
 				  tests.
 
-	dist_cleanup_container - Called after test is run to remove
-				 any remaining distribution-specific
-				 residue.
+	dist_clean_up_container - Called after test is run to remove
+				  any remaining distribution-specific
+				  residue.
 
     Container interface (defined by sourcing
     /usr/local/share/pwx_test_kernel_pkgs/container_driver.sh ):

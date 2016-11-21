@@ -118,7 +118,7 @@ test_kernel_pkgs_func_default() {
 
     uninstall_pkgs $pkg_names
     in_container rm -rf "$container_tmpdir"
-    dist_cleanup_container
+    dist_clean_up_container
 
     echo "test_kernel_pkgs_func_default: build_exit_code=$result" >&2
     # if [[ "$result" != 0 ]] ; then
