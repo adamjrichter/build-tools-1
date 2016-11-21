@@ -35,7 +35,6 @@ filter_word() {
     echo "$first"
 }
 
-# test_kernel_pkgs_func_default also sets the global variable ran_test
 test_kernel_pkgs_func_default() {
     local container_tmpdir result_logdir
     local result filename real dirname basename headers_dir
@@ -113,7 +112,7 @@ test_kernel_pkgs_func_default() {
 	    in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
 		tar -C "${result_logdir}" -xpv
 	fi # result = 0
-	ran_test=true	# Global variable
+	touch "${result_logdir}/ran_test"
     fi # result = 0
 
     uninstall_pkgs $pkg_names
