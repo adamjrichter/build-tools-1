@@ -63,8 +63,7 @@ mirror_mirror_centos_org() {
 
     rename_bad_rpm_files "$top_dir"
 
-    wget --quiet --protocol-directories --force-directories \
-	  "${top_url}"
+    wget --quiet --protocol-directories --force-directories "${top_url}"
 
     extract_subdirs < "$top_dir/index.html" |
 	egrep '^[1-9][0-9]*\.[0-9]+' |
