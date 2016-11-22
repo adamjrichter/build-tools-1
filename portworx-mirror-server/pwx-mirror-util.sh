@@ -97,5 +97,5 @@ rename_bad_deb_files() {
 }
 
 rename_bad_rpm_files() {
-    rename_bad_pkg_files '.rpm' 'rpm --query --list --package' "$@"
+    rename_bad_pkg_files '.rpm' rpm2cpio "$@"
 }
