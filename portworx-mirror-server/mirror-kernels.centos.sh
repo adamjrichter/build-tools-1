@@ -33,7 +33,12 @@ mirror_el_repo() {
 
     rename_bad_rpm_files "$top_dir"
 
-    wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
+    # For now, do not include "--no-clobber" in this top level wget.
+    # Pull new index.html files every time.  Otherwise, the files do
+    # not get updated.  FIXME: Confirm that  timestamps are not
+    # supported by the elrepo web server.
+    #
+    wget --quiet --no-parent -e robots=off \
 	 --protocol-directories --force-directories --recursive \
 	 --accept-regex='.*/(index.html)?$' \
 	 ${top_url}
