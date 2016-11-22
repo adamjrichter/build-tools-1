@@ -31,7 +31,14 @@ mirror_el_repo() {
 	* ) rpm_arch="$arch" ;;
     esac
 
-    wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
+    rename_bad_rpm_files "$top_dir"
+
+    # For now, do not include "--no-clobber" in this top level wget.
+    # Pull new index.html files every time.  Otherwise, the files do
+    # not get updated.  FIXME: Confirm that  timestamps are not
+    # supported by the elrepo web server.
+    #
+    wget --quiet --no-parent -e robots=off \
 	 --protocol-directories --force-directories --recursive \
 	 --accept-regex='.*/(index.html)?$' \
 	 ${top_url}
@@ -54,8 +61,9 @@ mirror_mirror_centos_org() {
     local top_url=http://mirror.centos.org/centos/
     local top_dir=$(url_to_dir "$top_url")
 
-    wget --quiet --protocol-directories --force-directories \
-	  "${top_url}"
+    rename_bad_rpm_files "$top_dir"
+
+    wget --quiet --protocol-directories --force-directories "${top_url}"
 
     extract_subdirs < "$top_dir/index.html" |
 	egrep '^[1-9][0-9]*\.[0-9]+' |

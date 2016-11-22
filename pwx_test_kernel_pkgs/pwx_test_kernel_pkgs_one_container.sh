@@ -76,6 +76,16 @@ if [[ -z "$pxfuse_dir" ]] ; then
     exit 1
 fi
 
+if ! [[ -e "$pxfuse_dir" ]] ; then
+    echo "$0: pxfuse directory ${pxfuse_dir} does not exist." >&2
+    exit 1
+fi
+
+if ! [[ -d "$pxfuse_dir" ]] ; then
+    echo "$0: pxfuse directory ${pxfuse_dir} is not a directory." >&2
+    exit 1
+fi
+
 local_tmp_dir=/tmp/test-kernels.ubuntu.$$
 
 test_kernel_pkgs() {
