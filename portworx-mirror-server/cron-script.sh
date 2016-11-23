@@ -30,21 +30,15 @@ copy_link_tree_remove_index_html()
 run_all_verb_scripts()
 {
     local verb="$1"
-    local basename logfile pids pid
+    local basename logfile
 
-    pids=""
     for script in ${scriptsdir}/${verb}-kernels.*.sh ; do
 	basename="${script##*/}"
 	logfile="$logdir/${basename}.log"
 	if [[ -e "$logfile" ]] ; then
 	    mv --force "$logfile" "${logfile}.old"
 	fi
-        $script > "$logfile" 2>&1 &
-	pids="$pids $!"
-    done
-    for pid in $pids ; do
-	wait -n $pid
-	save_error
+        $script > "$logfile" 2>&1
     done
 }
 
