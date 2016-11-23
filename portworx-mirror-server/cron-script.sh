@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+# ^^^^^^^^^ /bin/bash because pwx-mirror-util.sh uses "[[".
 
 scriptsdir=$PWD
 . ${scriptsdir}/pwx-mirror-config.sh
