@@ -5,7 +5,7 @@ scriptsdir=$PWD
 . ${scriptsdir}/pwx-mirror-config.sh
 . ${scriptsdir}/pwx-mirror-util.sh
 logdir=/var/log/portworx-mirror-server
-logfile=${logdir}/$(date +%Y%m%d.%H:%M:%S).log
+main_logfile=${logdir}/cron-script.log
 
 error_code=0
 
@@ -34,7 +34,7 @@ run_all_verb_scripts()
     set -x
     for script in ${scriptsdir}/${verb}-kernels.*.sh ; do
 	basename="${script##*/}"
-	logfile="$logdir/$basename"
+	logfile="$logdir/${basename}.log"
 	mv --force "$logfile" "${logfile}.old" > /dev/null 2>&1 || true
         $script > "$logfile" 2>&1 &
     done
@@ -61,7 +61,8 @@ run_all_test_scripts()
 
 mkdir -p "$logdir"
 
-( run_all_mirror_scripts ; run_all_test_scripts ) > "$logfile" 2>&1 < /dev/null
+mv --force "$main_logfile" "${main_logfile}.old}"
+( run_all_mirror_scripts ; run_all_test_scripts ) > "$main_logfile" 2>&1 < /dev/null
 save_error
 
 exit $error_code
