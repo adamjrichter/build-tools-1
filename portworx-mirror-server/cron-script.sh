@@ -36,7 +36,9 @@ run_all_verb_scripts()
     for script in ${scriptsdir}/${verb}-kernels.*.sh ; do
 	basename="${script##*/}"
 	logfile="$logdir/${basename}.log"
-	mv --force "$logfile" "${logfile}.old" > /dev/null 2>&1 || true
+	if [[ -e "$logfile" ]] ; then
+	    mv --force "$logfile" "${logfile}.old"
+	fi
         $script > "$logfile" 2>&1 &
 	pids="$pids $!"
     done
@@ -66,7 +68,9 @@ run_all_test_scripts()
 
 mkdir -p "$logdir"
 
-mv --force "$main_logfile" "${main_logfile}.old}"
+if [[ -e "$main_logfile" ]] ; then
+    mv --force "$main_logfile" "${main_logfile}.old}"
+fi
 ( run_all_mirror_scripts ; run_all_test_scripts ) > "$main_logfile" 2>&1 < /dev/null
 save_error
 
