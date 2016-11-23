@@ -38,9 +38,10 @@ install_httpd_ubuntu:
 	mv /var/www/html/index.html /var/www/html/index.html.orig 2> /dev/null || true
 
 install_mirror_ubuntu: install_mirror_scripts install_httpd_ubuntu install_ftpd_ubuntu
+	mkdir -p /var/log/portworx-mirror-server
 	adduser --system pwxmirror
 	chsh --shell /bin/bash pwxmirror
-	chown -R pwxmirror /home/pwxmirror
+	chown -R pwxmirror /home/pwxmirror /var/log/portworx-mirror-server
 	crontab -u pwxmirror ${scriptsdir}/crontab.txt
 	( . ${scriptsdir}/pwx-mirror-config.sh && \
 	  mkdir -p $$mirrordir/misc/centos $$mirrordir/misc/debian $$mirrordir/misc/ubuntu && for subdir in centos debian ubuntu ; do dir=$$mirrordir/misc/$$subdir ; file=$$dir/README.txt ; if [ ! -e "$$file" ] ; then echo "This directory is for unmirrored kernel header packages and support files related to $$subdir." > $$file ; fi ; done && chown -R pwxmirror $$mirrordir )
