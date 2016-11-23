@@ -18,6 +18,16 @@ install_scripts() {
     done
 }
 
+install_crontab() {
+    old_crontab=$( ( crontab -u root -l 2> /dev/null ) |
+		       egrep -v pwx_test_kernels.cron_script.sh |
+		       egrep -v '^#' ) || true
+
+    ( echo "$old_crontab" ;
+      echo "15 1 * * * $scriptsdir/pwx_test_kernels.cron_script.sh" ) |
+	crontab -u root -
+}
+
 apt-get install --yes --quiet rpm
 # Needed for Centos support, for extracting information from .rpm files.
 
@@ -38,12 +48,10 @@ chmod a+x \
       "${scriptsdir}/pwx_update_pxfuse_by_date.sh" \
       "${scriptsdir}/test_report.sh"
 
-old_crontab=$( ( crontab -u root -l 2> /dev/null ) |
-	      egrep -v pwx_test_kernels.cron_script.sh |
-	      egrep -v '^#' ) || true
-( echo "$old_crontab" ;
-  echo "15 1 * * * $scriptsdir/pwx_test_kernels.cron_script.sh" ) |
-    crontab -u root -
+# For now, comment out the installation of the crontab, as the cron
+# script will be run by Jenson.
+#
+# install_crontab
 
 rm -f /var/www/html/build-results
 ln -s ${build_results_dir} /var/www/html/build-results
