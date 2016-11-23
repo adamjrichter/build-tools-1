@@ -4,7 +4,7 @@
 scriptsdir=$PWD
 . ${scriptsdir}/pwx-mirror-config.sh
 . ${scriptsdir}/pwx-mirror-util.sh
-logdir=${scriptsdir}/logs
+logdir=/var/log/portworx-mirror-server
 logfile=${logdir}/$(date +%Y%m%d.%H:%M:%S).log
 
 error_code=0
@@ -30,10 +30,15 @@ copy_link_tree_remove_index_html()
 run_all_verb_scripts()
 {
     local verb="$1"
+    local basename logfile
     set -x
     for script in ${scriptsdir}/${verb}-kernels.*.sh ; do
-        $script
+	basename="${script##*/}"
+	logfile="$logdir/$basename"
+	mv --force "$logfile" "${logfile}.old" > /dev/null 2>&1 || true
+        $script > "$logfile" 2>&1 &
     done
+    wait
 }
 
 run_all_mirror_scripts()
