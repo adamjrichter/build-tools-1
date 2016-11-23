@@ -2,8 +2,11 @@
 
 scriptsdir=$PWD
 
-log_file=/home/ubuntu/pwx_test_kernels.cron_script.sh.log
+log_file=/var/log/pwx_test_kernels_in_mirror/pwx_test_kernels.cron_script.log
 
+mkdir -p "${log_file%/*}"
+
+mv --force "$log_file" "${log_file}.old"
 exec > "$log_file" 2>&1 < /dev/null
 
 PATH=/usr/local/bin:$PATH
