@@ -39,6 +39,7 @@ run_all_verb_scripts()
 	    mv --force "$logfile" "${logfile}.old"
 	fi
         $script > "$logfile" 2>&1
+	save_error
     done
 }
 
