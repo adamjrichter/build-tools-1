@@ -30,15 +30,20 @@ copy_link_tree_remove_index_html()
 run_all_verb_scripts()
 {
     local verb="$1"
-    local basename logfile
-    set -x
+    local basename logfile pids pid
+
+    pids=""
     for script in ${scriptsdir}/${verb}-kernels.*.sh ; do
 	basename="${script##*/}"
 	logfile="$logdir/${basename}.log"
 	mv --force "$logfile" "${logfile}.old" > /dev/null 2>&1 || true
         $script > "$logfile" 2>&1 &
+	pids="$pids $!"
     done
-    wait
+    for pid in $pids ; do
+	wait -n $pid
+	save_error
+    done
 }
 
 run_all_mirror_scripts()
