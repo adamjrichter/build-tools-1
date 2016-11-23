@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/bash
+# ^^^^^^^^^ /bin/bash because pwx-mirror-util.sh uses "[[".
 
 scriptsdir=$PWD
 . ${scriptsdir}/pwx-mirror-config.sh
 . ${scriptsdir}/pwx-mirror-util.sh
-logdir=${scriptsdir}/logs
-logfile=${logdir}/$(date +%Y%m%d.%H:%M:%S).log
+logdir=/var/log/portworx-mirror-server
+main_logfile=${logdir}/cron-script.log
 
 error_code=0
 
@@ -29,9 +30,16 @@ copy_link_tree_remove_index_html()
 run_all_verb_scripts()
 {
     local verb="$1"
-    set -x
+    local basename logfile
+
     for script in ${scriptsdir}/${verb}-kernels.*.sh ; do
-        $script
+	basename="${script##*/}"
+	logfile="$logdir/${basename}.log"
+	if [[ -e "$logfile" ]] ; then
+	    mv --force "$logfile" "${logfile}.old"
+	fi
+        $script > "$logfile" 2>&1
+	save_error
     done
 }
 
@@ -55,7 +63,10 @@ run_all_test_scripts()
 
 mkdir -p "$logdir"
 
-( run_all_mirror_scripts ; run_all_test_scripts ) > "$logfile" 2>&1 < /dev/null
+if [[ -e "$main_logfile" ]] ; then
+    mv --force "$main_logfile" "${main_logfile}.old}"
+fi
+( run_all_mirror_scripts ; run_all_test_scripts ) > "$main_logfile" 2>&1 < /dev/null
 save_error
 
 exit $error_code

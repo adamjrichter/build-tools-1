@@ -27,7 +27,7 @@ get_subdir_index_files() {
     local top_url="$1"
     echo_word_per_line "$@" |
         subdirs_to_urls "${top_url}"  |
-        xargs -- wget ${TIMESTAMPING} --quiet --protocol-directories \
+        xargs -- wget --quiet --protocol-directories \
 	      --force-directories --accept=index.html --recursive
     save_error
 }
