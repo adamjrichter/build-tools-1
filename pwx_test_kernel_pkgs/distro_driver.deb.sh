@@ -10,7 +10,8 @@ in_container_flock_deb() {
     local seconds=600
     local lockfile=/var/lib/dpkg/lock
     in_container flock --close --timeout $seconds $lockfile \
-		 flock --close --unlock $lockfile "$@"
+		 flock --close --unlock $lockfile \
+		 env DEBIAN_FRONTEND=noninteractive "$@"
 }
 
 dist_init_container_deb() {
