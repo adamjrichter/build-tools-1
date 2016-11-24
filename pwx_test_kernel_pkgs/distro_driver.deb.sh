@@ -13,6 +13,10 @@
 # Notice that /usr/local/sbin, /usr/sbin and /sbin are not in $PATH.
 #
 
+# Global variable determine which arguments to pass to apt-get to
+# tell it it just do what was requests while avoiding warning messages:
+deb_apt_get_args="--quiet --yes --force-yes"
+
 in_container_env_deb() {
     in_container env --ignore-environment \
 	 DEBIAN_FRONTEND=noninteractive \
@@ -36,8 +40,17 @@ in_container_flock_deb() {
 	"$@"
 }
 
+dist_start_container_deb()
+{
+    if in_container_flock_deb apt-get install --quiet --yes --allow-downgrades bash ; then
+	deb_apt_get_args="--quiet --yes --force-yes"
+    else
+	deb_apt_get_args="--quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages"
+    fi
+}
+
 dist_init_container_deb() {
-    in_container_flock_deb apt-get update --quiet --yes
+    in_container_flock_deb apt-get update $deb_apt_get_args
     # ^^^ Skip this for binary reproducibility ??
 
     install_pkgs_deb autoconf g++ gcc git libelf-dev libssl1.0 make tar
@@ -76,13 +89,13 @@ pkg_files_to_dependencies_deb() {
 }
 
 install_pkgs_deb()      {
-    in_container_flock_deb apt-get install --quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages "$@"
+    in_container_flock_deb apt-get install $deb_apt_get_args "$@"
 }
 
 # uninstall_pkgs_deb()    { in_container_flock_deb dpkg --remove "$@" ; }
 uninstall_pkgs_deb()    {
     local pkg
-    if ! in_container_flock_deb apt-get remove --quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages "$@" ; then
+    if ! in_container_flock_deb apt-get remove $deb_apt_get_args "$@" ; then
 	for pkg in "$@" ; do
 	    in_container_flock_deb dpkg --remove --force-remove-reinstreq "$pkg"
 	done
@@ -90,7 +103,7 @@ uninstall_pkgs_deb()    {
 }
 
 pkgs_update_deb()       {
-    in_container_flock_deb apt-get update --quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages
+    in_container_flock_deb apt-get update $deb_apt_get_args
 }
 
 dist_clean_up_container_deb()
@@ -102,7 +115,7 @@ dist_clean_up_container_deb()
 install_pkgs_dir_deb()  {
     in_container_flock_deb apt-get --yes clean
     in_container_flock_deb sh -c "dpkg --install --force-all $1/*"
-    # in_container_flock_deb apt-get --fix-broken install --quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages || true
-    # in_container_flock_deb apt-get --fix-broken install --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages || true
+    # in_container_flock_deb apt-get --fix-broken install $deb_apt_get_args || true
+    # in_container_flock_deb apt-get --fix-broken install $deb_apt_get_args || true
     # ^^^ Try to install any missing dependencies.
 }

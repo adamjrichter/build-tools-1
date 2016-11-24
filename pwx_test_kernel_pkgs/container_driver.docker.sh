@@ -31,10 +31,12 @@ start_container_docker() {
     if [[ -n "$id" ]] ; then
 	docker start "$id"
 	docker_pid="$id"
-	return 0
+	dist_start_container
+	return $?
     else
 	docker pull $distribution
         docker_pid=$(docker run --interactive --name "${container_name}" --detach "$distribution" bash)
+	dist_start_container
 	"$@"
     fi
 }

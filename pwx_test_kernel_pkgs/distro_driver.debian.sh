@@ -15,6 +15,7 @@ uninstall_pkgs_debian()           { uninstall_pkgs_deb            "$@" ; }
 pkgs_update_debian()              { pkgs_update_deb               "$@" ; }
 test_kernel_pkgs_func_debian()    { test_kernel_pkgs_func_default "$@" ; }
 dist_clean_up_container_debian()  { dist_clean_up_container_deb   "$@" ; }
+dist_start_container_ubuntu()     { dist_start_container_deb      "$@"; }
 
 get_dist_releases_debian()
 {

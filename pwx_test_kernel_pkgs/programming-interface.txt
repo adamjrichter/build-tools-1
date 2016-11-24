@@ -83,6 +83,18 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 	dist_init_container	-  Install any needed initial
 				   packages in the initial container.
 
+	dist_start_container	-  Called every time a container is
+				   started (not just created from scratch).
+				   This is currently used with
+				   Debian-based container to check and
+				   record which versions of "apt-get"
+				   command line options are accepted.
+				   This function is called by the container
+				   driver, and is called before
+				   dist_init_container, so that
+				   dist_init_container can rely on the
+				   results of this function.
+
 	pkg_files_to_kernel_dirs - Extract the kernel directory strings
 				  from the given list of kernel header
 				  packages.

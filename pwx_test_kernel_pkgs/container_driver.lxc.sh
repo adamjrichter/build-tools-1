@@ -93,6 +93,7 @@ start_container_lxc() {
 	fi
     fi
 
+    dist_start_container
     if $must_initialize ; then
 	"$@"
     fi
