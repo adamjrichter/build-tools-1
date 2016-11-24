@@ -5,9 +5,6 @@ container_name=
 
 # To use LXC containers, for now, the script must be running as superuser.
 
-# lxc_exec_command=lxc-execute
-lxc_exec_command=lxc-attach
-
 await_default_route() {
     local count=100
     while [[ $count -gt 0 ]] ; do
@@ -68,30 +65,28 @@ start_container_lxc() {
 		     --dist "$distro" --arch "$arch" --release "$release"
     fi
 
-    if [[ ".$lxc_exec_command" = ".lxc-attach" ]] ; then
-	if ! is_container_running "${container_name}" ; then
-            lxc-start --name "${container_name}" --daemon
-	fi
+    if ! is_container_running "${container_name}" ; then
+        lxc-start --name "${container_name}" --daemon
+    fi
 
-	if ! await_default_route ; then
-	    # Centos 6 has a problem where it (sometimes?) does not get
-	    # its default route immediately after lxc-create.  Even
-	    # though doing lxc-start / lxc-start again on the container
-	    # from the command line makes it recover, doing so from
-	    # this script does not.  However, running
-	    # "/etc/initd.network restart" in the Centos 6 container
-	    # does seem to fix the problem from this script.
-	    in_container_lxc /etc/init.d/network restart
+    if ! await_default_route ; then
 
-	    await_default_route
-	else
-	    echo "AJR start_container_lxc: first await_default_route succeeded." >&2	    
-	fi
+	# Centos 6 has a problem where it (sometimes?) does not get
+	# its default route immediately after lxc-create.  Even
+	# though doing lxc-start / lxc-start again on the container
+	# from the command line makes it recover, doing so from
+	# this script does not.  However, running
+	# "/etc/initd.network restart" in the Centos 6 container
+	# does seem to fix the problem from this script.
+	in_container_lxc /etc/init.d/network restart
 
-	if ! await_dns ; then
-	    in_container_lxc tee /etc/resolve.conf \
-			     < /etc/resolv.conf > /dev/null
-	fi
+	await_default_route
+    else
+	echo "AJR start_container_lxc: first await_default_route succeeded." >&2	    
+    fi
+
+    if ! await_dns ; then
+	in_container_lxc tee /etc/resolve.conf < /etc/resolv.conf > /dev/null
     fi
 
     dist_start_container
@@ -101,14 +96,12 @@ start_container_lxc() {
 }
 
 stop_container_lxc() {
-#    if [[ ".$lxc_exec_command" = ".lxc-attach" ]] ; then
-#	lxc-stop --name "$container_name"
-#    fi
+    # lxc-stop --name "$container_name"
     true
 }
 
 in_container_lxc() {
-    "$lxc_exec_command" --name "$container_name" -- \
+    lxc-attach --name "$container_name" -- \
         env --ignore-environment \
             PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
 	    SHELL=/bin/sh \
