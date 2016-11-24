@@ -108,7 +108,14 @@ pkgs_update_deb()       {
 
 dist_clean_up_container_deb()
 {
-    in_container_flock_deb sh -c "pkgs=\$( dpkg --list 'linux-headers-*' | awk '\$1 != \"un\" {print \$2;}' | egrep '^linux-headers-' ) ; dpkg --remove \$pkgs"
+    in_container_flock_deb sh -c "
+	pkgs=\$( dpkg --list 'linux-headers-*' |
+            awk '\$1 != \"un\" {print \$2;}' |
+            egrep '^linux-headers-' )
+        if [ -n \"\$pkgs\" ] ; then
+	    dpkg --remove \$pkgs
+        fi
+    "
     in_container_flock_deb apt-get --yes clean
 }
 
