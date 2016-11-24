@@ -54,13 +54,13 @@ pkg_files_to_dependencies_deb() {
 }
 
 install_pkgs_deb()      {
-    in_container_flock_deb apt-get install --quiet --yes --force-yes "$@"
+    in_container_flock_deb apt-get install --quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages "$@"
 }
 
 # uninstall_pkgs_deb()    { in_container_flock_deb dpkg --remove "$@" ; }
 uninstall_pkgs_deb()    {
     local pkg
-    if ! in_container_flock_deb apt-get remove --quiet --yes --force-yes "$@" ; then
+    if ! in_container_flock_deb apt-get remove --quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages "$@" ; then
 	for pkg in "$@" ; do
 	    in_container_flock_deb dpkg --remove --force-remove-reinstreq "$pkg"
 	done
@@ -68,7 +68,7 @@ uninstall_pkgs_deb()    {
 }
 
 pkgs_update_deb()       {
-    in_container_flock_deb apt-get update --quiet --yes --force-yes
+    in_container_flock_deb apt-get update --quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages
 }
 
 dist_clean_up_container_deb()
@@ -80,7 +80,7 @@ dist_clean_up_container_deb()
 install_pkgs_dir_deb()  {
     in_container_flock_deb apt-get --yes clean
     in_container_flock_deb sh -c "dpkg --install --force-all $1/*"
-    # in_container_flock_deb apt-get --fix-broken install --quiet --yes --force-yes || true
-    # in_container_flock_deb apt-get --fix-broken install --yes --force-yes || true
+    # in_container_flock_deb apt-get --fix-broken install --quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages || true
+    # in_container_flock_deb apt-get --fix-broken install --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages || true
     # ^^^ Try to install any missing dependencies.
 }
