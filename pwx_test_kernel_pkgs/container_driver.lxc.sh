@@ -81,8 +81,6 @@ start_container_lxc() {
 	in_container_lxc /etc/init.d/network restart
 
 	await_default_route
-    else
-	echo "AJR start_container_lxc: first await_default_route succeeded." >&2	    
     fi
 
     if ! await_dns ; then
