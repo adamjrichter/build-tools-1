@@ -101,10 +101,10 @@ stop_container_lxc() {
 }
 
 in_container_lxc() {
-    lxc-attach --name "$container_name" -- \
-        env --ignore-environment \
+    lxc-attach --name "$container_name" --clear-env \
+        --set-var \
             PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-	    SHELL=/bin/sh \
-	    USER=root \
-	    "$@"
+	--set-var SHELL=/bin/sh \
+	--set-var USER=root \
+	-- "$@"
 }
