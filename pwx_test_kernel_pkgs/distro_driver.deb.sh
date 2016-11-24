@@ -17,15 +17,6 @@
 # tell it it just do what was requests while avoiding warning messages:
 deb_apt_get_args="--quiet --quiet --yes --force-yes"
 
-in_container_env_deb() {
-    in_container env --ignore-environment \
-	 DEBIAN_FRONTEND=noninteractive \
-	 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-	 SHELL=/bin/sh \
-	 USER=root \
-	 "$@"
-}
-
 in_container_flock_deb() {
     # Do an in_container command, but block for up to five minutes to
     # acquire (and release) the dpkg lock, to reduce the change of the
@@ -34,7 +25,7 @@ in_container_flock_deb() {
     # of he Ubuntu rebuild tests.
     local seconds=600
     local lockfile=/var/lib/dpkg/lock
-    in_container_env_deb \
+    in_container env DEBIAN_FRONTEND=noninteractive \
 	flock --close --timeout $seconds $lockfile \
 	flock --close --unlock $lockfile \
 	"$@"

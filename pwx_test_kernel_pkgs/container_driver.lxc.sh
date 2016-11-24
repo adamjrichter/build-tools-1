@@ -5,7 +5,8 @@ container_name=
 
 # To use LXC containers, for now, the script must be running as superuser.
 
-use_lxc_attach=true
+# lxc_exec_command=lxc-execute
+lxc_exec_command=lxc-attach
 
 await_default_route() {
     local count=100
@@ -67,7 +68,7 @@ start_container_lxc() {
 		     --dist "$distro" --arch "$arch" --release "$release"
     fi
 
-    if $use_lxc_attach ; then
+    if [[ ".$lxc_exec_command" = ".lxc-attach" ]] ; then
 	if ! is_container_running "${container_name}" ; then
             lxc-start --name "${container_name}" --daemon
 	fi
@@ -100,16 +101,17 @@ start_container_lxc() {
 }
 
 stop_container_lxc() {
-#    if $use_lxc_attach ; then
+#    if [[ ".$lxc_exec_command" = ".lxc-attach" ]] ; then
 #	lxc-stop --name "$container_name"
 #    fi
     true
 }
 
 in_container_lxc() {
-    if $use_lxc_attach ; then
-        lxc-attach --name "$container_name" -- "$@"
-    else
-        lxc-execute --name "$container_name" -- "$@"
-    fi
+    "$lxc_exec_command" --name "$container_name" -- \
+        env --ignore-environment \
+            PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+	    SHELL=/bin/sh \
+	    USER=root \
+	    "$@"
 }
