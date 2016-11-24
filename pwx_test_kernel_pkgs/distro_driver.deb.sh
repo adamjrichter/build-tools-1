@@ -43,9 +43,9 @@ in_container_flock_deb() {
 dist_start_container_deb()
 {
     if in_container_flock_deb apt-get install --quiet --yes --allow-downgrades bash ; then
-	deb_apt_get_args="--quiet --yes --force-yes"
-    else
 	deb_apt_get_args="--quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages"
+    else
+	deb_apt_get_args="--quiet --yes --force-yes"
     fi
 }
 
