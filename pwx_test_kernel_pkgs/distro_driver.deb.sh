@@ -17,8 +17,7 @@ dist_init_container_deb() {
     in_container_flock_deb apt-get update --quiet --yes
     # ^^^ Skip this for binary reproducibility ??
 
-    in_container_flock_deb apt-get install --quiet --yes \
-		 autoconf g++ gcc git libelf-dev libssl1.0 make tar
+    install_pkgs_deb autoconf g++ gcc git libelf-dev libssl1.0 make tar
     # TODO?: install gcc-5?
     # Why px-fuse wants git is unclear to me.
 }
