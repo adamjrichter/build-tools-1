@@ -15,7 +15,7 @@
 
 # Global variable determine which arguments to pass to apt-get to
 # tell it it just do what was requests while avoiding warning messages:
-deb_apt_get_args="--quiet --yes --force-yes"
+deb_apt_get_args="--quiet --quiet --yes --force-yes"
 
 in_container_env_deb() {
     in_container env --ignore-environment \
@@ -42,10 +42,10 @@ in_container_flock_deb() {
 
 dist_start_container_deb()
 {
-    if in_container_flock_deb apt-get install --quiet --yes --allow-downgrades bash ; then
-	deb_apt_get_args="--quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages"
+    if in_container_flock_deb apt-get install --quiet --quiet --yes --allow-downgrades bash ; then
+	deb_apt_get_args="--quiet --quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages"
     else
-	deb_apt_get_args="--quiet --yes --force-yes"
+	deb_apt_get_args="--quiet --quiet --yes --force-yes"
     fi
 }
 
