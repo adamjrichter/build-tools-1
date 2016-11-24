@@ -40,6 +40,9 @@ exit_handler() {
     rm -rf "$local_tmp_dir"
 }
 
+echo ""
+echo "Command: pwx_test_kernel_pkgs_one_container.sh $*"
+
 while [[ $# -gt 0 ]] ; do
     case "$1" in
 	--arch=* ) arch=${1#--arch=} ;;
@@ -91,8 +94,6 @@ local_tmp_dir=/tmp/test-kernels.ubuntu.$$
 test_kernel_pkgs() {
     local result local
     local release="$distro_release"
-
-    echo "Command: pwx_test_kernel_pkgs_one_container.sh $*"
 
     echo "test_kernel_pkgs: Attempting to test kernel package(s) on distribution $distro, release $release, make_args=$make_args."
 
