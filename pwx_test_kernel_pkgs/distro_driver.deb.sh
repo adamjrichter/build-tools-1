@@ -1,6 +1,27 @@
 # This is not a standalone program.  It is a library to be sourced by a shell
 # script.
 
+# FIXME? Maybe clear the other environment variables.  Here is the
+# environment that a root cron script runs with on mirrors.portworx.com:
+# HOME=/root
+# LOGNAME=root
+# PATH=/usr/bin:/bin
+# LANG=en_US.UTF-8
+# SHELL=/bin/sh
+# PWD=/root
+#
+# Notice that /usr/local/sbin, /usr/sbin and /sbin are not in $PATH.
+#
+
+in_container_env_deb() {
+    in_container env --ignore-environment \
+	 DEBIAN_FRONTEND=noninteractive \
+	 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+	 SHELL=/bin/sh \
+	 USER=root \
+	 "$@"
+}
+
 in_container_flock_deb() {
     # Do an in_container command, but block for up to five minutes to
     # acquire (and release) the dpkg lock, to reduce the change of the
@@ -9,9 +30,10 @@ in_container_flock_deb() {
     # of he Ubuntu rebuild tests.
     local seconds=600
     local lockfile=/var/lib/dpkg/lock
-    in_container flock --close --timeout $seconds $lockfile \
-		 flock --close --unlock $lockfile \
-		 env DEBIAN_FRONTEND=noninteractive "$@"
+    in_container_env_deb \
+	flock --close --timeout $seconds $lockfile \
+	flock --close --unlock $lockfile \
+	"$@"
 }
 
 dist_init_container_deb() {
