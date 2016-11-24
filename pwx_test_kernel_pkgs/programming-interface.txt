@@ -8,11 +8,20 @@ Top level scripts, installed in /usr/local/bin:
 
 	Each of the following scripts accepts a common set of options,
 	listed below.
-
-
-
+	
 
 	pwx_test_kernel_pkgs [options] pkg_files...
+	pwx_test_kernel_pkgs_one_container.sh [options] pkg_files...
+
+ 	    pwx_test_kernel_pkgs iterates through the operating system
+	    releases suported by the specified opreating system distribution
+	    (for example, if "ubuntu" is the distribution, "xenial",
+	    "yakkety", etc. are the releases), terminating as soon as
+	    pwx_test_kernels_pkgs_one_container.sh returns success (exit
+	    code of zero).  pwx_test_kernel_pkgs_one_container.sh is
+	    the script that actually does the work of running the test.
+	    It is installed in /usr/local/share/pwx_test_kernel_pkgs/scripts.
+	    pwx_test_kernel_pkgs is installed in /usr/local/bin.
 
 	    Options:
 		
@@ -25,7 +34,13 @@ Top level scripts, installed in /usr/local/bin:
 		--logdir=logdir                [default: based on distribution]
 		--pfxuse=pxfuse_src_dir        [default: download tempoary
 					        directory from github]
-		--release=dist_release         [default: based on distribution]
+		--releases=dist_release        [default: based on distribution]
+
+            pwx_test_kernel_pkgs_one_releaese.sh accepts the additional
+	    option "--release=..." and ignores "--releases=....".  In this
+	    way, pwx_test_kenrel_pkgs can tell
+	    pwx_test_kernel_pkgs_one_release.sh which release to test,
+	    withing need to delete anything from its command line arguments.
 
 	    Description:
 
