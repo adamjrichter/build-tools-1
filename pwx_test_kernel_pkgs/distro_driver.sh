@@ -12,6 +12,7 @@
 
 get_dist_releases()        { "get_dist_releases_$distro"        "$@" ; }
 dist_init_container()      { "dist_init_container_$distro"      "$@" ; }
+dist_start_container()     { "dist_start_container_$distro"     "$@" ; }
 pkg_files_to_kernel_dirs() { "pkg_files_to_kernel_dirs_$distro" "$@" ; }
 pkg_files_to_names()       { "pkg_files_to_names_$distro"       "$@" ; }
 pkg_files_to_dependencies() { "pkg_files_to_dependencies_$distro" "$@" ; }

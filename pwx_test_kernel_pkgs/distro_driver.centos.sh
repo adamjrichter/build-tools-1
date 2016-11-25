@@ -13,7 +13,8 @@ uninstall_pkgs_centos()           { uninstall_pkgs_rpm            "$@" ; }
 pkgs_update_centos()              { pkgs_update_rpm               "$@" ; }
 test_kernel_pkgs_func_centos()    { test_kernel_pkgs_func_default "$@" ; }
 dist_init_container_centos()      { dist_init_container_rpm       "$@" ; }
-dist_clean_up_container_fedora()  { dist_clean_up_container_rpm   "$@" ; }
+dist_clean_up_container_centos()  { dist_clean_up_container_rpm   "$@" ; }
+dist_start_container_centos()     { dist_start_container_rpm      "$@"; }
 
 get_dist_releases_centos()
 {

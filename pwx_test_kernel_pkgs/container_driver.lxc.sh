@@ -5,8 +5,6 @@ container_name=
 
 # To use LXC containers, for now, the script must be running as superuser.
 
-use_lxc_attach=true
-
 await_default_route() {
     local count=100
     while [[ $count -gt 0 ]] ; do
@@ -67,48 +65,44 @@ start_container_lxc() {
 		     --dist "$distro" --arch "$arch" --release "$release"
     fi
 
-    if $use_lxc_attach ; then
-	if ! is_container_running "${container_name}" ; then
-            lxc-start --name "${container_name}" --daemon
-	fi
-
-	if ! await_default_route ; then
-	    # Centos 6 has a problem where it (sometimes?) does not get
-	    # its default route immediately after lxc-create.  Even
-	    # though doing lxc-start / lxc-start again on the container
-	    # from the command line makes it recover, doing so from
-	    # this script does not.  However, running
-	    # "/etc/initd.network restart" in the Centos 6 container
-	    # does seem to fix the problem from this script.
-	    in_container_lxc /etc/init.d/network restart
-
-	    await_default_route
-	else
-	    echo "AJR start_container_lxc: first await_default_route succeeded." >&2	    
-	fi
-
-	if ! await_dns ; then
-	    in_container_lxc tee /etc/resolve.conf \
-			     < /etc/resolv.conf > /dev/null
-	fi
+    if ! is_container_running "${container_name}" ; then
+        lxc-start --name "${container_name}" --daemon
     fi
 
+    if ! await_default_route ; then
+
+	# Centos 6 has a problem where it (sometimes?) does not get
+	# its default route immediately after lxc-create.  Even
+	# though doing lxc-start / lxc-start again on the container
+	# from the command line makes it recover, doing so from
+	# this script does not.  However, running
+	# "/etc/initd.network restart" in the Centos 6 container
+	# does seem to fix the problem from this script.
+	in_container_lxc /etc/init.d/network restart
+
+	await_default_route
+    fi
+
+    if ! await_dns ; then
+	in_container_lxc tee /etc/resolve.conf < /etc/resolv.conf > /dev/null
+    fi
+
+    dist_start_container
     if $must_initialize ; then
 	"$@"
     fi
 }
 
 stop_container_lxc() {
-#    if $use_lxc_attach ; then
-#	lxc-stop --name "$container_name"
-#    fi
+    # lxc-stop --name "$container_name"
     true
 }
 
 in_container_lxc() {
-    if $use_lxc_attach ; then
-        lxc-attach --name "$container_name" -- "$@"
-    else
-        lxc-execute --name "$container_name" -- "$@"
-    fi
+    lxc-attach --name "$container_name" --clear-env \
+        --set-var \
+            PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+	--set-var SHELL=/bin/sh \
+	--set-var USER=root \
+	-- "$@"
 }
