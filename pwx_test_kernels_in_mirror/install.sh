@@ -28,8 +28,11 @@ install_crontab() {
 	crontab -u root -
 }
 
-apt-get install --yes --quiet rpm
-# Needed for Centos support, for extracting information from .rpm files.
+apt-get install --yes --quiet git rpm
+# git is used by pwx_run_mirrors_in_script to clone px-fuse in a working
+# directory if it is provided.
+#
+# rpm is needed for Centos support, for extracting information from .rpm files.
 
 mkdir -p "${scriptsdir}" "${bindir}" "${build_results_dir}/pxfuse/by-checksum"
 
