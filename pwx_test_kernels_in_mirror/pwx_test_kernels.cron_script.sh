@@ -6,7 +6,9 @@ log_file=/var/log/pwx_test_kernels_in_mirror/pwx_test_kernels.cron_script.log
 
 mkdir -p "${log_file%/*}"
 
-mv --force "$log_file" "${log_file}.old"
+if [ -e "$log_file" ] ; then
+    mv --force "$log_file" "${log_file}.old"
+fi
 exec > "$log_file" 2>&1 < /dev/null
 
 PATH=/usr/local/bin:$PATH
