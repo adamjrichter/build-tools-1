@@ -24,7 +24,13 @@ install_ftpd_ubuntu:
 	mkdir -p ~ftp/bin
 	cp /bin/ls ~ftp/bin/
 	ldd /bin/ls | egrep ' => /' | \
-	    ( sed 's/^.* => //;s/(0x[0-9a-f]*) *$$//' ; echo /lib/ld-linux.so.2  ; echo /lib64/ld-linux-x86-64.so.2 ; echo /etc/passwd ; echo /etc/group ; echo /etc/nsswitch.conf ; echo /lib/x86_64-linux-gnu/libnss_files.so.* ) | \
+	    ( sed 's/^.* => //;s/(0x[0-9a-f]*) *$$//' ; \
+	      echo /lib/ld-linux.so.2 ; \
+	      echo /lib64/ld-linux-x86-64.so.2 ; \
+	      echo /etc/passwd ; \
+	      echo /etc/group ; \
+	      echo /etc/nsswitch.conf ; \
+	      echo /lib/x86_64-linux-gnu/libnss_files.so.* ) | \
 	    ( cd / && xargs -- tar --create --dereference ) | \
 	    ( cd ~ftp && tar xp )
 
