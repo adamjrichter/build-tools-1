@@ -80,7 +80,9 @@ install_docker: install_docker_ubuntu
 
 install_pxdev_ubuntu: install_docker_ubuntu
 	apt-get install -y git
-	- ( cd ${scriptsdir} && git clone git://github.com/portworx/px-dev.git )
+#	- ( cd ${scriptsdir} && git clone git://github.com/portworx/px-dev.git )
+# ^^^ For now, do not create /home/portworx/px-dev, but this may return
+# later, for testing in a a px-dev Docker container.
 
 install_pxdev: install_pxdev_ubuntu
 
