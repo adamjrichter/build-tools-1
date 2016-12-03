@@ -146,6 +146,11 @@ done # for dir (distribution) in...
 
 output_html_trailer >> test_report/test_report.html
 
+# In addition to recording a summary to test_report/test_report.txt, also
+# write it to standard output, for cases where this script is invoked by
+# Jenkins.
+cat test_report/test_report.txt
+
 if [[ -n "$regression_distros" ]] ; then
     regression_detected $regression_distros
 fi
