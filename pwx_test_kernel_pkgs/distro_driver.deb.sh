@@ -100,7 +100,7 @@ pkgs_update_deb()       {
 dist_clean_up_container_deb()
 {
     in_container_flock_deb sh -c "
-	pkgs=\$( dpkg --list 'linux-headers-*' |
+	pkgs=\$( dpkg --list 'linux-headers-*' 2> /dev/null |
             awk '\$1 != \"un\" {print \$2;}' |
             egrep '^linux-headers-' )
         if [ -n \"\$pkgs\" ] ; then
