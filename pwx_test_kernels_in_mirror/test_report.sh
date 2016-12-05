@@ -141,6 +141,7 @@ for dir in */ ; do
 	echo "<A href=\"${distribution}/${word}.html\"> $count ${word}</A>," \
 	     >> test_report/test_report.html
     done # for word in ...
+    echo "" >> test_report/test_report.txt
     ( echo "" ; echo "</P>" ) >> test_report/test_report.html
 done # for dir (distribution) in...
 
