@@ -23,8 +23,20 @@ install_ftpd_ubuntu:
 	sed -e 's|^anonymous$$|# anonymous|' -i /etc/ftpusers
 	mkdir -p ~ftp/bin
 	cp /bin/ls ~ftp/bin/
-	ldd /bin/ls | egrep ' => /' | \
-	    ( sed 's/^.* => //;s/(0x[0-9a-f]*) *$$//' ; echo /lib/ld-linux.so.2  ; echo /lib64/ld-linux-x86-64.so.2 ; echo /etc/passwd ; echo /etc/group ; echo /etc/nsswitch.conf ; echo /lib/x86_64-linux-gnu/libnss_files.so.* ) | \
+	ldd /bin/ls | egrep ' => /' | ( \
+	    sed 's/^.* => //;s/(0x[0-9a-f]*) *$$//' ; \
+	    for file in \
+		/lib/ld-linux.so.2 \
+		/lib64/ld-linux-x86-64.so.2 \
+	 	/etc/passwd \
+		/etc/group \
+		/etc/nsswitch.conf \
+	        /lib/x86_64-linux-gnu/libnss_files.so.* \
+	    ; do \
+		if [ -e "$$file" ] ; then \
+		    echo "$$file" ; \
+		fi ; \
+	      done ) | \
 	    ( cd / && xargs -- tar --create --dereference ) | \
 	    ( cd ~ftp && tar xp )
 
@@ -68,7 +80,9 @@ install_docker: install_docker_ubuntu
 
 install_pxdev_ubuntu: install_docker_ubuntu
 	apt-get install -y git
-	- ( cd ${scriptsdir} && git clone git://github.com/portworx/px-dev.git )
+#	- ( cd ${scriptsdir} && git clone git://github.com/portworx/px-dev.git )
+# ^^^ For now, do not create /home/portworx/px-dev, but this may return
+# later, for testing in a a px-dev Docker container.
 
 install_pxdev: install_pxdev_ubuntu
 

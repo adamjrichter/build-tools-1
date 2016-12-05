@@ -33,7 +33,7 @@ in_container_flock_deb() {
 
 dist_start_container_deb()
 {
-    if in_container_flock_deb apt-get install --quiet --quiet --yes --allow-downgrades bash ; then
+    if in_container_flock_deb sh -c "apt-get install --quiet --quiet --yes --allow-downgrades bash 2> /dev/null" ; then
 	deb_apt_get_args="--quiet --quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages"
     else
 	deb_apt_get_args="--quiet --quiet --yes --force-yes"
@@ -100,7 +100,7 @@ pkgs_update_deb()       {
 dist_clean_up_container_deb()
 {
     in_container_flock_deb sh -c "
-	pkgs=\$( dpkg --list 'linux-headers-*' |
+	pkgs=\$( dpkg --list 'linux-headers-*' 2> /dev/null |
             awk '\$1 != \"un\" {print \$2;}' |
             egrep '^linux-headers-' )
         if [ -n \"\$pkgs\" ] ; then
