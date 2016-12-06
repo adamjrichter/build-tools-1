@@ -33,7 +33,10 @@ save_error()
 
 	error_code=$saved_code
 
-	echo "pwx-mirror-util.sh save_error: error in shell script detected.  Trace: " >&2
+	echo "pwx-mirror-util.sh save_error: error in shell script." >&2
+	echo "This shell function trace does not imply that the script" >&2
+	echo "has aborted.  It is just provided to make it easier to" >&2
+	echo "identify the source of the error:" >&2
 	bash_stack_trace >&2
 	echo "" >&2
     fi

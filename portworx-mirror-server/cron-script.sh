@@ -17,6 +17,11 @@ copy_link_tree_remove_index_html()
     set +e
     symlinks -d "${to}"
 
+    # Remove "$from" and/or "$to" if either one is not a directory.  That
+    # should never happen, but apparently it somehow can.  Perhaps
+    # some install script needs to be fixed.
+    rm -f "$from" "$to" 2> /dev/null || true
+
     cp --symbolic-link --recursive --remove-destination "$from/." "$to"
     save_error
 

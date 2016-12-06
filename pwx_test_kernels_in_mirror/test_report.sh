@@ -145,6 +145,10 @@ for dir in */ ; do
     ( echo "" ; echo "</P>" ) >> test_report/test_report.html
 done # for dir (distribution) in...
 
+date=$(date)
+( echo "" ; echo "Generated $date." ) >> test_report/test_report.txt
+echo "<P>Generated $date.</P>" >> test_report/test_report.html
+
 output_html_trailer >> test_report/test_report.html
 
 # In addition to recording a summary to test_report/test_report.txt, also
