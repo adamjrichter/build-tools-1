@@ -42,6 +42,7 @@ dist_start_container_deb()
 
 dist_init_container_deb() {
     in_container_flock_deb apt-get update $deb_apt_get_args
+    in_container_flock_deb apt-get upgrade $deb_apt_get_args
     # ^^^ Skip this for binary reproducibility ??
 
     install_pkgs_deb autoconf g++ gcc git libelf-dev libssl1.0 make tar
