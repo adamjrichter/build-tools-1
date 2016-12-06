@@ -15,7 +15,7 @@
 
 # Global variable determine which arguments to pass to apt-get to
 # tell it it just do what was requests while avoiding warning messages:
-deb_apt_get_args="--quiet --quiet --yes --force-yes"
+deb_apt_get_cmd="apt-get --quiet --quiet --yes --force-yes"
 
 in_container_flock_deb() {
     # Do an in_container command, but block for up to five minutes to
@@ -33,16 +33,17 @@ in_container_flock_deb() {
 
 dist_start_container_deb()
 {
-    if in_container_flock_deb sh -c "apt-get install --quiet --quiet --yes --allow-downgrades bash 2> /dev/null" ; then
-	deb_apt_get_args="--quiet --quiet --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages"
+    local cmd="apt-get install --quiet --quiet --yes"
+    if in_container_flock_deb sh -c "$cmd --allow-downgrades bash 2> /dev/null" ; then
+	deb_apt_get_cmd="$cmd --allow-downgrades --allow-remove-essential --allow-change-held-packages"
     else
-	deb_apt_get_args="--quiet --quiet --yes --force-yes"
+	deb_apt_get_cmd="$cmd --force-yes"
     fi
 }
 
 dist_init_container_deb() {
-    in_container_flock_deb apt-get update $deb_apt_get_args
-    in_container_flock_deb apt-get upgrade $deb_apt_get_args
+    in_container_flock_deb $deb_apt_get_cmd update
+    in_container_flock_deb $deb_apt_get_cmd upgrade
     # ^^^ Skip this for binary reproducibility ??
 
     install_pkgs_deb autoconf g++ gcc git libelf-dev libssl1.0 make tar
@@ -81,13 +82,13 @@ pkg_files_to_dependencies_deb() {
 }
 
 install_pkgs_deb()      {
-    in_container_flock_deb apt-get install $deb_apt_get_args "$@"
+    in_container_flock_deb $deb_apt_get_cmd install "$@"
 }
 
 # uninstall_pkgs_deb()    { in_container_flock_deb dpkg --remove "$@" ; }
 uninstall_pkgs_deb()    {
     local pkg
-    if ! in_container_flock_deb apt-get remove $deb_apt_get_args "$@" ; then
+    if ! in_container_flock_deb $deb_apt_get_cmd remove "$@" ; then
 	for pkg in "$@" ; do
 	    in_container_flock_deb dpkg --remove --force-remove-reinstreq "$pkg"
 	done
@@ -95,7 +96,7 @@ uninstall_pkgs_deb()    {
 }
 
 pkgs_update_deb()       {
-    in_container_flock_deb apt-get update $deb_apt_get_args
+    in_container_flock_deb $deb_apt_get_cmd update
 }
 
 dist_clean_up_container_deb()
@@ -108,13 +109,12 @@ dist_clean_up_container_deb()
 	    dpkg --remove \$pkgs
         fi
     "
-    in_container_flock_deb apt-get --yes clean
+    in_container_flock_deb $deb_apt_get_cmd --yes clean
 }
 
 install_pkgs_dir_deb()  {
-    in_container_flock_deb apt-get --yes clean
+    in_container_flock_deb $deb_apt_get_cmd --yes clean
     in_container_flock_deb sh -c "dpkg --install --force-all $1/*"
-    # in_container_flock_deb apt-get --fix-broken install $deb_apt_get_args || true
-    # in_container_flock_deb apt-get --fix-broken install $deb_apt_get_args || true
+    # in_container_flock_deb $deb_apt_get_cmd --fix-broken install || true
     # ^^^ Try to install any missing dependencies.
 }
