@@ -31,6 +31,10 @@ in_container_flock_deb() {
 	"$@"
 }
 
+deb_in_container_apt_get() {
+    in_container_flock_deb $deb_apt_get_cmd "$@"
+}
+
 dist_start_container_deb()
 {
     local cmd="apt-get install --quiet --quiet --yes"
@@ -42,8 +46,8 @@ dist_start_container_deb()
 }
 
 dist_init_container_deb() {
-    in_container_flock_deb $deb_apt_get_cmd update
-    in_container_flock_deb $deb_apt_get_cmd upgrade
+    deb_in_container_apt_get update
+    deb_in_container_apt_get upgrade
     # ^^^ Skip this for binary reproducibility ??
 
     install_pkgs_deb autoconf g++ gcc git libelf-dev libssl1.0 make tar
@@ -82,13 +86,13 @@ pkg_files_to_dependencies_deb() {
 }
 
 install_pkgs_deb()      {
-    in_container_flock_deb $deb_apt_get_cmd install "$@"
+    deb_in_container_apt_get install "$@"
 }
 
 # uninstall_pkgs_deb()    { in_container_flock_deb dpkg --remove "$@" ; }
 uninstall_pkgs_deb()    {
     local pkg
-    if ! in_container_flock_deb $deb_apt_get_cmd remove "$@" ; then
+    if ! deb_in_container_apt_get remove "$@" ; then
 	for pkg in "$@" ; do
 	    in_container_flock_deb dpkg --remove --force-remove-reinstreq "$pkg"
 	done
@@ -96,7 +100,7 @@ uninstall_pkgs_deb()    {
 }
 
 pkgs_update_deb()       {
-    in_container_flock_deb $deb_apt_get_cmd update
+    deb_in_container_apt_get update
 }
 
 dist_clean_up_container_deb()
@@ -109,12 +113,12 @@ dist_clean_up_container_deb()
 	    dpkg --remove \$pkgs
         fi
     "
-    in_container_flock_deb $deb_apt_get_cmd --yes clean
+    deb_in_container_apt_get --yes clean
 }
 
 install_pkgs_dir_deb()  {
-    in_container_flock_deb $deb_apt_get_cmd --yes clean
+    deb_in_container_apt_get --yes clean
     in_container_flock_deb sh -c "dpkg --install --force-all $1/*"
-    # in_container_flock_deb $deb_apt_get_cmd --fix-broken install || true
+    # deb_in_container_apt_get --fix-broken install || true
     # ^^^ Try to install any missing dependencies.
 }
