@@ -116,7 +116,7 @@ pick_a_midpoint() {
     local guess distance filename
 
     distance=0
-    while [[ $distance -lt $max_distance ]] ; do
+    while [[ $distance -le $max_distance ]] ; do
         for guess in $((mid - distance)) $((mid + distance)) ; do
             filename=$(directory_index_to_filename $guess)
             if [[ -e "$filename" ]] &&
