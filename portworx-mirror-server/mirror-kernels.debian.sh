@@ -118,14 +118,15 @@ pick_a_midpoint() {
     distance=0
     while [[ $distance -le $max_distance ]] ; do
         for guess in $((mid - distance)) $((mid + distance)) ; do
-            filename=$(directory_index_to_filename $guess)
-            if [[ -e "$filename" ]] &&
-               [[ "$guess" -gt "$start" ]] &&
+            if [[ "$guess" -gt "$start" ]] &&
                [[ "$guess" -lt "$end" ]] ; then
-
-                echo "pick_a_midpoint: cached guess $start < $guess < $end" >&2
-                echo "$guess"
-                return 0
+	    
+		filename=$(directory_index_to_filename $guess)
+		if [[ -e "$filename" ]] ; then
+                    echo "pick_a_midpoint: cached guess $start < $guess < $end" >&2
+                    echo "$guess"
+                    return 0
+		fi
             fi
         done
         distance=$((distance + 1))
