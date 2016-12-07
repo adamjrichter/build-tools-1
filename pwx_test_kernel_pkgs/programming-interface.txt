@@ -118,11 +118,7 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 
 	test_kernel_pkgs_func pxfuse_source_dir results_logdir make_args pkgs
 			       - This is the main function of
-				  ./test_kernel_pkgs.  There is
-				  a default version of this function,
-				  test_kernel_pkgs_func_default, which
-				  distribution specific drivers can
-				  wrap or redirect to.  On success, it
+				  ./test_kernel_pkgs.  On success, it
 				  copies px.ko into the directory
 				  $results_logdir.
 
