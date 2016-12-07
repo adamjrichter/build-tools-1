@@ -146,7 +146,9 @@ binary_search() {
 
     if ! "$@" "$start" "$end" ; then
         result=$?
-        # echo "binary_search $* ended by subcommand returning $result."
+        # echo "binary_search $* ended by subcommand returning $result,"
+        # echo "   meaning that the versions have the same contents or"
+        # echo "   an error occurred."
         return $result
     fi
 
@@ -166,7 +168,7 @@ mirror_kernel_dir_index_files_binary_search() {
     local url_count
 
     # ^^^ url_array is indexed starting at 1.
-    
+
     url_count=0
     for url in $urls_string ; do
         url_count=$((url_count + 1))
