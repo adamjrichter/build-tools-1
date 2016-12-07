@@ -62,6 +62,9 @@ while [[ $# -gt 0 ]] ; do
     shift
 done
 
+pkgformat=$distro
+# Used by some function in distro_driver.sh.
+
 if [[ $# -lt 1 ]] ; then
     usage >&2
     exit 1
