@@ -112,9 +112,8 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 
 	uninstall_pkgs	        - Uninstall the specified package names.
 
-	pkgs_update		- Do something like
-				  "apt-get update" or "yum update".
-				  Perhaps unnecessary.
+	pkgs_update		- Do something like "apt-get update" or
+				 "yum update".  Perhaps unnecessary.
 
 	test_kernel_pkgs_func pxfuse_source_dir results_logdir make_args pkgs
 			       - This is the main function of
