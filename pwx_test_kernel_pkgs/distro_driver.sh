@@ -23,7 +23,6 @@ dist_start_container()     { "dist_start_container_$distro"     "$@" ; }
 install_pkgs()             { "install_pkgs_$distro"             "$@" ; }
 uninstall_pkgs()           { "uninstall_pkgs_$distro"           "$@" ; }
 pkgs_update()              { "pkgs_update_$distro"              "$@" ; }
-test_kernel_pkgs_func()    { "test_kernel_pkgs_func_$distro"    "$@" ; }
 dist_clean_up_container()  { "dist_clean_up_container_$distro"  "$@" ; }
 
 filter_word() {
@@ -39,7 +38,7 @@ filter_word() {
     echo "$first"
 }
 
-test_kernel_pkgs_func_default() {
+test_kernel_pkgs_func() {
     local container_tmpdir result_logdir
     local result filename real dirname basename headers_dir
     local pkg_names deps_unfiltered dep_names arg
@@ -123,7 +122,7 @@ test_kernel_pkgs_func_default() {
     in_container rm -rf "$container_tmpdir"
     dist_clean_up_container
 
-    echo "test_kernel_pkgs_func_default: build_exit_code=$result" >&2
+    echo "test_kernel_pkgs_func: build_exit_code=$result" >&2
     # if [[ "$result" != 0 ]] ; then
     #	sleep 3600
     # fi

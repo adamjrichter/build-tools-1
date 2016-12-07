@@ -11,7 +11,6 @@ install_pkgs_ubuntu()             { install_pkgs_deb              "$@" ; }
 install_pkgs_dir_ubuntu()         { install_pkgs_dir_deb          "$@" ; }
 uninstall_pkgs_ubuntu()           { uninstall_pkgs_deb            "$@" ; }
 pkgs_update_ubuntu()              { pkgs_update_deb               "$@" ; }
-test_kernel_pkgs_func_ubuntu()    { test_kernel_pkgs_func_default "$@" ; }
 dist_clean_up_container_ubuntu()  { dist_clean_up_container_deb   "$@" ; }
 dist_start_container_ubuntu()     { dist_start_container_deb      "$@"; }
 
