@@ -159,7 +159,7 @@ binary_search() {
         binary_search "$start" "$mid" "$@" &&
         binary_search "$mid" "$end" "$@"
     else
-        # echo "binary_search $* ended by due to lack of middle index."
+        # echo "binary_search $* ended due to lack of middle index."
         true
     fi
 }
