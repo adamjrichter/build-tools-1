@@ -143,8 +143,8 @@ DESCRIPTION OF INTERNAL FUNCTIONS
     /usr/local/share/pwx_test_kernel_pkgs/container_driver.sh ):
 
 	The container interface uses the $container_system shell global
-	variable to select the container type.  Currently "docker" is the
-	only implemented driver, but "lxc" or "chroot" might come later.
+	variable to select the container type.  Currently "lxc" is the
+	only implemented driver, but "docker" or "chroot" might come later.
 
 	Every shell function func listed below is just a wrapper that
 	invokes func_$container_system.
