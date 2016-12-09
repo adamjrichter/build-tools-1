@@ -25,7 +25,9 @@ copy_link_tree_remove_index_html()
     cp --symbolic-link --recursive --remove-destination "$from/." "$to"
     save_error
 
-    find "$to" -name index.html -print0 | xargs --null -- rm -f
+    find "$to" -name index.html -print0 |
+	xargs --null --no-run-if-empty -- rm -f
+
     find "$to" -type d | sort -r | xargs rmdir 2> /dev/null || true
 
     symlinks -cs "$to"
