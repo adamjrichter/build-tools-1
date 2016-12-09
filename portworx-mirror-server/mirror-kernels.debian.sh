@@ -123,7 +123,7 @@ kernel_header_packages_different() {
     local end=$2
     local start_names=$(extract_kernel_header_names "$start")
     local end_names=$(extract_kernel_header_names "$end")
-    test ".${start_names}" != ".${end_names}"
+    [[ ".${start_names}" != ".${end_names}" ]]
 }
 
 # Pick a midpoint, preferably one for which index.html has already
