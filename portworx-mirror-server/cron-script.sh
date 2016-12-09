@@ -25,8 +25,17 @@ copy_link_tree_remove_index_html()
     cp --symbolic-link --recursive --remove-destination "$from/." "$to"
     save_error
 
-    find "$to" -name index.html -print0 | xargs --null -- rm -f
-    find "$to" -type d | sort -r | xargs rmdir 2> /dev/null || true
+    if [[ -e "$to" ]] ; then
+	find "$to" -name index.html -print0 |
+	    xargs --null --no-run-if-empty -- rm -f
+	save_error
+    fi
+
+    if [[ -e "$to" ]] ; then
+	find "$to" -type d | sort -r |
+	    xargs --no-run-if-empty rmdir 2> /dev/null || true
+	save_error
+    fi
 
     symlinks -cs "$to"
     save_error
@@ -42,6 +51,7 @@ run_all_verb_scripts()
 	logfile="$logdir/${basename}.log"
 	if [[ -e "$logfile" ]] ; then
 	    mv --force "$logfile" "${logfile}.old"
+	    save_error
 	fi
         $script > "$logfile" 2>&1
 	save_error
@@ -69,7 +79,8 @@ run_all_test_scripts()
 mkdir -p "$logdir"
 
 if [[ -e "$main_logfile" ]] ; then
-    mv --force "$main_logfile" "${main_logfile}.old}"
+    mv --force "$main_logfile" "${main_logfile}.old"
+    save_error
 fi
 ( run_all_mirror_scripts ; run_all_test_scripts ) > "$main_logfile" 2>&1 < /dev/null
 save_error

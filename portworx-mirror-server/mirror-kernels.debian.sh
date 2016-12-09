@@ -36,6 +36,20 @@ on_or_after_linux_3_10_release_date() {
     egrep '^(2013051[1-9]|201305[23]|20130[6-9]|20131|201[4-9]|2[1-9]|[3-9])'
 }
 
+# Return true if the file needs to be retrieved (that is, the file
+# is absent), but, before testing, remove the file if it is empty.
+remove_if_empty_check_if_absent()
+{
+    local file="$1"
+    if [[ -s "$file" ]] ; then
+	return 1
+    fi
+    if [[ -e "$file" ]] ; then
+	rm -f "$file"
+    fi
+    return 0
+}
+
 list_kernel_dir_urls() {
     cat "${top_dir}"/index.html\?year=* |
         extract_subdirs |
@@ -64,12 +78,20 @@ remember_kernel_header_names() {
     local index="$1"
     local url=${url_array[$index]}
     local file=$(directory_url_to_filename "$url")
-    if [[ ! -e "$file" ]] ; then
+    if remove_if_empty_check_if_absent "$file" ; then
         # echo wget $TIMESTAMPING --protocol-directories --force-directories \
         #      --quiet "$url" >&2
-        wget $TIMESTAMPING --protocol-directories --force-directories \
-	     --quiet "$url"
-	save_error
+        if wget $TIMESTAMPING --protocol-directories --force-directories \
+		--quiet "$url" ; then
+	    # The "if <condition> ; then ... true ; else ... ; fi" structure
+	    # preserves the wget exit code for save_error while still
+	    # testing it.
+	    true
+	else
+	    save_error
+	    rm "$file"
+	    return 1
+	fi
     fi
     kernel_header_names[$index]=$( extract_subdirs < "$file" |
 				   linux_headers_after_3_9 )
@@ -87,12 +109,11 @@ skip_directory_urls_already_mirrored() {
     local url url_type url_rest filename
     while read url ; do
         filename=$(directory_url_to_filename "$url")
-        if [[ ! -e "$filename" ]] ; then
+	if remove_if_empty_check_if_absent "$filename" ; then
             echo "$url"
         fi
     done
 }
-
 
 # Mirror all index.html files in url_array in the inclusive range
 # [start,end] that are different.
@@ -102,7 +123,7 @@ kernel_header_packages_different() {
     local end=$2
     local start_names=$(extract_kernel_header_names "$start")
     local end_names=$(extract_kernel_header_names "$end")
-    test ".${start_names}" != ".${end_names}"
+    [[ ".${start_names}" != ".${end_names}" ]]
 }
 
 # Pick a midpoint, preferably one for which index.html has already
@@ -122,7 +143,7 @@ pick_a_midpoint() {
                [[ "$guess" -lt "$end" ]] ; then
 	    
 		filename=$(directory_index_to_filename $guess)
-		if [[ -e "$filename" ]] ; then
+		if [[ -s "$filename" ]] ; then
                     echo "pick_a_midpoint: cached guess $start < $guess < $end" >&2
                     echo "$guess"
                     return 0
@@ -232,7 +253,7 @@ list_first_relative_paths() {
 skip_existing_filenames() {
     local filename
     while read filename ; do
-	if [[ ! -e "$filename" ]] ; then
+	if remove_if_empty_check_if_absent "$filename" ; then
 	    echo "$filename"
 	fi
     done
