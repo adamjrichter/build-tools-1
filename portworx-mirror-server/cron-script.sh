@@ -51,6 +51,7 @@ run_all_verb_scripts()
 	logfile="$logdir/${basename}.log"
 	if [[ -e "$logfile" ]] ; then
 	    mv --force "$logfile" "${logfile}.old"
+	    save_error
 	fi
         $script > "$logfile" 2>&1
 	save_error
@@ -79,6 +80,7 @@ mkdir -p "$logdir"
 
 if [[ -e "$main_logfile" ]] ; then
     mv --force "$main_logfile" "${main_logfile}.old}"
+    save_error
 fi
 ( run_all_mirror_scripts ; run_all_test_scripts ) > "$main_logfile" 2>&1 < /dev/null
 save_error
