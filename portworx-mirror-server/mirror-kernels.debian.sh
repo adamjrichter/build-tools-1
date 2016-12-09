@@ -116,16 +116,17 @@ pick_a_midpoint() {
     local guess distance filename
 
     distance=0
-    while [[ $distance -lt $max_distance ]] ; do
+    while [[ $distance -le $max_distance ]] ; do
         for guess in $((mid - distance)) $((mid + distance)) ; do
-            filename=$(directory_index_to_filename $guess)
-            if [[ -e "$filename" ]] &&
-               [[ "$guess" -gt "$start" ]] &&
+            if [[ "$guess" -gt "$start" ]] &&
                [[ "$guess" -lt "$end" ]] ; then
-
-                echo "pick_a_midpoint: cached guess $start < $guess < $end" >&2
-                echo "$guess"
-                return 0
+	    
+		filename=$(directory_index_to_filename $guess)
+		if [[ -e "$filename" ]] ; then
+                    echo "pick_a_midpoint: cached guess $start < $guess < $end" >&2
+                    echo "$guess"
+                    return 0
+		fi
             fi
         done
         distance=$((distance + 1))
@@ -146,7 +147,9 @@ binary_search() {
 
     if ! "$@" "$start" "$end" ; then
         result=$?
-        # echo "binary_search $* ended by subcommand returning $result."
+        # echo "binary_search $* ended by subcommand returning $result,"
+        # echo "   meaning that the versions have the same contents or"
+        # echo "   an error occurred."
         return $result
     fi
 
@@ -156,7 +159,7 @@ binary_search() {
         binary_search "$start" "$mid" "$@" &&
         binary_search "$mid" "$end" "$@"
     else
-        # echo "binary_search $* ended by due to lack of middle index."
+        # echo "binary_search $* ended due to lack of middle index."
         true
     fi
 }
@@ -166,7 +169,7 @@ mirror_kernel_dir_index_files_binary_search() {
     local url_count
 
     # ^^^ url_array is indexed starting at 1.
-    
+
     url_count=0
     for url in $urls_string ; do
         url_count=$((url_count + 1))

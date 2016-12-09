@@ -13,7 +13,6 @@ install_pkgs_debian()             { install_pkgs_deb              "$@" ; }
 install_pkgs_dir_debian()         { install_pkgs_dir_deb          "$@" ; }
 uninstall_pkgs_debian()           { uninstall_pkgs_deb            "$@" ; }
 pkgs_update_debian()              { pkgs_update_deb               "$@" ; }
-test_kernel_pkgs_func_debian()    { test_kernel_pkgs_func_default "$@" ; }
 dist_clean_up_container_debian()  { dist_clean_up_container_deb   "$@" ; }
 dist_start_container_debian()     { dist_start_container_deb      "$@"; }
 

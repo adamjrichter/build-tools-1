@@ -112,17 +112,12 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 
 	uninstall_pkgs	        - Uninstall the specified package names.
 
-	pkgs_update		- Do something like
-				  "apt-get update" or "yum update".
-				  Perhaps unnecessary.
+	pkgs_update		- Do something like "apt-get update" or
+				 "yum update".  Perhaps unnecessary.
 
 	test_kernel_pkgs_func pxfuse_source_dir results_logdir make_args pkgs
 			       - This is the main function of
-				  ./test_kernel_pkgs.  There is
-				  a default version of this function,
-				  test_kernel_pkgs_func_default, which
-				  distribution specific drivers can
-				  wrap or redirect to.  On success, it
+				  ./test_kernel_pkgs.  On success, it
 				  copies px.ko into the directory
 				  $results_logdir.
 
@@ -143,8 +138,8 @@ DESCRIPTION OF INTERNAL FUNCTIONS
     /usr/local/share/pwx_test_kernel_pkgs/container_driver.sh ):
 
 	The container interface uses the $container_system shell global
-	variable to select the container type.  Currently "docker" is the
-	only implemented driver, but "lxc" or "chroot" might come later.
+	variable to select the container type.  Currently "lxc" is the
+	only implemented driver, but "docker" or "chroot" might come later.
 
 	Every shell function func listed below is just a wrapper that
 	invokes func_$container_system.
