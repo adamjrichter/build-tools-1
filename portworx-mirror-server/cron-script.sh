@@ -28,7 +28,8 @@ copy_link_tree_remove_index_html()
     find "$to" -name index.html -print0 |
 	xargs --null --no-run-if-empty -- rm -f
 
-    find "$to" -type d | sort -r | xargs rmdir 2> /dev/null || true
+    find "$to" -type d | sort -r |
+	xargs --no-run-if-empty rmdir 2> /dev/null || true
 
     symlinks -cs "$to"
     save_error
