@@ -28,11 +28,13 @@ copy_link_tree_remove_index_html()
     if [[ -e "$to" ]] ; then
 	find "$to" -name index.html -print0 |
 	    xargs --null --no-run-if-empty -- rm -f
+	save_error
     fi
 
     if [[ -e "$to" ]] ; then
 	find "$to" -type d | sort -r |
 	    xargs --no-run-if-empty rmdir 2> /dev/null || true
+	save_error
     fi
 
     symlinks -cs "$to"
