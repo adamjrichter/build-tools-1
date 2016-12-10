@@ -29,10 +29,10 @@ main() {
     return $result
 }
 
-mkdir -p "${log_file%/*}"
-
 if [ -e "$log_file" ] ; then
     mv --force "$log_file" "${log_file}.old"
+else
+    mkdir -p "${log_file%/*}"
 fi
 
 PATH=/usr/local/bin:$PATH
