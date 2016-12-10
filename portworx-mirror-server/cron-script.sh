@@ -76,12 +76,13 @@ run_all_test_scripts()
     true
 }
 
-mkdir -p "$logdir"
-
 if [[ -e "$main_logfile" ]] ; then
     mv --force "$main_logfile" "${main_logfile}.old"
     save_error
+else
+    mkdir -p "$logdir"
 fi
+
 ( run_all_mirror_scripts ; run_all_test_scripts ) > "$main_logfile" 2>&1 < /dev/null
 save_error
 
