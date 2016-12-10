@@ -17,12 +17,18 @@ copy_link_tree_remove_index_html()
     set +e
     symlinks -d "${to}"
 
-    # Remove "$from" and/or "$to" if either one is not a directory.  That
-    # should never happen, but apparently it somehow can.  Perhaps
-    # some install script needs to be fixed.
-    rm -f "$from" "$to" 2> /dev/null || true
+    # Remove "$from" if is not a directory.  That should never happen,
+    # but apparently it somehow can.
+    rm -f "$from" 2> /dev/null || true
 
-    cp --symbolic-link --recursive --remove-destination "$from/." "$to"
+    # For some reason, the recursive copy does not seem to update some of
+    # the subdirectories incrementally.  So, remove the target tree and
+    # remake all of the symbolic links.
+    rm -rf "$to.new" 2> /dev/null || true
+    cp --symbolic-link --recursive --remove-destination "$from/." "$to.new"
+    save_error
+    rm -rf "$to"
+    mv "$to.new" "$to"
     save_error
 
     if [[ -e "$to" ]] ; then
