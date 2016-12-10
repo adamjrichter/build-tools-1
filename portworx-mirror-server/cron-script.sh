@@ -24,11 +24,8 @@ copy_link_tree_remove_index_html()
     # For some reason, the recursive copy does not seem to update some of
     # the subdirectories incrementally.  So, remove the target tree and
     # remake all of the symbolic links.
-    rm -rf "$to.new" 2> /dev/null || true
-    cp --symbolic-link --recursive --remove-destination "$from/." "$to.new"
-    save_error
-    rm -rf "$to"
-    mv "$to.new" "$to"
+    rm -rf "$to" 2> /dev/null || true
+    cp --symbolic-link --recursive --remove-destination "$from/." "$to"
     save_error
 
     if [[ -e "$to" ]] ; then
