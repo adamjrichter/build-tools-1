@@ -233,9 +233,7 @@ list_kernel_filenames_plus_directories() {
     local top_dir="$1"
     local subdir="$2"	# For example "/pool/main/l/linux-tools/"
     local index_filename pkg_filename dir 
-    for index_filename in \
-	"${top_dir}"/*/"${subdir}/index.html" \
-    do
+    for index_filename in "${top_dir}"/*/"${subdir}/index.html" ; do
 	dir=${index_filename%/index.html}
 	extract_subdirs < "$index_filename" |
 	    linux_headers_after_3_9 |
