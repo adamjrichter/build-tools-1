@@ -337,5 +337,6 @@ mirror_debian()
 }
 
 mirror_debian "http://snapshot.debian.org/archive/debian"
+mirror_debian "http://security.debian.org/debian-security"
 
 exit $error_code
