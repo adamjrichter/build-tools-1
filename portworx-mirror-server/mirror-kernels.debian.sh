@@ -11,11 +11,6 @@ cd ${mirrordir} || exit $?
 
 mirrordir=/home/ftp/mirrors
 
-
-url_dir=snapshot.debian.org/archive/debian
-top_url=http://$url_dir
-top_dir=http/$url_dir
-
 #arch=i386
 arch=amd64
 
@@ -23,7 +18,9 @@ TIMESTAMPING=--timestamping
 #TIMESTAMPING=--no-clobber
 
 error_code=0
+debug_binary_search=false
 
+urls_string=""	# Global variable for caching list of URL's.
 declare -A url_array
 declare -A kernel_header_names
 
@@ -51,13 +48,14 @@ remove_if_empty_check_if_absent()
 }
 
 list_kernel_dir_urls() {
+    local top_url="$1"
+    local top_dir="$2"
+
     cat "${top_dir}"/index.html\?year=* |
         extract_subdirs |
         egrep '^20[0-9]+(T[0-9]+)?+Z/$' |
         on_or_after_linux_3_10_release_date |
-	sed "s|^\(.*\)\$|\
-${top_url}/\1/pool/main/l/linux/\\
-${top_url}/\1/pool/main/l/linux-tools/|"
+	sed "s|^|${top_url}/|"
 }
 
 directory_url_to_filename() {
@@ -123,8 +121,19 @@ kernel_header_packages_different() {
     local end=$2
     local start_names=$(extract_kernel_header_names "$start")
     local end_names=$(extract_kernel_header_names "$end")
+    local result
     [[ ".${start_names}" != ".${end_names}" ]]
+    result=$?
+    if [[ $result != 0 ]] && $debug_binary_search ; then
+	echo "kernel_header_packages_different: same start=$start end=$end" >&2
+	echo "    url_array[start]=${url_array[$start]}." >&2
+	echo "    url_array[end]=${url_array[$end]}." >&2
+	echo "    start_names=$start_names." >&2
+	echo "    end_names=$end_names." >&2
+    fi
+    return $result
 }
+       
 
 # Pick a midpoint, preferably one for which index.html has already
 # been downloaded and which is as close as possible to the average
@@ -186,17 +195,21 @@ binary_search() {
 }
 
 mirror_kernel_dir_index_files_binary_search() {
-    local urls_string=$(list_kernel_dir_urls | sort -u)
+    local top_url="$1"
+    local top_dir="$2"
+    local subdir="$3"
     local url_count
-
-    # ^^^ url_array is indexed starting at 1.
 
     url_count=0
     for url in $urls_string ; do
         url_count=$((url_count + 1))
-        url_array[$url_count]="$url"
+	# ^^^ url_array is indexed starting at 1.
+        url_array[$url_count]="$url$subdir"
+	if $debug_binary_search ; then
+	    echo "mirror_kernel_dir_index_files_binary_search: url_array[$url_count]=$url." >&2
+	fi
     done
-    
+
     binary_search 1 $url_count kernel_header_packages_different
 }
 
@@ -210,16 +223,18 @@ mirror_kernel_dir_index_files_all() {
 }
 
 mirror_top_level_directories() {
+    local top_url="$1"
     wget $TIMESTAMPING --protocol-directories --mirror --quiet --level=1 \
          --accept='index.html*' "$top_url/"
     save_error
 }
 
 list_kernel_filenames_plus_directories() {
+    local top_dir="$1"
+    local subdir="$2"	# For example "/pool/main/l/linux-tools/"
     local index_filename pkg_filename dir 
     for index_filename in \
-	"${top_dir}"/*/pool/main/l/linux/index.html \
-	"${top_dir}"/*/pool/main/l/linux-tools/index.html
+	"${top_dir}"/*/"${subdir}/index.html" \
     do
 	dir=${index_filename%/index.html}
 	extract_subdirs < "$index_filename" |
@@ -247,7 +262,10 @@ first_unique_filenames() {
 }
 
 list_first_relative_paths() {
-    list_kernel_filenames_plus_directories | first_unique_filenames
+    local top_dir="$1"
+    local subdir="$2"
+    list_kernel_filenames_plus_directories "$top_dir" "$subdir" |
+	first_unique_filenames
 }
 
 skip_existing_filenames() {
@@ -269,16 +287,20 @@ filenames_to_urls() {
 }
 
 list_pkg_urls_to_download() {
-    list_first_relative_paths |
+    local top_dir="$1"
+    local subdir="$2"
+    list_first_relative_paths "$top_dir" "$subdir" |
 	sort -u |
         skip_existing_filenames |
         filenames_to_urls
 }
 
 mirror_pkg_files() {
+    local top_dir="$1"
+    local subdir="$2"
     # list_pkg_urls_to_download: 1,344,589, takes 7min:14sec to
     # compute on mirrros.portworx.com.
-    list_pkg_urls_to_download |
+    list_pkg_urls_to_download "$top_dir" "$subdir" |
 	egrep "_(${arch}|all)\.deb\$" |
         xargs --no-run-if-empty -- \
 	    wget $TIMESTAMPING --protocol-directories --force-directories \
@@ -286,18 +308,34 @@ mirror_pkg_files() {
     save_error
 }
 
-rename_bad_deb_files "$top_dir"
-mirror_top_level_directories
-save_error
+mirror_debian()
+{
+    local top_url="$1"
+    local top_dir=$(url_to_dir "$top_url")
 
-# Do one of the following two:
-mirror_kernel_dir_index_files_binary_search
-save_error
-# mirror_kernel_dir_index_files_all
+    rename_bad_deb_files "$top_dir"
+    mirror_top_level_directories "$top_url"
+    save_error
 
-# If we don't want to do the whole binary search song and dance, this
-# should download all files.
-mirror_pkg_files
-save_error
+    urls_string=$(list_kernel_dir_urls "$top_url" "$top_dir" | sort -u)
+    # ^^^^ This takes a lot of exec'ing to compute, so save it as a global
+    # variable so it does not have to be recomputed in each iteration of
+    # the following loop.
+
+    for subdir in "/pool/main/l/linux/" "/pool/main/l/linux-tools/" ; do
+	# Do one of the following two:
+	mirror_kernel_dir_index_files_binary_search \
+	    "$top_url" "$top_dir" "$subdir"
+	# mirror_kernel_dir_index_files_all
+	save_error
+
+	# If we don't want to do the whole binary search song and dance,
+	# this should download all files.
+	mirror_pkg_files "$top_dir" "$subdir"
+	save_error
+    done
+}
+
+mirror_debian "http://snapshot.debian.org/archive/debian"
 
 exit $error_code
