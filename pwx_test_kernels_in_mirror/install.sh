@@ -3,6 +3,7 @@
 prefix=/usr/local
 scriptsdir=${prefix}/share/pwx_test_kernels_in_mirror/scripts
 build_results_dir=/home/ftp/build-results
+downloads_dir=/home/ftp/downloads
 bindir=${prefix}/bin
 
 set -e
@@ -56,5 +57,10 @@ chmod a+x \
 #
 # install_crontab
 
-rm -f /var/www/html/build-results
-ln -s ${build_results_dir} /var/www/html/build-results
+for dist in centos debian fedora ubuntu ; do
+    mkdir -p "${downloads_dir}/${dist}"
+done
+
+rm -f /var/www/html/build-results /var/www/html/downloads
+ln -s "$build_results_dir" /var/www/html/build-results
+ln -s "$downloads_dir" /var/www/html/downloads
