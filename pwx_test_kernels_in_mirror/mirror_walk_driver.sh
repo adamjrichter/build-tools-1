@@ -12,6 +12,11 @@
 # Used for selecting kernels version 3.10 or later.  Used by some drivers.
 above_3_9_regexp='(3\.[1-9][0-9]+|[4-9][0-9]*|[1-9][0-9]+)(\.[.0-9]+[0-9])?'
 
-get_default_mirror_dirs()  { "get_default_mirror_dirs_$distro"  "$@" ; }
 pkg_files_to_names()       { "pkg_files_to_names_$distro"       "$@" ; }
 walk_mirror()              { "walk_mirror_$distro"              "$@" ; }
+
+get_default_mirror_dirs()
+{
+    "get_default_mirror_dirs_$distro""$@"
+    echo "/home/ftp/downloads/$distro"
+}
