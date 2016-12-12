@@ -36,6 +36,7 @@ if [[ $# -eq 1 ]] && [[ ".$1" = ".--recursive" ]] ; then
 	pwx_test_kernels_in_mirror --distribution="$dist" --command="$0"
 	symlinks -c "$for_installer_dir"
     done
+    exit $?
 fi
 
 while [[ $# -gt 0 ]] ; do
