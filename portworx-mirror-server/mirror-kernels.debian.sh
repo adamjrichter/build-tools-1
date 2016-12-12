@@ -20,8 +20,8 @@ TIMESTAMPING=--timestamping
 error_code=0
 debug_binary_search=false
 
-urls_string=""	# Global variable for caching list of URL's.
-declare -A url_array
+directories_string=""	# Global variable for caching list of URL's.
+declare -A dir_array
 declare -A kernel_header_names
 
 on_or_after_linux_3_10_release_date() {
@@ -47,25 +47,23 @@ remove_if_empty_check_if_absent()
     return 0
 }
 
-list_kernel_dir_urls() {
-    local top_url="$1"
-    local top_dir="$2"
+list_kernel_directories() {
+    local top_dir="$1"
 
     cat "${top_dir}"/index.html\?year=* |
         extract_subdirs |
         egrep '^20[0-9]+(T[0-9]+)?+Z/$' |
-        on_or_after_linux_3_10_release_date |
-	sed "s|^|${top_url}/|"
+        on_or_after_linux_3_10_release_date
 }
 
-directory_url_to_filename() {
-    local url="$1"
-    echo "$url" | sed 's|^\([a-zA-Z]\+\)://|\1/|;s|$|/index.html|'
+directory_to_index_file() {
+    local dir="$1"
+    echo "${dir}/index.html"
 }
 
 directory_index_to_filename() {
     local index="$1"
-    directory_url_to_filename "${url_array[$index]}"
+    directory_to_index_file "${dir_array[$index]}"
 }
 
 linux_headers_after_3_9() {
@@ -73,10 +71,14 @@ linux_headers_after_3_9() {
 }
 
 remember_kernel_header_names() {
-    local index="$1"
-    local url=${url_array[$index]}
-    local file=$(directory_url_to_filename "$url")
+    local top_url="$1"
+    local index="$2"
+    local directory=${dir_array[$index]}
+    local file=$(directory_to_index_file "${top_dir}/${directory}")
+    local url
+
     if remove_if_empty_check_if_absent "$file" ; then
+	url="${top_url}/${directory}/"
         # echo wget $TIMESTAMPING --protocol-directories --force-directories \
         #      --quiet "$url" >&2
         if wget $TIMESTAMPING --protocol-directories --force-directories \
@@ -113,7 +115,7 @@ skip_directory_urls_already_mirrored() {
     done
 }
 
-# Mirror all index.html files in url_array in the inclusive range
+# Mirror all index.html files in dir_array in the inclusive range
 # [start,end] that are different.
 
 kernel_header_packages_different() {
@@ -126,8 +128,8 @@ kernel_header_packages_different() {
     result=$?
     if [[ $result != 0 ]] && $debug_binary_search ; then
 	echo "kernel_header_packages_different: same start=$start end=$end" >&2
-	echo "    url_array[start]=${url_array[$start]}." >&2
-	echo "    url_array[end]=${url_array[$end]}." >&2
+	echo "    dir_array[start]=${dir_array[$start]}." >&2
+	echo "    dir_array[end]=${dir_array[$end]}." >&2
 	echo "    start_names=$start_names." >&2
 	# echo "    end_names=$end_names." >&2
     fi
@@ -139,8 +141,9 @@ kernel_header_packages_different() {
 # been downloaded and which is as close as possible to the average
 # of start and end.
 pick_a_midpoint() {
-    local start="$1"
-    local end="$2"
+    local top_dir="$1"
+    local start="$2"
+    local end="$3"
     local mid=$(( ( start + end ) / 2))
     local max_distance=$(( ( end - start ) / 2))
     local guess distance filename
@@ -149,9 +152,9 @@ pick_a_midpoint() {
     while [[ $distance -le $max_distance ]] ; do
         for guess in $((mid - distance)) $((mid + distance)) ; do
             if [[ "$guess" -gt "$start" ]] &&
-               [[ "$guess" -lt "$end" ]] ; then
-	    
-		filename=$(directory_index_to_filename $guess)
+		   [[ "$guess" -lt "$end" ]] ; then
+		
+		filename=${top_dir}/$(directory_index_to_filename $guess)
 		if [[ -s "$filename" ]] ; then
                     echo "pick_a_midpoint: cached guess $start < $guess < $end" >&2
                     echo "$guess"
@@ -169,8 +172,9 @@ pick_a_midpoint() {
 #  ... invokes command [args] start end.  If that command returns success
 #  and there are integers between start and end, then descend.
 binary_search() {
-    local start=$1
-    local end=$2
+    local top_dir="$1"
+    local start="$2"
+    local end="$3"
     local mid result
 
     shift 2
@@ -186,8 +190,8 @@ binary_search() {
     if [[ $((start + 1)) -lt "$end" ]] ; then
         mid=$(pick_a_midpoint "$start" "$end")
 
-        binary_search "$start" "$mid" "$@" &&
-        binary_search "$mid" "$end" "$@"
+        binary_search "$top_dir" "$start" "$mid" "$@" &&
+        binary_search "$top_dir" "$mid" "$end" "$@"
     else
         # echo "binary_search $* ended due to lack of middle index."
         true
@@ -198,23 +202,24 @@ mirror_kernel_dir_index_files_binary_search() {
     local top_url="$1"
     local top_dir="$2"
     local subdir="$3"
-    local url_count
+    local dir_count
 
-    url_count=0
-    for url in $urls_string ; do
-        url_count=$((url_count + 1))
-	# ^^^ url_array is indexed starting at 1.
-        url_array[$url_count]="$url$subdir"
+    dir_count=0
+    for url in $directories_string ; do
+        dir_count=$((dir_count + 1))
+	# ^^^ dir_array is indexed starting at 1.
+        dir_array[$dir_count]="$url$subdir"
 	if $debug_binary_search ; then
-	    echo "mirror_kernel_dir_index_files_binary_search: url_array[$url_count]=$url." >&2
+	    echo "mirror_kernel_dir_index_files_binary_search: dir_array[$dir_count]=$url." >&2
 	fi
     done
 
-    binary_search 1 $url_count kernel_header_packages_different
+    binary_search "$top_dir" 1 $dir_count kernel_header_packages_different
 }
 
 mirror_kernel_dir_index_files_all() {
-    list_kernel_dir_urls |
+    local top_dir="$1"
+    list_kernel_directories "$top_dir" |
         skip_directory_urls_already_mirrored |
         xargs --no-run-if-empty -- \
             wget $TIMESTAMPING --protocol-directories --force-directories \
@@ -315,7 +320,7 @@ mirror_debian()
     mirror_top_level_directories "$top_url"
     save_error
 
-    urls_string=$(list_kernel_dir_urls "$top_url" "$top_dir" | sort -u)
+    directories_string=$(list_kernel_directories "$top_dir" | sort -u)
     # ^^^^ This takes a lot of exec'ing to compute, so save it as a global
     # variable so it does not have to be recomputed in each iteration of
     # the following loop.
