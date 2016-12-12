@@ -2,7 +2,7 @@
 
 scriptsdir=$PWD
 
-for_installer_dir="/home/ftp/build-results/pxfuse-for-installer"
+for_installer_dir="/home/ftp/build-results/pxfuse/for-installer"
 
 usage()
 {
@@ -49,9 +49,18 @@ while [[ $# -gt 0 ]] ; do
     shift
 done
 
-set -e
-[[ -e "$logdir/exit_code" ]]
-read exit_code rest < "$logdir/exit_code"
+if [[ ! -e "$logdir/exit_code" ]] ; then
+    exit 0
+fi
+
+if ! read exit_code rest < "$logdir/exit_code" ; then
+    exit $?
+fi
+
+if [[ ".$exit_code" != ".0" ]] ; then
+    exit 0
+fi
+
 guess_utsname=$(egrep 'make KERNELPATH=' < "$logdir/build.log" |
 		       sed 's/^.* KERNELPATH=//;s/ .*//')
 guess_utsname=${guess_utsname#kernels/}
