@@ -110,7 +110,7 @@ filter_word() {
 test_kernel_pkgs_func() {
     local container_tmpdir result_logdir
     local result filename real dirname basename headers_dir
-    local pkg_names deps_unfiltered dep_names arg
+    local pkg_names deps_unfiltered dep_names arg guess_utsname dir
     local container_tmpdir=/tmp/test-portworx-kernels.$$
     local pxfuse_dir
     local make_args=
@@ -183,6 +183,16 @@ test_kernel_pkgs_func() {
 	if [[ "$result" = 0 ]] ; then
 	    in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
 		tar -C "${result_logdir}" -xpv
+
+	    guess_utsname=${headers_dir#/usr/src/}
+	    guess_utsname=${guess_utsname#kernels/}
+	    guess_utsname=${guess_utsname#linux-header-}
+	    dir="/home/ftp/build-results/pxfuse/for-installer/$guess_utsname"
+	    mkdir -p "$dir/packages"
+	    ln --symbolic --force "$@" "$dir/packages/"
+	    symlinks -c "$dir/packages" > /dev/null
+	    cp "${result_logdir}/px.ko" "$dir/"
+
 	fi # result = 0
 	touch "${result_logdir}/ran_test"
     fi # result = 0
