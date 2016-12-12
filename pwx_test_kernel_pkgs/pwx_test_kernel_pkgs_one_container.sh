@@ -188,6 +188,7 @@ test_kernel_pkgs_func() {
 	    guess_utsname=${guess_utsname#kernels/}
 	    guess_utsname=${guess_utsname#linux-header-}
 	    dir="/home/ftp/build-results/pxfuse/for-installer/$guess_utsname"
+	    rm -rf "$dir/packages"
 	    mkdir -p "$dir/packages"
 	    ln --symbolic --force "$@" "$dir/packages/"
 	    symlinks -c "$dir/packages" > /dev/null
