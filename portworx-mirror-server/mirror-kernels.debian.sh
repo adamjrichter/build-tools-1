@@ -129,7 +129,7 @@ kernel_header_packages_different() {
 	echo "    url_array[start]=${url_array[$start]}." >&2
 	echo "    url_array[end]=${url_array[$end]}." >&2
 	echo "    start_names=$start_names." >&2
-	echo "    end_names=$end_names." >&2
+	# echo "    end_names=$end_names." >&2
     fi
     return $result
 }
