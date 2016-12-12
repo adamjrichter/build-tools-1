@@ -43,9 +43,10 @@ while [[ $# -gt 0 ]] ; do
     case "$1" in
 	--  ) shift ; break ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
-	--* ) shift ;;
+	--* ) ;;
 	* ) break ;;
     esac
+    shift
 done
 
 set -e
