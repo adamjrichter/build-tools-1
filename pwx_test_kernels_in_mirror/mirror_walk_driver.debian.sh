@@ -9,6 +9,7 @@ debian_find_txt="${debian_tmpdir}/find.sorted.txt"
 get_default_mirror_dirs_debian()
 {
     echo /home/ftp/mirrors/http/snapshot.debian.org/archive/debian
+    echo /home/ftp/mirrors/http/security.debian.org/debian-security
 }
 
 pkg_files_to_names_debian()       { pkg_files_to_names_deb        "$@" ; }
