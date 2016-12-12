@@ -41,7 +41,7 @@ install_ftpd_ubuntu:
 	    ( cd ~ftp && tar xp )
 
 install_httpd_ubuntu:
-	apt-get install -y apache2
+	apt-get install --quiet --yes apache2
 	-rm -f /var/www/html/mirrors
 	-mkdir -p /var/www/html/mirrors
 	chown -R pwxmirror /var/www/html/mirrors
