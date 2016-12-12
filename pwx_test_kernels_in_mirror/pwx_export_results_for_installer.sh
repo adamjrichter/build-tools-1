@@ -66,6 +66,7 @@ guess_utsname=$(egrep 'make KERNELPATH=' < "$logdir/build.log" |
 guess_utsname=${guess_utsname#kernels/}
 guess_utsname=${guess_utsname#linux-header-}
 dir="${for_installer_dir}/${guess_utsname}"
+rm -rf "$dir/packages"
 mkdir -p "$dir/packages"
 ln --symbolic --force "$@" "$dir/packages/"
 # symlinks -c "$dir/packages" > /dev/null
