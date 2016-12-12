@@ -40,6 +40,7 @@ mkdir -p "${scriptsdir}" "${bindir}" "${build_results_dir}/pxfuse/by-checksum"
 install_scripts "${scriptsdir}" \
 		mirror_walk_driver.*.sh \
 		mirror_walk_driver.sh \
+		pwx_export_results_for_installer.sh \
 		pwx_test_kernels.cron_script.sh \
 		pwx_update_pxfuse_by_date.sh \
 		test_report.sh
@@ -48,6 +49,7 @@ install_scripts "${bindir}" pwx_test_kernels_in_mirror
 
 chmod a+x \
       "${bindir}/pwx_test_kernels_in_mirror" \
+      "${scriptsdir}/pwx_export_results_for_installer.sh" \
       "${scriptsdir}/pwx_test_kernels.cron_script.sh" \
       "${scriptsdir}/pwx_update_pxfuse_by_date.sh" \
       "${scriptsdir}/test_report.sh"
