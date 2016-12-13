@@ -328,8 +328,8 @@ mirror_debian()
     local top_url="$1"
     local top_dir=$(url_to_dir "$top_url")
     # Uncomment one of the following two lines:
-    # local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_binary_search
-    local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_all
+    local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_binary_search
+    # local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_all
 
     rename_bad_deb_files "$top_dir"
     mirror_top_level_directories "$top_url"
