@@ -343,6 +343,11 @@ mirror_debian()
 }
 
 mirror_debian "http://snapshot.debian.org/archive/debian"
-mirror_debian "http://security.debian.org/debian-security"
+# mirror_debian "http://security.debian.org/debian-security"
+# ^^^ Does not mirror for now, as it appears that this directory tree
+# has a slightly different layout.  We probably want
+# http://security.debian.org/debian-security/pool/updates/main/l/linux/linux-headers* ,
+# but linux-kbuild packages do not appear to be in that directory.  Perhaps
+# they are outside of the "updates" directory tree.
 
 exit $error_code
