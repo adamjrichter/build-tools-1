@@ -349,12 +349,17 @@ mirror_debian()
     done
 }
 
+mirror_security_debian_org()
+{
+    # FIXME?  linux-kbuild packages do not appear to be in this directory.
+    # What other directory needs to be mirrored or searched?
+    wget $TIMESTAMPING --protocol-directories --force-directories \
+	 --mirror --level=1 \
+         --accept-regex="/linux-(headers|compiler|kbuild).*_${arch}\.deb\$" \
+	 http://security.debian.org/debian-security/pool/updates/main/l/linux/
+}
+
 mirror_debian "http://snapshot.debian.org/archive/debian"
-# mirror_debian "http://security.debian.org/debian-security"
-# ^^^ Does not mirror for now, as it appears that this directory tree
-# has a slightly different layout.  We probably want
-# http://security.debian.org/debian-security/pool/updates/main/l/linux/linux-headers* ,
-# but linux-kbuild packages do not appear to be in that directory.  Perhaps
-# they are outside of the "updates" directory tree.
+mirror_security_debian_org
 
 exit $error_code
