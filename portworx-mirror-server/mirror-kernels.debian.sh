@@ -225,7 +225,7 @@ mirror_kernel_dir_index_files_all() {
 
     list_kernel_directories "$top_dir" |
         skip_directories_already_mirrored "$top_dir" |
-	sed "s|^(.*)\$|${top_url}\\1/" |
+	sed "s|^(.*)\$|${top_url}\\1/|" |
         xargs --no-run-if-empty -- \
             wget --quiet --protocol-directories --force-directories
 
