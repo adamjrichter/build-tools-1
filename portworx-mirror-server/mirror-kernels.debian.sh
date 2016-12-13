@@ -178,7 +178,7 @@ binary_search() {
     local end="$3"
     local mid result
 
-    shift 2
+    shift 3
 
     if ! "$@" "$start" "$end" ; then
         result=$?
