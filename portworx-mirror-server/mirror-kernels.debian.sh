@@ -11,11 +11,6 @@ cd ${mirrordir} || exit $?
 
 mirrordir=/home/ftp/mirrors
 
-
-url_dir=snapshot.debian.org/archive/debian
-top_url=http://$url_dir
-top_dir=http/$url_dir
-
 #arch=i386
 arch=amd64
 
@@ -23,8 +18,10 @@ TIMESTAMPING=--timestamping
 #TIMESTAMPING=--no-clobber
 
 error_code=0
+debug_binary_search=false
 
-declare -A url_array
+directories_string=""	# Global variable for caching list of URL's.
+declare -A dir_array
 declare -A kernel_header_names
 
 on_or_after_linux_3_10_release_date() {
@@ -50,24 +47,23 @@ remove_if_empty_check_if_absent()
     return 0
 }
 
-list_kernel_dir_urls() {
+list_kernel_directories() {
+    local top_dir="$1"
+
     cat "${top_dir}"/index.html\?year=* |
         extract_subdirs |
         egrep '^20[0-9]+(T[0-9]+)?+Z/$' |
-        on_or_after_linux_3_10_release_date |
-	sed "s|^\(.*\)\$|\
-${top_url}/\1/pool/main/l/linux/\\
-${top_url}/\1/pool/main/l/linux-tools/|"
+        on_or_after_linux_3_10_release_date
 }
 
-directory_url_to_filename() {
-    local url="$1"
-    echo "$url" | sed 's|^\([a-zA-Z]\+\)://|\1/|;s|$|/index.html|'
+directory_to_index_file() {
+    local dir="$1"
+    echo "${dir}/index.html"
 }
 
 directory_index_to_filename() {
     local index="$1"
-    directory_url_to_filename "${url_array[$index]}"
+    directory_to_index_file "${dir_array[$index]}"
 }
 
 linux_headers_after_3_9() {
@@ -75,10 +71,15 @@ linux_headers_after_3_9() {
 }
 
 remember_kernel_header_names() {
-    local index="$1"
-    local url=${url_array[$index]}
-    local file=$(directory_url_to_filename "$url")
+    local top_url="$1"
+    local top_dir="$2"
+    local index="$3"
+    local directory=${dir_array[$index]}
+    local file=$(directory_to_index_file "${top_dir}/${directory}")
+    local url
+
     if remove_if_empty_check_if_absent "$file" ; then
+	url="${top_url}/${directory}/"
         # echo wget $TIMESTAMPING --protocol-directories --force-directories \
         #      --quiet "$url" >&2
         if wget $TIMESTAMPING --protocol-directories --force-directories \
@@ -98,40 +99,58 @@ remember_kernel_header_names() {
 }
 
 extract_kernel_header_names() {
-    local index="$1"
+    # local top_url="$1"
+    # local top_dir="$2"
+    local index="$3"
     if [[ -z "${kernel_header_names[$index]}" ]] ; then
         remember_kernel_header_names "$@"
     fi
     echo "${kernel_header_names[$index]}"
 }
 
-skip_directory_urls_already_mirrored() {
-    local url url_type url_rest filename
-    while read url ; do
-        filename=$(directory_url_to_filename "$url")
+skip_directories_already_mirrored() {
+    local top_dir="$1"
+    local dir filename
+    while read dir ; do
+        filename=$( directory_to_index_file "${top_dir}/${dir}" )
 	if remove_if_empty_check_if_absent "$filename" ; then
-            echo "$url"
+            echo "$dir"
         fi
     done
 }
 
-# Mirror all index.html files in url_array in the inclusive range
+# Mirror all index.html files in dir_array in the inclusive range
 # [start,end] that are different.
 
 kernel_header_packages_different() {
-    local start=$1
-    local end=$2
-    local start_names=$(extract_kernel_header_names "$start")
-    local end_names=$(extract_kernel_header_names "$end")
+    local top_url="$1"
+    local top_dir="$2"
+    local start="$3"
+    local end="$4"
+
+    local start_names=$(extract_kernel_header_names "$top_url" "$top_dir" "$start")
+    local end_names=$(extract_kernel_header_names "$top_url" "$top_dir" "$end")
+    local result
     [[ ".${start_names}" != ".${end_names}" ]]
+    result=$?
+    if [[ $result != 0 ]] && $debug_binary_search ; then
+	echo "kernel_header_packages_different: same start=$start end=$end" >&2
+	echo "    dir_array[start]=${dir_array[$start]}." >&2
+	echo "    dir_array[end]=${dir_array[$end]}." >&2
+	echo "    start_names=$start_names." >&2
+	# echo "    end_names=$end_names." >&2
+    fi
+    return $result
 }
+       
 
 # Pick a midpoint, preferably one for which index.html has already
 # been downloaded and which is as close as possible to the average
 # of start and end.
 pick_a_midpoint() {
-    local start="$1"
-    local end="$2"
+    local top_dir="$1"
+    local start="$2"
+    local end="$3"
     local mid=$(( ( start + end ) / 2))
     local max_distance=$(( ( end - start ) / 2))
     local guess distance filename
@@ -140,9 +159,9 @@ pick_a_midpoint() {
     while [[ $distance -le $max_distance ]] ; do
         for guess in $((mid - distance)) $((mid + distance)) ; do
             if [[ "$guess" -gt "$start" ]] &&
-               [[ "$guess" -lt "$end" ]] ; then
-	    
-		filename=$(directory_index_to_filename $guess)
+		   [[ "$guess" -lt "$end" ]] ; then
+		
+		filename=${top_dir}/$(directory_index_to_filename $guess)
 		if [[ -s "$filename" ]] ; then
                     echo "pick_a_midpoint: cached guess $start < $guess < $end" >&2
                     echo "$guess"
@@ -160,13 +179,15 @@ pick_a_midpoint() {
 #  ... invokes command [args] start end.  If that command returns success
 #  and there are integers between start and end, then descend.
 binary_search() {
-    local start=$1
-    local end=$2
+    local top_url="$1"
+    local top_dir="$2"
+    local start="$3"
+    local end="$4"
     local mid result
 
-    shift 2
+    shift 4
 
-    if ! "$@" "$start" "$end" ; then
+    if ! "$@" "$top_url" "$top_dir" "$start" "$end" ; then
         result=$?
         # echo "binary_search $* ended by subcommand returning $result,"
         # echo "   meaning that the versions have the same contents or"
@@ -175,10 +196,10 @@ binary_search() {
     fi
 
     if [[ $((start + 1)) -lt "$end" ]] ; then
-        mid=$(pick_a_midpoint "$start" "$end")
+        mid=$(pick_a_midpoint "$top_dir" "$start" "$end")
 
-        binary_search "$start" "$mid" "$@" &&
-        binary_search "$mid" "$end" "$@"
+        binary_search "$top_url" "$top_dir" "$start" "$mid" "$@" &&
+        binary_search "$top_url" "$top_dir" "$mid" "$end" "$@"
     else
         # echo "binary_search $* ended due to lack of middle index."
         true
@@ -186,41 +207,50 @@ binary_search() {
 }
 
 mirror_kernel_dir_index_files_binary_search() {
-    local urls_string=$(list_kernel_dir_urls | sort -u)
-    local url_count
+    local top_url="$1"
+    local top_dir="$2"
+    local subdir="$3"
+    local dir_count
 
-    # ^^^ url_array is indexed starting at 1.
-
-    url_count=0
-    for url in $urls_string ; do
-        url_count=$((url_count + 1))
-        url_array[$url_count]="$url"
+    dir_count=0
+    for url in $directories_string ; do
+        dir_count=$((dir_count + 1))
+	# ^^^ dir_array is indexed starting at 1.
+        dir_array[$dir_count]="$url$subdir"
+	if $debug_binary_search ; then
+	    echo "mirror_kernel_dir_index_files_binary_search: dir_array[$dir_count]=$url." >&2
+	fi
     done
-    
-    binary_search 1 $url_count kernel_header_packages_different
+
+    binary_search "$top_url" "$top_dir" 1 $dir_count kernel_header_packages_different
 }
 
 mirror_kernel_dir_index_files_all() {
-    list_kernel_dir_urls |
-        skip_directory_urls_already_mirrored |
+    local top_url="$1"
+    local top_dir="$2"
+    local subdir="$3"
+
+    list_kernel_directories "$top_dir" |
+        skip_directories_already_mirrored "$top_dir" |
+	sed "s|^\(.*\)\$|${top_url}/\\1/|" |
         xargs --no-run-if-empty -- \
-            wget $TIMESTAMPING --protocol-directories --force-directories \
-	        --quiet --accept='index.html*'
+            wget --quiet --protocol-directories --force-directories
+
     save_error
 }
 
 mirror_top_level_directories() {
+    local top_url="$1"
     wget $TIMESTAMPING --protocol-directories --mirror --quiet --level=1 \
          --accept='index.html*' "$top_url/"
     save_error
 }
 
 list_kernel_filenames_plus_directories() {
+    local top_dir="$1"
+    local subdir="$2"	# For example "/pool/main/l/linux-tools/"
     local index_filename pkg_filename dir 
-    for index_filename in \
-	"${top_dir}"/*/pool/main/l/linux/index.html \
-	"${top_dir}"/*/pool/main/l/linux-tools/index.html
-    do
+    for index_filename in "${top_dir}"/*/"${subdir}/index.html" ; do
 	dir=${index_filename%/index.html}
 	extract_subdirs < "$index_filename" |
 	    linux_headers_after_3_9 |
@@ -247,7 +277,10 @@ first_unique_filenames() {
 }
 
 list_first_relative_paths() {
-    list_kernel_filenames_plus_directories | first_unique_filenames
+    local top_dir="$1"
+    local subdir="$2"
+    list_kernel_filenames_plus_directories "$top_dir" "$subdir" |
+	first_unique_filenames
 }
 
 skip_existing_filenames() {
@@ -269,16 +302,20 @@ filenames_to_urls() {
 }
 
 list_pkg_urls_to_download() {
-    list_first_relative_paths |
+    local top_dir="$1"
+    local subdir="$2"
+    list_first_relative_paths "$top_dir" "$subdir" |
 	sort -u |
         skip_existing_filenames |
         filenames_to_urls
 }
 
 mirror_pkg_files() {
+    local top_dir="$1"
+    local subdir="$2"
     # list_pkg_urls_to_download: 1,344,589, takes 7min:14sec to
     # compute on mirrros.portworx.com.
-    list_pkg_urls_to_download |
+    list_pkg_urls_to_download "$top_dir" "$subdir" |
 	egrep "_(${arch}|all)\.deb\$" |
         xargs --no-run-if-empty -- \
 	    wget $TIMESTAMPING --protocol-directories --force-directories \
@@ -286,18 +323,43 @@ mirror_pkg_files() {
     save_error
 }
 
-rename_bad_deb_files "$top_dir"
-mirror_top_level_directories
-save_error
+mirror_debian()
+{
+    local top_url="$1"
+    local top_dir=$(url_to_dir "$top_url")
+    # Uncomment one of the following two lines:
+    local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_binary_search
+    # local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_all
 
-# Do one of the following two:
-mirror_kernel_dir_index_files_binary_search
-save_error
-# mirror_kernel_dir_index_files_all
+    rename_bad_deb_files "$top_dir"
+    mirror_top_level_directories "$top_url"
+    save_error
 
-# If we don't want to do the whole binary search song and dance, this
-# should download all files.
-mirror_pkg_files
-save_error
+    directories_string=$(list_kernel_directories "$top_dir" | sort -u)
+    # ^^^^ This takes a lot of exec'ing to compute, so save it as a global
+    # variable so it does not have to be recomputed in each iteration of
+    # the following loop.
+
+    for subdir in "/pool/main/l/linux/" "/pool/main/l/linux-tools/" ; do
+	$mirror_kernel_dir_indexes "$top_url" "$top_dir" "$subdir"
+	save_error
+
+	mirror_pkg_files "$top_dir" "$subdir"
+	save_error
+    done
+}
+
+mirror_security_debian_org()
+{
+    # FIXME?  linux-kbuild packages do not appear to be in this directory.
+    # What other directory needs to be mirrored or searched?
+    wget $TIMESTAMPING --protocol-directories --force-directories \
+	 --mirror --level=1 \
+         --accept-regex="/linux-(headers|compiler|kbuild).*_${arch}\.deb\$" \
+	 http://security.debian.org/debian-security/pool/updates/main/l/linux/
+}
+
+mirror_debian "http://snapshot.debian.org/archive/debian"
+mirror_security_debian_org
 
 exit $error_code

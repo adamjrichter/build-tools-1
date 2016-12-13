@@ -3,6 +3,7 @@
 prefix=/usr/local
 scriptsdir=${prefix}/share/pwx_test_kernels_in_mirror/scripts
 build_results_dir=/home/ftp/build-results
+downloads_dir=/home/ftp/downloads
 bindir=${prefix}/bin
 
 set -e
@@ -39,6 +40,7 @@ mkdir -p "${scriptsdir}" "${bindir}" "${build_results_dir}/pxfuse/by-checksum"
 install_scripts "${scriptsdir}" \
 		mirror_walk_driver.*.sh \
 		mirror_walk_driver.sh \
+		pwx_export_results_for_installer.sh \
 		pwx_test_kernels.cron_script.sh \
 		pwx_update_pxfuse_by_date.sh \
 		test_report.sh
@@ -47,6 +49,7 @@ install_scripts "${bindir}" pwx_test_kernels_in_mirror
 
 chmod a+x \
       "${bindir}/pwx_test_kernels_in_mirror" \
+      "${scriptsdir}/pwx_export_results_for_installer.sh" \
       "${scriptsdir}/pwx_test_kernels.cron_script.sh" \
       "${scriptsdir}/pwx_update_pxfuse_by_date.sh" \
       "${scriptsdir}/test_report.sh"
@@ -56,5 +59,10 @@ chmod a+x \
 #
 # install_crontab
 
-rm -f /var/www/html/build-results
-ln -s ${build_results_dir} /var/www/html/build-results
+for dist in centos debian fedora ubuntu ; do
+    mkdir -p "${downloads_dir}/${dist}"
+done
+
+rm -f /var/www/html/build-results /var/www/html/downloads
+ln -s "$build_results_dir" /var/www/html/build-results
+ln -s "$downloads_dir" /var/www/html/downloads

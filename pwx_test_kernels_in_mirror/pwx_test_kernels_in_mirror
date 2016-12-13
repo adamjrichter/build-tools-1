@@ -98,6 +98,13 @@ mirror_callback() {
 	pkg_subdir=${pkg1#$mirror_dir}
     fi
 
+    if [[ ".$pkg_subdir" = ".$pkg1" ]] ; then
+	# If the previous commands did not chop anything else off, at
+	# least try to remove the leading "/home/ftp/".  This is for
+	# packages found in /home/ftp/downloads/<distribution>/.
+	pkg_subdir="${pkg1#/home/ftp/}"
+    fi
+
     shift 2
 
     command_logdir="${log_subdir}/${pkg_subdir}"
