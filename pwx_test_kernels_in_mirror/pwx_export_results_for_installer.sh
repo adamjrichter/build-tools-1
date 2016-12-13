@@ -25,6 +25,7 @@ EOF
 }
 
 logdir=
+pxfuse_dir=
 
 if [[ $# -eq 0 ]] ; then
     usage
@@ -43,6 +44,7 @@ while [[ $# -gt 0 ]] ; do
     case "$1" in
 	--  ) shift ; break ;;
 	--logdir=* ) logdir=${1#--logdir=} ;;
+	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
 	--* ) ;;
 	* ) break ;;
     esac
@@ -62,12 +64,16 @@ if [[ ".$exit_code" != ".0" ]] ; then
 fi
 
 guess_utsname=$(egrep 'make KERNELPATH=' < "$logdir/build.log" |
-		       sed 's/^.* KERNELPATH=//;s/ .*//')
+		       sed 's/^.* KERNELPATH=//;s/ .*//' | sort -u)
+guess_utsname=${guess_utsname#/usr/src/}
 guess_utsname=${guess_utsname#kernels/}
 guess_utsname=${guess_utsname#linux-header-}
-dir="${for_installer_dir}/${guess_utsname}"
+
+pxd_version=$(set -- $(egrep '^#define PXD_VERSION ' < "${pxfuse_dir}/pxd.h") ; echo $3)
+
+dir="${for_installer_dir}/${pxd_version}/${guess_utsname}"
 rm -rf "$dir/packages"
 mkdir -p "$dir/packages"
 ln --symbolic --force "$@" "$dir/packages/"
 # symlinks -c "$dir/packages" > /dev/null
-cp "${result_logdir}/px.ko" "$dir/"
+cp "${logdir}/px.ko" "$dir/"

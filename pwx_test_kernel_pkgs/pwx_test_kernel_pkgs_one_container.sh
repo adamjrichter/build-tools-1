@@ -112,7 +112,7 @@ test_kernel_pkgs_func() {
     local result filename real dirname basename headers_dir
     local pkg_names deps_unfiltered dep_names arg guess_utsname dir
     local container_tmpdir=/tmp/test-portworx-kernels.$$
-    local pxfuse_dir
+    local pxfuse_dir pxd_version
     local make_args=
 
     for arg in "$@" ; do
@@ -187,7 +187,10 @@ test_kernel_pkgs_func() {
 	    guess_utsname=${headers_dir#/usr/src/}
 	    guess_utsname=${guess_utsname#kernels/}
 	    guess_utsname=${guess_utsname#linux-header-}
-	    dir="/home/ftp/build-results/pxfuse/for-installer/$guess_utsname"
+
+	    pxd_version=$(set -- $(egrep '^#define PXD_VERSION ' < "${pxfuse_dir}/pxd.h") ; echo $3)
+
+	    dir="${for_installer_dir}/${pxd_version}/${guess_utsname}"
 	    rm -rf "$dir/packages"
 	    mkdir -p "$dir/packages"
 	    ln --symbolic --force "$@" "$dir/packages/"
