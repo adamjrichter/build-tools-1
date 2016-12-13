@@ -26,6 +26,7 @@ EOF
 . ${scriptsdir}/container_driver.sh
 . ${scriptsdir}/distro_driver.sh
 
+for_installer_dir="/home/ftp/build-results/pxfuse/for-installer/x86_64"
 arch=amd64
 distro=ubuntu
 distro_release=""

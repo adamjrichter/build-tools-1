@@ -2,8 +2,6 @@
 
 scriptsdir=$PWD
 
-for_installer_dir="/home/ftp/build-results/pxfuse/for-installer"
-
 usage()
 {
     cat <<EOF
@@ -24,6 +22,7 @@ on the latest build results in /home/ftp/build-results/pxfuse.
 EOF
 }
 
+for_installer_dir="/home/ftp/build-results/pxfuse/for-installer/x86_64"
 logdir=
 pxfuse_dir=
 
