@@ -187,7 +187,7 @@ test_kernel_pkgs_func() {
 
 	    guess_utsname=${headers_dir#/usr/src/}
 	    guess_utsname=${guess_utsname#kernels/}
-	    guess_utsname=${guess_utsname#linux-header-}
+	    guess_utsname=${guess_utsname#linux-headers-}
 
 	    pxd_version=$(set -- $(egrep '^#define PXD_VERSION ' < "${pxfuse_dir}/pxd.h") ; echo $3)
 

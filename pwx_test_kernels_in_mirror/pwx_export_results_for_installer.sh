@@ -66,7 +66,7 @@ guess_utsname=$(egrep 'make KERNELPATH=' < "$logdir/build.log" |
 		       sed 's/^.* KERNELPATH=//;s/ .*//' | sort -u)
 guess_utsname=${guess_utsname#/usr/src/}
 guess_utsname=${guess_utsname#kernels/}
-guess_utsname=${guess_utsname#linux-header-}
+guess_utsname=${guess_utsname#linux-headers-}
 
 pxd_version=$(set -- $(egrep '^#define PXD_VERSION ' < "${pxfuse_dir}/pxd.h") ; echo $3)
 
