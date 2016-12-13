@@ -72,7 +72,8 @@ linux_headers_after_3_9() {
 
 remember_kernel_header_names() {
     local top_url="$1"
-    local index="$2"
+    local top_dir="$2"
+    local index="$3"
     local directory=${dir_array[$index]}
     local file=$(directory_to_index_file "${top_dir}/${directory}")
     local url
@@ -98,7 +99,9 @@ remember_kernel_header_names() {
 }
 
 extract_kernel_header_names() {
-    local index="$1"
+    # local top_url="$1"
+    # local top_dir="$2"
+    local index="$3"
     if [[ -z "${kernel_header_names[$index]}" ]] ; then
         remember_kernel_header_names "$@"
     fi
@@ -120,10 +123,13 @@ skip_directories_already_mirrored() {
 # [start,end] that are different.
 
 kernel_header_packages_different() {
-    local start=$1
-    local end=$2
-    local start_names=$(extract_kernel_header_names "$start")
-    local end_names=$(extract_kernel_header_names "$end")
+    local top_url="$1"
+    local top_dir="$2"
+    local start="$3"
+    local end="$4"
+
+    local start_names=$(extract_kernel_header_names "$top_url" "$top_dir" "$start")
+    local end_names=$(extract_kernel_header_names "$top_url" "$top_dir" "$end")
     local result
     [[ ".${start_names}" != ".${end_names}" ]]
     result=$?
@@ -173,14 +179,15 @@ pick_a_midpoint() {
 #  ... invokes command [args] start end.  If that command returns success
 #  and there are integers between start and end, then descend.
 binary_search() {
-    local top_dir="$1"
-    local start="$2"
-    local end="$3"
+    local top_url="$1"
+    local top_dir="$2"
+    local start="$3"
+    local end="$4"
     local mid result
 
-    shift 3
+    shift 4
 
-    if ! "$@" "$start" "$end" ; then
+    if ! "$@" "$top_url" "$top_dir" "$start" "$end" ; then
         result=$?
         # echo "binary_search $* ended by subcommand returning $result,"
         # echo "   meaning that the versions have the same contents or"
@@ -189,10 +196,10 @@ binary_search() {
     fi
 
     if [[ $((start + 1)) -lt "$end" ]] ; then
-        mid=$(pick_a_midpoint "$start" "$end")
+        mid=$(pick_a_midpoint "$top_dir" "$start" "$end")
 
-        binary_search "$top_dir" "$start" "$mid" "$@" &&
-        binary_search "$top_dir" "$mid" "$end" "$@"
+        binary_search "$top_url" "$top_dir" "$start" "$mid" "$@" &&
+        binary_search "$top_url" "$top_dir" "$mid" "$end" "$@"
     else
         # echo "binary_search $* ended due to lack of middle index."
         true
@@ -215,7 +222,7 @@ mirror_kernel_dir_index_files_binary_search() {
 	fi
     done
 
-    binary_search "$top_dir" 1 $dir_count kernel_header_packages_different
+    binary_search "$top_url" "$top_dir" 1 $dir_count kernel_header_packages_different
 }
 
 mirror_kernel_dir_index_files_all() {
@@ -225,7 +232,7 @@ mirror_kernel_dir_index_files_all() {
 
     list_kernel_directories "$top_dir" |
         skip_directories_already_mirrored "$top_dir" |
-	sed "s|^(.*)\$|${top_url}\\1/|" |
+	sed "s|^\(.*\)\$|${top_url}/\\1/|" |
         xargs --no-run-if-empty -- \
             wget --quiet --protocol-directories --force-directories
 
@@ -321,8 +328,8 @@ mirror_debian()
     local top_url="$1"
     local top_dir=$(url_to_dir "$top_url")
     # Uncomment one of the following two lines:
-    local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_binary_search
-    # local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_all
+    # local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_binary_search
+    local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_all
 
     rename_bad_deb_files "$top_dir"
     mirror_top_level_directories "$top_url"
