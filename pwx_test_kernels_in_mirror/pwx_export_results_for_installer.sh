@@ -22,7 +22,7 @@ on the latest build results in /home/ftp/build-results/pxfuse.
 EOF
 }
 
-for_installer_dir="/home/ftp/build-results/pxfuse/for-installer/x86_64"
+for_installer_dir="/home/ftp/build-results/pxfuse/for-installer/x86_64/version"
 logdir=
 pxfuse_dir=
 
