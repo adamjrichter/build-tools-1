@@ -105,12 +105,13 @@ extract_kernel_header_names() {
     echo "${kernel_header_names[$index]}"
 }
 
-skip_directory_urls_already_mirrored() {
-    local url url_type url_rest filename
-    while read url ; do
-        filename=$(directory_url_to_filename "$url")
+skip_directories_already_mirrored() {
+    local top_dir="$1"
+    local dir filename
+    while read dir ; do
+        filename=$( directory_to_index_file "${top_dir}/${dir}" )
 	if remove_if_empty_check_if_absent "$filename" ; then
-            echo "$url"
+            echo "$dir"
         fi
     done
 }
@@ -218,12 +219,16 @@ mirror_kernel_dir_index_files_binary_search() {
 }
 
 mirror_kernel_dir_index_files_all() {
-    local top_dir="$1"
+    local top_url="$1"
+    local top_dir="$2"
+    local subdir="$3"
+
     list_kernel_directories "$top_dir" |
-        skip_directory_urls_already_mirrored |
+        skip_directories_already_mirrored "$top_dir" |
+	sed "s|^(.*)\$|${top_url}\\1/" |
         xargs --no-run-if-empty -- \
-            wget $TIMESTAMPING --protocol-directories --force-directories \
-	        --quiet --accept='index.html*'
+            wget --quiet --protocol-directories --force-directories
+
     save_error
 }
 
@@ -315,6 +320,9 @@ mirror_debian()
 {
     local top_url="$1"
     local top_dir=$(url_to_dir "$top_url")
+    # Uncomment one of the following two lines:
+    local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_binary_search
+    # local mirror_kernel_dir_indexes=mirror_kernel_dir_index_files_all
 
     rename_bad_deb_files "$top_dir"
     mirror_top_level_directories "$top_url"
@@ -326,14 +334,9 @@ mirror_debian()
     # the following loop.
 
     for subdir in "/pool/main/l/linux/" "/pool/main/l/linux-tools/" ; do
-	# Do one of the following two:
-	mirror_kernel_dir_index_files_binary_search \
-	    "$top_url" "$top_dir" "$subdir"
-	# mirror_kernel_dir_index_files_all
+	$mirror_kernel_dir_indexes "$top_url" "$top_dir" "$subdir"
 	save_error
 
-	# If we don't want to do the whole binary search song and dance,
-	# this should download all files.
 	mirror_pkg_files "$top_dir" "$subdir"
 	save_error
     done
