@@ -22,7 +22,7 @@ on the latest build results in /home/ftp/build-results/pxfuse.
 EOF
 }
 
-for_installer_dir="/home/ftp/build-results/pxfuse/for-installer/x86_64/version"
+for_installer_dir="/home/ftp/build-results/pxfuse/for-installer/x86_64"
 logdir=
 pxfuse_dir=
 
@@ -33,7 +33,8 @@ fi
 
 if [[ $# -eq 1 ]] && [[ ".$1" = ".--recursive" ]] ; then
     for dist in centos debian fedora ubuntu ; do
-	pwx_test_kernels_in_mirror --distribution="$dist" --command="$0"
+	cmd=$(realpath "$0")
+	pwx_test_kernels_in_mirror --distribution="$dist" --command="$cmd"
 	symlinks -c "$for_installer_dir"
     done
     exit $?
@@ -70,9 +71,13 @@ guess_utsname=${guess_utsname#linux-headers-}
 
 pxd_version=$(set -- $(egrep '^#define PXD_VERSION ' < "${pxfuse_dir}/pxd.h") ; echo $3)
 
-dir="${for_installer_dir}/${pxd_version}/${guess_utsname}"
-rm -rf "$dir/packages"
-mkdir -p "$dir/packages"
-ln --symbolic --force "$@" "$dir/packages/"
-# symlinks -c "$dir/packages" > /dev/null
-cp "${logdir}/px.ko" "$dir/"
+export_dir="${for_installer_dir}/${guess_utsname}"
+export_pkgs_dir="${export_dir}/packages"
+export_module_dir="${export_dir}/version/${pxd_version}"
+
+rm -rf "$export_pkgs_dir" "$export_module_dir"
+mkdir -p "$export_pkgs_dir" "$export_module_dir"
+ln --symbolic --force "$@" "${export_pkgs_dir}/"
+symlinks -c "$export_pkgs_dir" > /dev/null
+
+cp "${logdir}/px.ko" "${export_module_dir}/"
