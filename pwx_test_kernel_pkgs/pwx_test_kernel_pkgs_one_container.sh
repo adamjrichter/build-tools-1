@@ -26,7 +26,7 @@ EOF
 . ${scriptsdir}/container_driver.sh
 . ${scriptsdir}/distro_driver.sh
 
-for_installer_dir="/home/ftp/build-results/pxfuse/for-installer/x86_64/version"
+for_installer_dir="/home/ftp/build-results/pxfuse/for-installer/x86_64"
 arch=amd64
 distro=ubuntu
 distro_release=""
@@ -111,7 +111,8 @@ filter_word() {
 test_kernel_pkgs_func() {
     local container_tmpdir result_logdir
     local result filename real dirname basename headers_dir
-    local pkg_names deps_unfiltered dep_names arg guess_utsname dir
+    local pkg_names deps_unfiltered dep_names arg guess_utsname
+    local export_dir export_pkgs_dir export_module_dir
     local container_tmpdir=/tmp/test-portworx-kernels.$$
     local pxfuse_dir pxd_version
     local make_args=
@@ -191,12 +192,16 @@ test_kernel_pkgs_func() {
 
 	    pxd_version=$(set -- $(egrep '^#define PXD_VERSION ' < "${pxfuse_dir}/pxd.h") ; echo $3)
 
-	    dir="${for_installer_dir}/${pxd_version}/${guess_utsname}"
-	    rm -rf "$dir/packages"
-	    mkdir -p "$dir/packages"
-	    ln --symbolic --force "$@" "$dir/packages/"
-	    symlinks -c "$dir/packages" > /dev/null
-	    cp "${result_logdir}/px.ko" "$dir/"
+	    export_dir="${for_installer_dir}/${guess_utsname}"
+	    export_pkgs_dir="${export_dir}/packages"
+	    export_module_dir="${export_dir}/version/${pxd_version}"
+
+	    rm -rf "$export_pkgs_dir" "$export_module_dir"
+	    mkdir -p "$export_pkgs_dir" "$export_module_dir"
+	    ln --symbolic --force "$@" "${export_pkgs_dir}/"
+	    symlinks -c "$export_pkgs_dir" > /dev/null
+
+	    cp "${result_logdir}/px.ko" "${export_module_dir}/"
 
 	fi # result = 0
 	touch "${result_logdir}/ran_test"
