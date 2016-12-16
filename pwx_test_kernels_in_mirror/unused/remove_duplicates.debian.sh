@@ -78,4 +78,6 @@ fi
 
 remove_duplicate_files
 remove_duplicate_build_dirs
-/usr/local/share/pwx_test_kernels_in_mirror/scripts/test_report.sh
+if $really_do_commands ; then
+    /usr/local/share/pwx_test_kernels_in_mirror/scripts/test_report.sh
+fi
