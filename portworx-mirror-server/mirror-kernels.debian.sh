@@ -163,7 +163,7 @@ pick_a_midpoint() {
 		
 		filename=${top_dir}/$(directory_index_to_filename $guess)
 		if [[ -s "$filename" ]] ; then
-                    echo "pick_a_midpoint: cached guess $start < $guess < $end" >&2
+                    # echo "pick_a_midpoint: cached guess $start < $guess < $end" >&2
                     echo "$guess"
                     return 0
 		fi
