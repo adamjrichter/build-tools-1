@@ -81,7 +81,8 @@ mirror_mirror_centos_org() {
     save_error
 }
 
-
+# TODO: Maybe add this after filtering for kernel versions 3.10 and later:
+# mirror_mirror_centos_org http://dev.centos.org/
 mirror_mirror_centos_org http://mirror.centos.org/centos/
 mirror_mirror_centos_org http://vault.centos.org/centos/
 save_error
