@@ -10,6 +10,7 @@ get_default_mirror_dirs_centos()
     echo \
 	/home/ftp/mirrors/http/elrepo.org/linux/kernel \
 	/home/ftp/mirrors/http/mirror.centos.org/centos
+	/home/ftp/mirrors/http/vault.centos.org/centos
 }
 
 walk_mirror_centos() {
