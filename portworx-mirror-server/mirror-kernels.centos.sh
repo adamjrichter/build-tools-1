@@ -58,7 +58,7 @@ mirror_el_repo() {
 }
 
 mirror_mirror_centos_org() {
-    local top_url=http://mirror.centos.org/centos/
+    local top_url="$1"
     local top_dir=$(url_to_dir "$top_url")
 
     rename_bad_rpm_files "$top_dir"
@@ -82,12 +82,8 @@ mirror_mirror_centos_org() {
 }
 
 
-# TODO? mirror vault.centos.org, but it only contains source RPM's.  The
-# kernel-headers RPM's that we use are apparently non-source RPM's
-# generated from kernel source RPM's.
-
-# mirror_vault_centos_org
-mirror_mirror_centos_org
+mirror_mirror_centos_org http://mirror.centos.org/centos/
+mirror_mirror_centos_org http://vault.centos.org/centos/
 save_error
 
 mirror_el_repo
