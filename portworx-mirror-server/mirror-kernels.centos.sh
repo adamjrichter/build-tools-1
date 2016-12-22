@@ -92,6 +92,7 @@ mirror_mirror_centos_org http://vault.centos.org/centos/
 save_error
 
 mirror_el_repo "http://elrepo.org/linux/kernel/"
+mirror_el_repo "http://mirrors.coreix.net/elrepo-archive-archive/kernel/"
 save_error
 
 exit $error_code
