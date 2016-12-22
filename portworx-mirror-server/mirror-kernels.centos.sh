@@ -71,7 +71,12 @@ mirror_mirror_centos_org() {
 	xargs wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
 	 --protocol-directories --force-directories --recursive --level=1 \
 	 --accept-regex="/(index.html)|(kernel-.*devel.*\.rpm)"
-
+    #                                         ^^^
+    # Notice that the "--accept-regexp=..." argument is written to allow
+    # more characters between the "kernel-" and "devel", to accomodate
+    # packages name kenrel-ml-devel... and kernel-lt-devel... for
+    # "main line" and "long term" kernels.
+    #
     # FIXME.  The following regular expresion might filter out kernels before
     # 3.10.  It is modified from one that was not working, but maybe this
     # version might work.
