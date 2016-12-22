@@ -19,6 +19,7 @@ error_code=0
 mirror_el_repo() {
     local top_url="$1"
     local top_dir=$(url_to_dir "$top_url")
+    local kernel_regexp
 
     local rpm_arch
 
@@ -41,10 +42,12 @@ mirror_el_repo() {
 
     save_error
 
+    kernel_regexp="kernel-([a-z]+-)?devel-${above_3_9_regexp}[0-9.]*-.*${rpm_arch}.rpm"
+
     for dir in ${top_dir}/*/${rpm_arch}/RPMS/ ; do
 	echo ''
 	extract_subdirs < $dir/index.html |
-	    egrep "^kernel-.*devel-.*.${rpm_arch}.rpm$" |
+	    egrep "^${kernel_regexp}\$" |
 	    subdirs_to_urls http://${dir#http/}
     done |
 	xargs -- wget --quiet --no-parent ${TIMESTAMPING} \
