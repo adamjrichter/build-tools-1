@@ -17,7 +17,7 @@ TIMESTAMPING='--no-clobber --no-use-server-timestamps'
 error_code=0
 
 mirror_el_repo() {
-    local top_url=http://elrepo.org/linux/kernel/
+    local top_url="$1"
     local top_dir=$(url_to_dir "$top_url")
 
     local rpm_arch
@@ -88,7 +88,7 @@ mirror_mirror_centos_org http://mirror.centos.org/centos/
 mirror_mirror_centos_org http://vault.centos.org/centos/
 save_error
 
-mirror_el_repo
+mirror_el_repo "http://elrepo.org/linux/kernel/"
 save_error
 
 exit $error_code
