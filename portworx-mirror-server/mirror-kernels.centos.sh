@@ -16,10 +16,6 @@ TIMESTAMPING='--no-clobber --no-use-server-timestamps'
 
 error_code=0
 
-versions_above_3_9 () {
-    egrep '^v(4|3\.[1-9][0-9]).*/$'
-}
-
 mirror_el_repo() {
     local top_url=http://elrepo.org/linux/kernel/
     local top_dir=$(url_to_dir "$top_url")
