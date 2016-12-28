@@ -80,19 +80,23 @@ subdirs_to_urls() {
 rename_bad_pkg_files() {
     local extension="$1"
     local command="$2"
-    local file
+    local dir file
     # FIXME?  Perhaps in the future, it would be better to maintain
     # a list of files that have already been checked and only check new
     # additions most of the time.  Better yet would be to have wget
     # download files to a temporary name, and only move them into place
     # after verifying them.
     shift 2
-    find "$@" -name "*${extension}" -type f -print0 |
-	while read -r -d $'\0' file ; do
-	    if ! $command "$file" > /dev/null 2>&1 ; then
-		mv --force "$file" "${file}.corrupt"
-	    fi
-	done
+    for dir in "$@" ; do
+	if [[ -e "$dir" ]] ; then
+	    find "$dir" -name "*${extension}" -type f -print0 |
+		while read -r -d $'\0' file ; do
+		    if ! $command "$file" > /dev/null 2>&1 ; then
+			mv --force "$file" "${file}.corrupt"
+		    fi
+		done
+	fi
+    done
 }
 
 rename_bad_deb_files() {

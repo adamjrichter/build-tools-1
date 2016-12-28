@@ -16,13 +16,10 @@ TIMESTAMPING='--no-clobber --no-use-server-timestamps'
 
 error_code=0
 
-versions_above_3_9 () {
-    egrep '^v(4|3\.[1-9][0-9]).*/$'
-}
-
 mirror_el_repo() {
-    local top_url=http://elrepo.org/linux/kernel/
+    local top_url="$1"
     local top_dir=$(url_to_dir "$top_url")
+    local kernel_regexp
 
     local rpm_arch
 
@@ -45,10 +42,12 @@ mirror_el_repo() {
 
     save_error
 
+    kernel_regexp="kernel-([a-z]+-)?devel-${above_3_9_regexp}[0-9.]*-.*${rpm_arch}.rpm"
+
     for dir in ${top_dir}/*/${rpm_arch}/RPMS/ ; do
 	echo ''
 	extract_subdirs < $dir/index.html |
-	    egrep "^kernel-.*devel-.*.${rpm_arch}.rpm$" |
+	    egrep "^${kernel_regexp}\$" |
 	    subdirs_to_urls http://${dir#http/}
     done |
 	xargs -- wget --quiet --no-parent ${TIMESTAMPING} \
@@ -58,7 +57,7 @@ mirror_el_repo() {
 }
 
 mirror_mirror_centos_org() {
-    local top_url=http://mirror.centos.org/centos/
+    local top_url="$1"
     local top_dir=$(url_to_dir "$top_url")
 
     rename_bad_rpm_files "$top_dir"
@@ -71,7 +70,12 @@ mirror_mirror_centos_org() {
 	xargs wget --quiet --no-parent ${TIMESTAMPING} -e robots=off \
 	 --protocol-directories --force-directories --recursive --level=1 \
 	 --accept-regex="/(index.html)|(kernel-.*devel.*\.rpm)"
-
+    #                                         ^^^
+    # Notice that the "--accept-regexp=..." argument is written to allow
+    # more characters between the "kernel-" and "devel", to accomodate
+    # packages name kenrel-ml-devel... and kernel-lt-devel... for
+    # "main line" and "long term" kernels.
+    #
     # FIXME.  The following regular expresion might filter out kernels before
     # 3.10.  It is modified from one that was not working, but maybe this
     # version might work.
@@ -81,16 +85,14 @@ mirror_mirror_centos_org() {
     save_error
 }
 
-
-# TODO? mirror vault.centos.org, but it only contains source RPM's.  The
-# kernel-headers RPM's that we use are apparently non-source RPM's
-# generated from kernel source RPM's.
-
-# mirror_vault_centos_org
-mirror_mirror_centos_org
+# TODO: Maybe add this after filtering for kernel versions 3.10 and later:
+# mirror_mirror_centos_org http://dev.centos.org/
+mirror_mirror_centos_org http://mirror.centos.org/centos/
+mirror_mirror_centos_org http://vault.centos.org/centos/
 save_error
 
-mirror_el_repo
+mirror_el_repo "http://elrepo.org/linux/kernel/"
+mirror_el_repo "http://mirrors.coreix.net/elrepo-archive-archive/kernel/"
 save_error
 
 exit $error_code

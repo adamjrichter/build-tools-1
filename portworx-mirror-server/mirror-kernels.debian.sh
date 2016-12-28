@@ -163,7 +163,7 @@ pick_a_midpoint() {
 		
 		filename=${top_dir}/$(directory_index_to_filename $guess)
 		if [[ -s "$filename" ]] ; then
-                    echo "pick_a_midpoint: cached guess $start < $guess < $end" >&2
+                    # echo "pick_a_midpoint: cached guess $start < $guess < $end" >&2
                     echo "$guess"
                     return 0
 		fi
@@ -323,6 +323,30 @@ mirror_pkg_files() {
     save_error
 }
 
+show_duplicates_from_later_directories()
+{
+    local oldname filename filepath
+
+    oldname=
+
+    awk -F/ '{print $NF, $0}' |
+        sort |
+        while read filename filepath ; do
+            if [[ ".$filename" = ".$oldname" ]] ; then
+                echo "$filepath"
+            fi
+            oldname="$filename"
+        done
+}
+
+remove_duplicate_files()
+{
+    local top_dir="$1"
+    find "$top_dir" -name '*.deb' -type f -print |
+	show_duplicates_from_later_directories |
+	xargs --no-run-if-empty -- rm -f
+}
+
 mirror_debian()
 {
     local top_url="$1"
@@ -347,6 +371,8 @@ mirror_debian()
 	mirror_pkg_files "$top_dir" "$subdir"
 	save_error
     done
+
+    remove_duplicate_files "$top_dir"
 }
 
 mirror_security_debian_org()
