@@ -47,7 +47,7 @@ mirror_download_opensuse_org() {
 
     wget --level=8 ${QUIET} --no-parent ${TIMESTAMPING} -e robots=off \
 	 --protocol-directories --force-directories --recursive \
-	 --accept-regex="/((index.html)||(kernel-.*devel.*\.rpm))$" "$top_url"
+	 --accept-regex="/((index.html)||(kernel-(source|.*devel).*\.rpm))$" "$top_url"
 
     #                                         ^^^
     # Notice that the "--accept-regexp=..." argument is written to allow
