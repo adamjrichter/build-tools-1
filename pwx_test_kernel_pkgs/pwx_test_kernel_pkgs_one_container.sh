@@ -101,7 +101,7 @@ filter_word() {
     local other
     shift
     for other in "$@" ; do
-	if [[ ".$first" = "$.other" ]] ; then
+	if [[ ".$first" = ".$other" ]] ; then
 	    return 0
 	fi
     done
