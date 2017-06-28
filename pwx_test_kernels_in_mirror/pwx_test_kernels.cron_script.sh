@@ -16,7 +16,7 @@ stop_lxc_test_containers() {
 
 main() {
     local result=0
-    for dist in centos debian fedora ubuntu ; do
+    for dist in centos debian fedora opensuse ubuntu ; do
 	if ! pwx_test_kernels_in_mirror --distribution="$dist" \
 	     --command-args="--leave-containers-running --containers=lxc" ; then
 	    result=$?
