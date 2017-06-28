@@ -2,26 +2,31 @@
 # script.
 
 dist_init_container_rpm() {
+    # dist_init_container_rpm calls {,un}install_pkgs rather than
+    # {,un}install_pkgs_rpm so that OpenSUSE can use this function
+    # while still having {,un}install_pkgs_opensuse.
     local iteration
     iteration=1
     while [[ $iteration -lt 10 ]] ; do
-        install_pkgs_rpm autoconf automake gcc gcc-c++ git make tar
+        install_pkgs autoconf automake gcc gcc-c++ git make tar
 	if in_container autoreconf --help > /dev/null 2>&1 ; then
 	    break
 	fi
 	iteration=$((iteration + 1))
     done
+    echo "AJR dist_init_container_rpm: packages loaded after iteration=$iteration" >&2
     
-    uninstall_pkgs_rpm kernel-devel   # FIXME? Is this command necessary?
+    uninstall_pkgs kernel-devel   # FIXME? Is this command necessary?
 }
 
 pkg_files_to_kernel_dirs_rpm() {
     rpm --query --list --package "$@" |
 	awk '{print $NF}' |
-	egrep '^\.?/usr/src/kernels/' |
-	sed 's|^\.\?\(/usr/src/kernels/[^/]*\)/.*$|\1|' |
+	egrep '^(\.?/usr/src/kernels/|/usr/src/linux-[0-9])' |
+	sed 's:^\.\?\(/usr/src/\(kernels/\|linux-[0-9]\)[^/]*\)/.*$:\1:' |
 	uniq |
 	sort -u
+	# | egrep -v '^/usr/src/linux-[0-9.]+-[0-9.]+-obj$'
 }
 
 pkg_files_to_names_rpm () {
