@@ -2,8 +2,16 @@
 # script.
 
 dist_init_container_rpm() {
-    install_pkgs_rpm autoconf automake gcc gcc-c++ git make tar
-
+    local iteration
+    iteration=1
+    while [[ $iteration -lt 10 ]] ; do
+        install_pkgs_rpm autoconf automake gcc gcc-c++ git make tar
+	if in_container autoreconf --help > /dev/null 2>&1 ; then
+	    break
+	fi
+	iteration=$((iteration + 1))
+    done
+    
     uninstall_pkgs_rpm kernel-devel   # FIXME? Is this command necessary?
 }
 
