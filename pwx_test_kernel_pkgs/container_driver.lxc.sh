@@ -7,8 +7,19 @@ container_name=
 
 await_default_route() {
     local count=100
+    local route_command
+    
+    if in_container_lxc ip netconf > /dev/null 2>&1 ; then
+	route_command="ip route"
+    else
+	route_command="route"
+    fi
+
     while [[ $count -gt 0 ]] ; do
-	if in_container_lxc ip route | egrep --quiet '^default via ' ; then
+	# if in_container_lxc ip route | egrep --quiet '^default via ' ; then
+	#    return 0
+	# fi
+	if in_container_lxc $route_command | egrep --quiet '^default[ 	]' ; then
 	    return 0
 	fi
 	sleep 0.1
