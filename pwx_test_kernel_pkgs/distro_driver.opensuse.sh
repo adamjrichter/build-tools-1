@@ -5,9 +5,16 @@
 
 pkg_files_to_names_opensuse()       { pkg_files_to_names_rpm        "$@" ; }
 pkg_files_to_dependencies_opensuse() { pkg_files_to_dependencies_rpm "$@" ; }
-dist_init_container_opensuse()      { dist_init_container_rpm       "$@" ; }
 dist_clean_up_container_opensuse()  { dist_clean_up_container_rpm   "$@" ; }
 dist_start_container_opensuse()     { dist_start_container_rpm      "$@"; }
+
+dist_init_container_opensuse()
+{
+    dist_init_container_rpm       "$@"
+    in_container sh -c "echo pkg_gpgcheck = off >> /etc/zypp/zypp.conf"
+    in_container sh -c "echo repo_gpgcheck = off >> /etc/zypp/zypp.conf"
+    in_container sh -c "echo gpgcheck = off >> /etc/zypp/zypp.conf"
+}
 
 pkg_files_to_kernel_dirs_opensuse()
 {
