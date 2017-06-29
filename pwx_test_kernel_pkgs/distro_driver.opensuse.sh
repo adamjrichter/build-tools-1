@@ -3,12 +3,22 @@
 
 # For now, just default everything to the common Opensuse drivers.
 
-pkg_files_to_kernel_dirs_opensuse() { pkg_files_to_kernel_dirs_rpm  "$@" ; }
 pkg_files_to_names_opensuse()       { pkg_files_to_names_rpm        "$@" ; }
 pkg_files_to_dependencies_opensuse() { pkg_files_to_dependencies_rpm "$@" ; }
 dist_init_container_opensuse()      { dist_init_container_rpm       "$@" ; }
 dist_clean_up_container_opensuse()  { dist_clean_up_container_rpm   "$@" ; }
 dist_start_container_opensuse()     { dist_start_container_rpm      "$@"; }
+
+pkg_files_to_kernel_dirs_opensuse()
+{
+    rpm --query --list --package "$@" |
+	awk '{print $NF}' |
+	egrep '^/usr/src/linux-[0-9][-0-9.]*-obj/[^/]+/[^/]+' |
+	sed 's:^\.\?\(/usr/src/linux-[0-9.][^/]*/[^/]*/[^/]*\)/.*$:\1:' |
+	uniq |
+	sort -u
+	# | egrep -v '^/usr/src/linux-[0-9.]+-[0-9.]+-obj$'
+}
 
 install_pkgs_opensuse()
 {
