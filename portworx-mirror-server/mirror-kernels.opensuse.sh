@@ -32,7 +32,7 @@ mirror_download_opensuse_org() {
     #	xargs
     #
     # wget will not load the .rpm files from
-    # http://download.opensuse.org/distribution/openSUSE-current/repo/oss/suse/x86_64 unless "--level" is explicitly set to a big number because "the default
+    # http://download.opensuse.org/distribution/openSUSE-current/repo/oss/opensuse/x86_64 unless "--level" is explicitly set to a big number because "the default
     # maximum depth is 5" according to the wget manual page.
 
     # First update all index.html files, then look for new .rpm files without

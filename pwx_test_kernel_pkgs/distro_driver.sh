@@ -8,7 +8,7 @@
 . $scriptsdir/distro_driver.ubuntu.sh
 . $scriptsdir/distro_driver.centos.sh
 . $scriptsdir/distro_driver.fedora.sh
-. $scriptsdir/distro_driver.suse.sh
+. $scriptsdir/distro_driver.opensuse.sh
 
 # These commands are selected based on the format of the kernel header
 # package files being used (.rpm or .deb)

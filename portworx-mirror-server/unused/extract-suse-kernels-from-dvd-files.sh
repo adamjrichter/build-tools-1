@@ -1,6 +1,6 @@
 #!/bin/sh
 # Usage:
-# extract-suse-kernels-from-dvd-files.sh file1.iso file2.iso ....
+# extract-opensuse-kernels-from-dvd-files.sh file1.iso file2.iso ....
 
 for iso in "$@" ; do
     no_dir=${iso##*/}

@@ -8,7 +8,7 @@
 . $scriptsdir/mirror_walk_driver.ubuntu.sh
 . $scriptsdir/mirror_walk_driver.centos.sh
 . $scriptsdir/mirror_walk_driver.fedora.sh
-. $scriptsdir/mirror_walk_driver.suse.sh
+. $scriptsdir/mirror_walk_driver.opensuse.sh
 
 # Used for selecting kernels version 3.10 or later.  Used by some drivers.
 above_3_9_regexp='(3\.[1-9][0-9]+|[4-9][0-9]*|[1-9][0-9]+)(\.[.0-9]+[0-9])?'

@@ -4,7 +4,7 @@
 dist_init_container_rpm() {
     # dist_init_container_rpm calls {,un}install_pkgs rather than
     # {,un}install_pkgs_rpm so that OpenSUSE can use this function
-    # while still having {,un}install_pkgs_suse.
+    # while still having {,un}install_pkgs_opensuse.
     local iteration
     iteration=1
     while [[ $iteration -lt 10 ]] ; do
