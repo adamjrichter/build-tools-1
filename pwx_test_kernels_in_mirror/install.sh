@@ -59,7 +59,7 @@ chmod a+x \
 #
 # install_crontab
 
-for dist in centos debian fedora opensuse ubuntu ; do
+for dist in centos debian fedora suse ubuntu ; do
     mkdir -p "${downloads_dir}/${dist}"
 done
 

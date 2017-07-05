@@ -3,12 +3,12 @@
 
 # For now, just default everything to the common Opensuse drivers.
 
-pkg_files_to_names_opensuse()       { pkg_files_to_names_rpm        "$@" ; }
-pkg_files_to_dependencies_opensuse() { pkg_files_to_dependencies_rpm "$@" ; }
-dist_clean_up_container_opensuse()  { dist_clean_up_container_rpm   "$@" ; }
-dist_start_container_opensuse()     { dist_start_container_rpm      "$@"; }
+pkg_files_to_names_suse()       { pkg_files_to_names_rpm        "$@" ; }
+pkg_files_to_dependencies_suse() { pkg_files_to_dependencies_rpm "$@" ; }
+dist_clean_up_container_suse()  { dist_clean_up_container_rpm   "$@" ; }
+dist_start_container_suse()     { dist_start_container_rpm      "$@"; }
 
-dist_init_container_opensuse()
+dist_init_container_suse()
 {
     dist_init_container_rpm       "$@"
     in_container sh -c "echo pkg_gpgcheck = off >> /etc/zypp/zypp.conf"
@@ -16,48 +16,48 @@ dist_init_container_opensuse()
     in_container sh -c "echo gpgcheck = off >> /etc/zypp/zypp.conf"
 }
 
-pkg_files_to_kernel_dirs_opensuse()
+pkg_files_to_kernel_dirs_suse()
 {
     rpm --query --list --package "$@" |
 	awk '{print $NF}' |
-	egrep '^/usr/src/linux-[0-9][-0-9.]*-obj/[^/]+/[^/]+' |
-	sed 's:^\.\?\(/usr/src/linux-[0-9.][^/]*/[^/]*/[^/]*\)/.*$:\1:' |
+	egrep '^/usr/src/linux-[0-9][-0-9a-z.]*-obj/[^/]+/[^/]+' |
+	sed 's:^\.\?\(/usr/src/linux-[^/]*/[^/]*/[^/]*\)/.*$:\1:' |
 	uniq |
 	sort -u
 	# | egrep -v '^/usr/src/linux-[0-9.]+-[0-9.]+-obj$'
 }
 
-install_pkgs_opensuse()
+install_pkgs_suse()
 {
     in_container zypper --non-interactive --gpg-auto-import-keys install "$@"
 }
 
-install_pkgs_dir_opensuse()
+install_pkgs_dir_suse()
 {
     # FIXME.  What about dependencies?
     # in_container sh -c "rpm --install $1/*"
-    echo "AJR install_pkgs_dir_opensuse: packages: " >&2
+    echo "AJR install_pkgs_dir_suse: packages: " >&2
     in_container sh -c "cd $1 && ls -l" >&2
     in_container sh -c "zypper --non-interactive --gpg-auto-import-keys install $1/*"
 }
 
-uninstall_pkgs_opensuse()
+uninstall_pkgs_suse()
 {
     in_container zypper --non-interactive --gpg-auto-import-keys remove "$@"
 }
 
-pkgs_update_opensuse()
+pkgs_update_suse()
 {
     in_container zypper --non-interactive --gpg-auto-import-keys update
 }
 
-#dist_init_container_opensuse()
+#dist_init_container_suse()
 #{
 #    # in_container zypper --non-interactive --gpg-auto-import-keys install yum
 #    dist_init_container_rpm "$@"
 #}
 
-get_dist_releases_opensuse()
+get_dist_releases_suse()
 {
     echo "42.2 13.2"
 }

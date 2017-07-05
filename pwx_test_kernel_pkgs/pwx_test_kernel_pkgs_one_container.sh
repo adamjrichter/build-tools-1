@@ -174,6 +174,10 @@ test_kernel_pkgs_func() {
 	# to become longer than a pipe buffer, although this would probably
 	# never happen.
 
+	if [[ -z "$headers_dir" ]] ; then
+	    echo "AJR test_kernel_pkgs_func: null \$headers_dir, \$* = $*." >&2
+	fi
+
 	in_container sh -c \
 		     "cd ${container_tmpdir}/pxfuse_dir && \
                   autoreconf && \

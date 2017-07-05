@@ -40,20 +40,22 @@ install_ftpd_ubuntu:
 	    ( cd / && xargs -- tar --create --dereference ) | \
 	    ( cd ~ftp && tar xp )
 
-install_httpd_ubuntu:
+add_user_pwxmirror:
+	adduser --system pwxmirror
+	chsh --shell /bin/bash pwxmirror
+
+install_httpd_ubuntu: add_user_pwxmirror
 	apt-get install --quiet --yes apache2
 	-rm -f /var/www/html/mirrors
 	-mkdir -p /var/www/html/mirrors
 	chown -R pwxmirror /var/www/html/mirrors
 	mv /var/www/html/index.html /var/www/html/index.html.orig 2> /dev/null || true
 
-install_mirror_ubuntu: install_mirror_scripts install_httpd_ubuntu install_ftpd_ubuntu
+install_mirror_ubuntu: install_mirror_scripts install_httpd_ubuntu install_ftpd_ubuntu add_user_pwxmirror
 	mkdir -p /var/log/portworx-mirror-server
-	adduser --system pwxmirror
-	chsh --shell /bin/bash pwxmirror
 	chown -R pwxmirror /home/pwxmirror /var/log/portworx-mirror-server
 	( . ${scriptsdir}/pwx-mirror-config.sh && \
-	  mkdir -p $$mirrordir/misc/centos $$mirrordir/misc/debian $$mirrordir/misc/opensuse $$mirrordir/misc/ubuntu && for subdir in centos debian opensuse ubuntu ; do dir=$$mirrordir/misc/$$subdir ; file=$$dir/README.txt ; if [ ! -e "$$file" ] ; then echo "This directory is for unmirrored kernel header packages and support files related to $$subdir." > $$file ; fi ; done && chown -R pwxmirror $$mirrordir )
+	  mkdir -p $$mirrordir/misc/centos $$mirrordir/misc/debian $$mirrordir/misc/suse $$mirrordir/misc/ubuntu && for subdir in centos debian suse ubuntu ; do dir=$$mirrordir/misc/$$subdir ; file=$$dir/README.txt ; if [ ! -e "$$file" ] ; then echo "This directory is for unmirrored kernel header packages and support files related to $$subdir." > $$file ; fi ; done && chown -R pwxmirror $$mirrordir )
 #	crontab -u pwxmirror ${scriptsdir}/crontab.txt
 #	^^^^^ Do not install the crontab for now, as the current  plan
 #	      is for the cron script to be run by Jensen.
@@ -84,7 +86,8 @@ install_pxdev_ubuntu: install_docker_ubuntu
 
 install_pxdev: install_pxdev_ubuntu
 
-install: install_docker install_mirror install_pxdev
+# install: install_docker install_mirror install_pxdev
+install: install_mirror
 
 clean:
 	-rm -f *~ \#* crontab.txt

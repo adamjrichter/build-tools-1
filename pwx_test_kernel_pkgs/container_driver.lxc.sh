@@ -110,6 +110,7 @@ stop_container_lxc() {
 }
 
 in_container_lxc() {
+    echo "AJR in_container_lxc $*" >&2
     lxc-attach --name "$container_name" --clear-env \
         --set-var \
             PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \

@@ -15,8 +15,7 @@ Options:
         --help
         --logdir=logdir                [default: based on distribution]
         --mirror-top=mirror_top_dir
-        --pfxuse=pxfuse_src_dir        [default: download tempoary
-
+        --pfxuse=pxfuse_src_dir        [default: download temporary]
 EOF
 }
 
