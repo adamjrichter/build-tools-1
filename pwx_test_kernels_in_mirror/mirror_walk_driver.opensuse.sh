@@ -48,7 +48,7 @@ find_noarch_file_opensuse()
 {
     local all_archs_dir="$1"
     local name_hyphen_version="$2"
-    local file="${name_hyphen_vesion}.noarch.rpm"
+    local file="${name_hyphen_version}.noarch.rpm"
     local dir dir_and_file
 
     for dir in $(list_noarch_dirs_opensuse "$all_archs_dir") ; do
