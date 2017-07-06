@@ -14,7 +14,6 @@ dist_init_container_rpm() {
 	fi
 	iteration=$((iteration + 1))
     done
-    echo "AJR dist_init_container_rpm: packages loaded after iteration=$iteration" >&2
     
     uninstall_pkgs kernel-devel   # FIXME? Is this command necessary?
 }

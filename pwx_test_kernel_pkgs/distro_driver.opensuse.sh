@@ -36,8 +36,8 @@ install_pkgs_dir_opensuse()
 {
     # FIXME.  What about dependencies?
     # in_container sh -c "rpm --install $1/*"
-    echo "AJR install_pkgs_dir_opensuse: packages: " >&2
-    in_container sh -c "cd $1 && ls -l" >&2
+    # echo "AJR install_pkgs_dir_opensuse: packages: " >&2
+    # in_container sh -c "cd $1 && ls -l" >&2
     in_container sh -c "zypper --non-interactive --gpg-auto-import-keys install $1/*"
 }
 
