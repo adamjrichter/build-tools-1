@@ -14,13 +14,13 @@ get_default_mirror_dirs_opensuse()
 }
 
 list_noarch_dirs_opensuse() {
-    local noarch_dir="$1"
+    local all_archs_dir="$1"
     local dvds_dir="/home/ftp/mirrors/dvd/opensuse"
 
-    echo "$noarch_dir"
+    echo "$all_archs_dir/noarch"
 
     # Skip directories that are not named to indicate a CD or DVD image.
-    case "$noarch_dir" in
+    case "$all_archs_dir" in
 	${dvds_dir}/SLE-*-DVD[0-9] ) ;;
 	${dvds_dir}/SLE-*-DVD[0-9]/* ) ;;
 	${dvds_dir}/SLE-*-CD[0-9] ) ;;
@@ -28,7 +28,7 @@ list_noarch_dirs_opensuse() {
 	* ) return 0 ;;
     esac
 
-    within_discs_dir=${noarch_dir#${dvds_dir}/}
+    within_discs_dir=${all_archs_dir#${dvds_dir}/}
     disc=${within_discs_dir%%/*}
     disc_no_number=${disc%[0-9]}
     parent_disc_no_number=$(echo "$disc_no_number" |
