@@ -8,7 +8,7 @@ get_default_mirror_dirs_opensuse()
     echo \
 	/home/ftp/mirrors/http/download.opensuse.org/distribution \
 	/home/ftp/mirrors/http/download.opensuse.org/update \
-	/home/ftp/mirrors/dvd/opensuse
+	/home/ftp/mirrors/dvd/suse
 
 	# echo /home/ftp/mirrors/http/dev.opensuse.org
 }
