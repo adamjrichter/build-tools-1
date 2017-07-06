@@ -175,7 +175,8 @@ test_kernel_pkgs_func() {
 	# never happen.
 
 	if [[ -z "$headers_dir" ]] ; then
-	    echo "AJR test_kernel_pkgs_func: null \$headers_dir, \$* = $*." >&2
+	    echo "FATAL: test_kernel_pkgs_func: null \$headers_dir, \$* = $*." >&2
+	    return 1
 	fi
 
 	in_container sh -c \
