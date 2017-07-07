@@ -24,7 +24,7 @@ start_container()
     if [[ -z "$release" ]] ; then
 	release=$(set $(get_dist_releases) ; echo $1)
 	if [[ -z "$release" ]] ; then
-	    echo "start_container_lxc: Unable to determine default release for distribution \"${distro}\"." >&2
+	    echo "start_container: Unable to determine default release for distribution \"${distro}\"." >&2
 	    echo "Failing." >&2
 	    return 1
 	fi
