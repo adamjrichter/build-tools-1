@@ -60,9 +60,27 @@ install_pkgs_dir_rpm_notyet()
     done
 }
 
-install_pkgs_rpm()     { in_container yum --assumeyes --quiet install "$@" ; }
+install_pkgs_rpm()
+{
+    # CoreOS ends up calling this function with no parameters, which
+    # is why this function checks for that.
+
+    if [[ $# -gt 0 ]] ; then
+	in_container yum --assumeyes --quiet install "$@"
+    fi
+}
+
 #uninstall_pkgs_rpm()   { in_container rpm --erase "$@" ; }
-uninstall_pkgs_rpm()   { in_container yum --assumeyes remove "$@" ; }
+uninstall_pkgs_rpm()
+{
+    # CoreOS ends up calling this function with no parameters, which
+    # is why this function checks for that.
+
+    if [[ $# -gt 0 ]] ; then
+	in_container yum --assumeyes remove "$@"
+    fi
+}
+
 pkgs_update_rpm()      { in_container yum --assumeyes --quiet update ; }
 dist_clean_up_container_rpm() { true; }	# No-op for now.
 dist_start_container_rpm() { true; }
