@@ -7,6 +7,7 @@
 . $scriptsdir/mirror_walk_driver.debian.sh
 . $scriptsdir/mirror_walk_driver.ubuntu.sh
 . $scriptsdir/mirror_walk_driver.centos.sh
+. $scriptsdir/mirror_walk_driver.coreos.sh
 . $scriptsdir/mirror_walk_driver.fedora.sh
 . $scriptsdir/mirror_walk_driver.opensuse.sh
 
