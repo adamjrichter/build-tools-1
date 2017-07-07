@@ -6,9 +6,11 @@ docker_pid=
 start_container_docker() {
     local container_name id
     local release=""
+    local distribution=""
 
     while [[ $# -gt 0 ]] ; do
 	case "$1" in
+	    --distribution=* ) distribution="${1#--distribution=}" ;;
 	    --release=* ) release="${1#--release=}" ;;
 	    --* ) echo "start_container_lxc: Unrecognized argument \"$1\"." >&2 ;;
 	    -- ) shift ; break ;;
@@ -17,14 +19,17 @@ start_container_docker() {
 	shift
     done
 
+    if [[ -z "$distribution" ]] ; then
+	echo "start_container_lxc: --distribution=disto missing." >&2
+	return 1
+    fi
+
     if [[ -z "$release" ]] ; then
 	echo "start_container_lxc: --release=dist_release missing." >&2
 	return 1
     fi
 
-    # FIXME.  Support selection of distribution release.
-    # container_name="pwx_test_${distribution}_${release}"
-    container_name="pwx_test_${distribution}"
+    container_name="pwx_test_${distribution}_${release}"
 
     systemctl start docker
     id=$(docker ps --quiet=true --all=true --filter name="${container_name}")
