@@ -32,7 +32,7 @@ if [[ $# -eq 0 ]] ; then
 fi
 
 if [[ $# -eq 1 ]] && [[ ".$1" = ".--recursive" ]] ; then
-    for dist in centos debian fedora ubuntu ; do
+    for dist in centos debian fedora ubuntu opensuse ; do
 	cmd=$(realpath "$0")
 	pwx_test_kernels_in_mirror --distribution="$dist" --command="$cmd"
 	symlinks -c "$for_installer_dir"
