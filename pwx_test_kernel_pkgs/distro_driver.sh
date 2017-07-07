@@ -7,6 +7,7 @@
 . $scriptsdir/distro_driver.debian.sh
 . $scriptsdir/distro_driver.ubuntu.sh
 . $scriptsdir/distro_driver.centos.sh
+. $scriptsdir/distro_driver.coreos.sh
 . $scriptsdir/distro_driver.fedora.sh
 . $scriptsdir/distro_driver.opensuse.sh
 
