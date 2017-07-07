@@ -58,8 +58,9 @@ DESCRIPTION OF INTERNAL FUNCTIONS
 
 	The distribution interface uses the $distribution shell global
 	variable to select the distribution type.  Currently, "ubuntu",
-	"debian" and "centos" are supported.  Every shell function func
-	listed below is just a wrapper that invokes func_$distribution.
+	"debian", "centos", "coreos" and "opensuse" are supported.
+	Every shell function, func, listed below is just a wrapper
+	that invokes func_$distribution.
 
 	pkg_files_to_names	- Given a list of package files output
 				  the names of the packages that those
