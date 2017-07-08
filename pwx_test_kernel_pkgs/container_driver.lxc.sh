@@ -47,9 +47,11 @@ is_container_running() {
 start_container_lxc() {
     local must_initialize
     local release=""
+    local distribution=""
 
     while [[ $# -gt 0 ]] ; do
 	case "$1" in
+	    --distribution=* ) distribution="${1#--distribution=}" ;;
 	    --release=* ) release="${1#--release=}" ;;
 	    --* ) echo "start_container_lxc: Unrecognized argument \"$1\"." >&2 ;;
 	    -- ) shift ; break ;;
@@ -58,12 +60,17 @@ start_container_lxc() {
 	shift
     done
 
+    if [[ -z "$distribution" ]] ; then
+	echo "start_container_lxc: --distribution=disto missing." >&2
+	return 1
+    fi
+
     if [[ -z "$release" ]] ; then
 	echo "start_container_lxc: --release=dist_release missing." >&2
 	return 1
     fi
 
-    container_name="pwx_test_${distro}_${release}"
+    container_name="pwx_test_${distribution}_${release}"
 
     lxc-ls > /dev/null 2>&1 || true
     # ^^^ Removes incompletely initialized containters
@@ -73,7 +80,7 @@ start_container_lxc() {
     else
 	must_initialize=true
 	lxc-create --name "${container_name}" --template download -- \
-		     --dist "$distro" --arch "$arch" --release "$release"
+		     --dist "$distribution" --arch "$arch" --release "$release"
     fi
 
     if ! is_container_running "${container_name}" ; then

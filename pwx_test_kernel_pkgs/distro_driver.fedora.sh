@@ -12,7 +12,8 @@ uninstall_pkgs_fedora()           { uninstall_pkgs_rpm            "$@" ; }
 pkgs_update_fedora()              { pkgs_update_rpm               "$@" ; }
 dist_init_container_fedora()      { dist_init_container_rpm       "$@" ; }
 dist_clean_up_container_fedora()  { dist_clean_up_container_rpm   "$@" ; }
-dist_start_container_fedora()     { dist_start_container_rpm      "$@"; }
+dist_start_container_fedora()     { dist_start_container_rpm      "$@" ; }
+start_container_fedora()          { start_container_generic       "$@" ; }
 
 get_dist_releases_fedora()
 {

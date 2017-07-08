@@ -4,15 +4,18 @@ container_system=docker	# force this default for now.
 . $scriptsdir/container_driver.docker.sh
 . $scriptsdir/container_driver.lxc.sh
 
+start_container() { "start_container_$distro" "$@" ; }
 stop_container() { "stop_container_$container_system" "$@" ; }
 in_container() { "in_container_$container_system" "$@" ; }
 
-start_container()
+start_container_generic()
 {
     local release=""
+    local distribution="$distro"
 
     while [[ $# -gt 0 ]] ; do
 	case "$1" in
+	    --distribution=* ) distribution="${1#--distribution=}" ;;
 	    --release=* ) release="${1#--release=}" ;;
 	    -- ) shift ; break ;;
 	    --* ) echo "start_container: Unrecognized argument \"$1\"." >&2 ;;
@@ -22,7 +25,7 @@ start_container()
     done
 
     if [[ -z "$release" ]] ; then
-	release=$(set $(get_dist_releases) ; echo $1)
+	release=$(set $(get_dist_releases_$distribution) ; echo $1)
 	if [[ -z "$release" ]] ; then
 	    echo "start_container: Unable to determine default release for distribution \"${distro}\"." >&2
 	    echo "Failing." >&2
@@ -30,7 +33,7 @@ start_container()
 	fi
     fi
 
-    "start_container_$container_system" --release="$release" "$@"
+    "start_container_$container_system" --distribution="$distribution" --release="$release" "$@"
 }
 
 

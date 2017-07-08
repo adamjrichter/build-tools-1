@@ -13,6 +13,7 @@ uninstall_pkgs_ubuntu()           { uninstall_pkgs_deb            "$@" ; }
 pkgs_update_ubuntu()              { pkgs_update_deb               "$@" ; }
 dist_clean_up_container_ubuntu()  { dist_clean_up_container_deb   "$@" ; }
 dist_start_container_ubuntu()     { dist_start_container_deb      "$@"; }
+start_container_ubuntu()          { start_container_generic "$@" ; }
 
 get_dist_releases_ubuntu()
 {

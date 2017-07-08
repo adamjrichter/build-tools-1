@@ -5,6 +5,7 @@
 
 pkg_files_to_names_opensuse()       { pkg_files_to_names_rpm        "$@" ; }
 pkg_files_to_dependencies_opensuse() { pkg_files_to_dependencies_rpm "$@" ; }
+start_container_opensuse()          { start_container_generic "$@" ; }
 dist_clean_up_container_opensuse()  { dist_clean_up_container_rpm   "$@" ; }
 dist_start_container_opensuse()     { dist_start_container_rpm      "$@"; }
 
