@@ -25,9 +25,10 @@ mirror_coreos() {
 	 --force-directories --accept=index.html --recursive \
 	 "${prefix}/"
 
-    wget ${TIMESTAMPING} --quiet --protocol-directories \
-	 --force-directories --accept=index.html \
-	 "${prefix}/${arch}-usr/current/coreos_production_iso_image.iso"
+    wget ${TIMESTAMPING} --quiet --protocol-directories --recursive \
+	 --force-directories \
+	 --accept-regex='.*/(index.html|.*\.iso)?$' \
+	 "${prefix}/${arch}-usr/"
 }
 
 mirror_coreos stable
