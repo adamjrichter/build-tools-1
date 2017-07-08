@@ -34,7 +34,7 @@ done
 
 main()
 {
-    local releaes releases
+    local release releases
 
     if [[ -n "$distro_releases" ]] ; then
 	releases=$(echo "$distro_releases" | sed 's/,/ /g')
