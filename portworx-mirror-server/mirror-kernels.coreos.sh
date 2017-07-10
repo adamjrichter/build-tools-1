@@ -27,7 +27,7 @@ mirror_coreos() {
 
     wget ${TIMESTAMPING} --quiet --protocol-directories --recursive \
 	 --force-directories \
-	 --accept-regex='.*/(index.html|.*\.iso)?$' \
+	 --accept-regex='.*/(index.html|.*\.iso|coreos_developer_container\.bin.bz2.*)?$' \
 	 "${prefix}/${arch}-usr/"
 }
 
