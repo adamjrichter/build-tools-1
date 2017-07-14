@@ -195,6 +195,14 @@ test_kernel_pkgs_func() {
 	    guess_utsname=${guess_utsname#kernels/}
 	    guess_utsname=${guess_utsname#linux-headers-}
 
+	    case "$guess_utsname" in
+		/tmp/coreos_remote_tmp_dir/* )
+		    guess_utsname=${guess_utsname#/tmp/coreos_remote_tmp_dir/squashfs-root/lib/modules/}
+		    guess_utsname=${guess_utsname%/}
+		    guess_utsname=${guess_utsname%/build}
+		    ;;
+	    esac
+
 	    pxd_version=$(set -- $(egrep '^#define PXD_VERSION ' < "${pxfuse_dir}/pxd.h") ; echo $3)
 
 	    export_dir="${for_installer_dir}/${guess_utsname}"
