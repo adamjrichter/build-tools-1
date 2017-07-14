@@ -12,8 +12,11 @@ install_mirror_scripts: all
 	    sed "s|^scriptsdir=.*$$|scriptsdir=${scriptsdir}|g" \
 		< "$$file" > "${scriptsdir}/$$file" ; \
 	done
+	cp -apr from_amazon_linux "${scriptsdir}/"
 	chmod a+x ${scriptsdir}/*.sh
-	apt-get install -y symlinks	# used by cron-script.sh
+	apt-get install -y symlinks yum-utils
+        # symlinks is used by cron-script.sh
+        # yum-tools includes reposync, which is used to mirror Amazon Linux.
 	install crontab.txt ${scriptsdir}/
 
 install_ftpd_ubuntu:
