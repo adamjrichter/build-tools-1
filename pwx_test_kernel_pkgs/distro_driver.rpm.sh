@@ -8,6 +8,7 @@ dist_init_container_rpm() {
     local iteration
     iteration=1
     while [[ $iteration -lt 10 ]] ; do
+	in_container dnf --assumeyes install yum || true
         install_pkgs autoconf automake gcc gcc-c++ git make tar
 	if in_container autoreconf --help > /dev/null 2>&1 ; then
 	    break
