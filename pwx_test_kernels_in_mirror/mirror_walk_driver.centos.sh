@@ -31,7 +31,8 @@ walk_mirror_centos() {
     return_status=0
 
     kernel_regexp=".*/kernel-([a-z]+-)?devel-${above_3_9_regexp}[0-9.]*-.*${rpm_arch}.rpm"
-    find "$mirror_tree" -regextype egrep -regex "$kernel_regexp" -type f -print0 |
+    find "$mirror_tree" -regextype egrep -regex "$kernel_regexp" -type f \
+	 -print0 |
 	while read -r -d $'\0' file ; do
             if ! "$@" "$file" ; then
 		return_status=$?
