@@ -7,6 +7,8 @@ pkg_files_to_names_centos()       { pkg_files_to_names_rpm        "$@" ; }
 
 get_default_mirror_dirs_centos()
 {
+    local dir
+	
     echo \
 	/home/ftp/mirrors/http/elrepo.org/linux/kernel \
 	/home/ftp/mirrors/http/mirror.centos.org/centos \
@@ -14,6 +16,12 @@ get_default_mirror_dirs_centos()
 	/home/ftp/mirrors/http/mirrors.coreix.net/elrepo-archive-archive/kernel
 
     # echo /home/ftp/mirrors/http/dev.centos.org
+
+    for dir in /home/ftp/mirrors/http/packages.*.amazonaws.com/ ; do
+	if [ -e "$dir" ] ; then
+	    echo "$dir"
+	fi
+    done
 }
 
 walk_mirror_centos() {

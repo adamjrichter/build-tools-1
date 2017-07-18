@@ -7,14 +7,7 @@ pkg_files_to_names_fedora()       { pkg_files_to_names_rpm        "$@" ; }
 
 get_default_mirror_dirs_fedora()
 {
-    local dir
     echo /home/ftp/mirrors/http/ftp.linux.ncsu.edu/pub/fedora/linux/releases
-    for dir in /home/ftp/mirrors/http/packages.*.amazonaws.com/ ; do
-	if [ -e "$dir" ] ; then
-	    echo "$dir"
-	fi
-    done
-	
 }
 
 walk_mirror_fedora() {
