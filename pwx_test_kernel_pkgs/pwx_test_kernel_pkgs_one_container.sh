@@ -108,6 +108,24 @@ filter_word() {
     echo "$first"
 }
 
+guess_utsname_from_headers_dir() {
+    local headers_dir="$1"
+    local guess_utsname
+
+    guess_utsname=${headers_dir#/usr/src/}
+    guess_utsname=${guess_utsname#kernels/}
+    guess_utsname=${guess_utsname#linux-headers-}
+
+    case "$guess_utsname" in
+	/tmp/coreos_remote_tmp_dir/* )
+	    guess_utsname=${guess_utsname#/tmp/coreos_remote_tmp_dir/squashfs-root/lib/modules/}
+	    guess_utsname=${guess_utsname%/}
+	    guess_utsname=${guess_utsname%/build}
+		    ;;
+    esac
+}
+
+
 test_kernel_pkgs_func() {
     local container_tmpdir result_logdir
     local result filename real dirname basename headers_dir
@@ -191,17 +209,7 @@ test_kernel_pkgs_func() {
 	    in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
 		tar -C "${result_logdir}" -xpv
 
-	    guess_utsname=${headers_dir#/usr/src/}
-	    guess_utsname=${guess_utsname#kernels/}
-	    guess_utsname=${guess_utsname#linux-headers-}
-
-	    case "$guess_utsname" in
-		/tmp/coreos_remote_tmp_dir/* )
-		    guess_utsname=${guess_utsname#/tmp/coreos_remote_tmp_dir/squashfs-root/lib/modules/}
-		    guess_utsname=${guess_utsname%/}
-		    guess_utsname=${guess_utsname%/build}
-		    ;;
-	    esac
+	    guess_utsname=$(guess_utsname_from_headers_dir "$headers_dir")
 
 	    pxd_version=$(set -- $(egrep '^#define PXD_VERSION ' < "${pxfuse_dir}/pxd.h") ; echo $3)
 
