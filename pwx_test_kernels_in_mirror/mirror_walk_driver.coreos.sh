@@ -30,5 +30,13 @@ walk_mirror_coreos() {
 	    fi
 	done
 
+    #find "$mirror_tree" -name 'coreos_developer_container.bin.bz2' -type f \
+    #     -print0 |
+    #    while read -r -d $'\0' file ; do
+    #        if ! "$@" "$file" ; then
+    #            return_status=$?
+    #        fi
+    #    done
+
     return $return_status
 }
