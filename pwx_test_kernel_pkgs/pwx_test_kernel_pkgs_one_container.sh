@@ -180,53 +180,51 @@ test_kernel_pkgs_func() {
 	return $result
     fi
 
-    if [[ $result = 0 ]] ; then
-	headers_dir=$(pkg_files_to_kernel_dirs "$@" | sort -u | tail -1)
-	# Use "tail" to get the last kernel directory that is alphabetically
-	# last because Ubuntu unpacks and requires an architecure-independnt
-	# kernel header directory that is a prefix architecture-specific
-	# kernel header directory that should be passed to the pxfuse build.
-	#
-	# "sort -u | tail -1" is used rather than "sort -ur | head -1" to
-	# avoid generating a broken pipe signal if the list were somehow
-	# to become longer than a pipe buffer, although this would probably
-	# never happen.
+    headers_dir=$(pkg_files_to_kernel_dirs "$@" | sort -u | tail -1)
+    # Use "tail" to get the last kernel directory that is alphabetically
+    # last because Ubuntu unpacks and requires an architecure-independnt
+    # kernel header directory that is a prefix architecture-specific
+    # kernel header directory that should be passed to the pxfuse build.
+    #
+    # "sort -u | tail -1" is used rather than "sort -ur | head -1" to
+    # avoid generating a broken pipe signal if the list were somehow
+    # to become longer than a pipe buffer, although this would probably
+    # never happen.
 
-	if [[ -z "$headers_dir" ]] ; then
-	    echo "FATAL: test_kernel_pkgs_func: null \$headers_dir, \$* = $*." >&2
-	    return 1
-	fi
+    if [[ -z "$headers_dir" ]] ; then
+        echo "FATAL: test_kernel_pkgs_func: null \$headers_dir, \$* = $*." >&2
+        return 1
+    fi
 
-	in_container sh -c \
-		     "cd ${container_tmpdir}/pxfuse_dir && \
+    in_container sh -c \
+                 "cd ${container_tmpdir}/pxfuse_dir && \
                   autoreconf && \
                   ./configure && \
                   make KERNELPATH=$headers_dir $make_args"
-                  # make KERNELPATH=$headers_dir CC=\"gcc -fno-pie\"
+    # make KERNELPATH=$headers_dir CC=\"gcc -fno-pie\"
 
-	result=$?
-	if [[ "$result" = 0 ]] ; then
-	    in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
-		tar -C "${result_logdir}" -xpv
+    result=$?
+    if [[ "$result" = 0 ]] ; then
+        in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
+            tar -C "${result_logdir}" -xpv
 
-	    guess_utsname=$(guess_utsname_from_headers_dir "$headers_dir")
+        guess_utsname=$(guess_utsname_from_headers_dir "$headers_dir")
 
-	    pxd_version=$(set -- $(egrep '^#define PXD_VERSION ' < "${pxfuse_dir}/pxd.h") ; echo $3)
+        pxd_version=$(set -- $(egrep '^#define PXD_VERSION ' < "${pxfuse_dir}/pxd.h") ; echo $3)
 
-	    export_dir="${for_installer_dir}/${guess_utsname}"
-	    export_pkgs_dir="${export_dir}/packages"
-	    export_module_dir="${export_dir}/version/${pxd_version}"
+        export_dir="${for_installer_dir}/${guess_utsname}"
+        export_pkgs_dir="${export_dir}/packages"
+        export_module_dir="${export_dir}/version/${pxd_version}"
 
-	    rm -rf "$export_pkgs_dir" "$export_module_dir"
-	    mkdir -p "$export_pkgs_dir" "$export_module_dir"
-	    ln --symbolic --force "$@" "${export_pkgs_dir}/"
-	    symlinks -c "$export_pkgs_dir" > /dev/null
+        rm -rf "$export_pkgs_dir" "$export_module_dir"
+        mkdir -p "$export_pkgs_dir" "$export_module_dir"
+        ln --symbolic --force "$@" "${export_pkgs_dir}/"
+        symlinks -c "$export_pkgs_dir" > /dev/null
 
-	    cp "${result_logdir}/px.ko" "${export_module_dir}/"
+        cp "${result_logdir}/px.ko" "${export_module_dir}/"
 
-	fi # result = 0
-	touch "${result_logdir}/ran_test"
     fi # result = 0
+    touch "${result_logdir}/ran_test"
 
     uninstall_pkgs $pkg_names
     in_container rm -rf "$container_tmpdir"
