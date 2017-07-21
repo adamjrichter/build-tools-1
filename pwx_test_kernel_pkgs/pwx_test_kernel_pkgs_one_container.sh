@@ -130,6 +130,7 @@ test_kernel_pkgs_func() {
     local container_tmpdir result_logdir
     local result filename real dirname basename headers_dir
     local pkg_names deps_unfiltered dep_names arg guess_utsname
+    local dep_filtered
     local export_dir export_pkgs_dir export_module_dir
     local container_tmpdir=/tmp/test-portworx-kernels.$$
     local pxfuse_dir pxd_version
@@ -165,7 +166,8 @@ test_kernel_pkgs_func() {
 
     dep_names=""
     for dep in $deps_unfiltered ; do
-	dep_names="$dep_names $(filter_word "$dep" $pkg_names)"
+	dep_filtered=$(filter_word "$dep" $pkg_names)
+	dep_names="$dep_names $dep_filtered"
     done
 
     install_pkgs $dep_names
