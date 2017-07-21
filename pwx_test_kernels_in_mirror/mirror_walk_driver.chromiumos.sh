@@ -16,7 +16,7 @@ walk_mirror_chromiumos() {
     shift 1
 
     "$@" --skip-build --skip-cleanup --all-containers "$mirror_tree"
-    ( cd "$mirror_tree" && git brach -a ) |
+    ( cd "$mirror_tree" && git branch -a ) |
 	while read branch ; do
             if ! "$@" --skip-load --prepare-build --skip-cleanup "$mirror_tree/$branch" "$branch" ; then
 		return_status=$?
