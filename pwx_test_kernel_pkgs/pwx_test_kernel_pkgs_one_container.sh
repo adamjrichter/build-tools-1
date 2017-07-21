@@ -125,7 +125,6 @@ guess_utsname_from_headers_dir() {
     esac
 }
 
-
 test_kernel_pkgs_func() {
     local container_tmpdir result_logdir
     local result filename real dirname basename headers_dir
