@@ -5,7 +5,7 @@ pkg_files_to_names_chromiumos()       { true ; }
 
 get_default_mirror_dirs_chromiumos()
 {
-    echo /home/ftp/mirrors/git/https/chromium.googlesource.com/thirdparty/kernel
+    echo /home/ftp/mirrors/git/https/chromium.googlesource.com/chromiumos/third_party/kernel
 }
 
 walk_mirror_chromiumos() {
@@ -15,14 +15,14 @@ walk_mirror_chromiumos() {
 
     shift 1
 
-    "$@" --skip-build --skip-cleanup --all-containers "$mirror_tree"
+    "$@" --skip-build --skip-cleanup --all-releases "$mirror_tree"
     ( cd "$mirror_tree" && git branch -a ) |
 	while read branch ; do
             if ! "$@" --skip-load --prepare-build --skip-cleanup "$mirror_tree/$branch" "$branch" ; then
 		return_status=$?
 	    fi
 	done
-    "$@" --skip-load --skip-build --all-containers "$mirror_tree"
+    "$@" --skip-load --skip-build --all-releases "$mirror_tree"
 
     return $return_status
 }
