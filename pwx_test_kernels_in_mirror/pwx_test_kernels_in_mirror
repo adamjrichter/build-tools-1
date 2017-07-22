@@ -88,8 +88,15 @@ PATH=$PATH:/usr/local/bin
 mirror_callback() {
     local mirror_dir="$1"
     local log_subdir="$2"
-    local pkg1="$3"
-    local pkg_subdir command_logdir result
+    local pkg1 pkg_subdir command_logdir result word
+
+    shift 2
+    for pkg1 in "$@" ; do
+	case "$pkg1" in
+	    --* ) shift ; continue ;;
+	    * ) break ;;
+	esac
+    done
 
     if [[ -n "$mirror_top" ]] ; then
 	pkg_subdir=${pkg1#$mirror_top}
@@ -103,8 +110,6 @@ mirror_callback() {
 	# packages found in /home/ftp/downloads/<distribution>/.
 	pkg_subdir="${pkg1#/home/ftp/}"
     fi
-
-    shift 2
 
     command_logdir="${log_subdir}/${pkg_subdir}"
     mkdir -p "$command_logdir"
