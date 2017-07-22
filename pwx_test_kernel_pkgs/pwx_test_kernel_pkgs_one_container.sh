@@ -143,10 +143,6 @@ guess_utsname_from_headers_dir() {
     esac
 }
 
-load_container() {
-}
-
-
 # Usage: test_kernel_pkgs_load pxfuse_dir files...
 test_kernel_pkgs_load() {
     local container_tmpdir
