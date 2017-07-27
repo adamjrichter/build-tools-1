@@ -36,17 +36,10 @@ pkg_files_to_dependencies_chromiumos() { true ; }
 
 install_pkgs_dir_chromiumos()
 {
-    install_pkgs genisoimage squashfs-tools
     in_container sh -c "
 	set -x ;
-	rm -rf $chromiumos_remote_tmp_dir/squashfs-root ;
-	mkdir -p $chromiumos_remote_tmp_dir &&
-	for iso_file in $1/* ; do
-		isoinfo -J -R -x /chromiumos/cpio.gz -i \$iso_file |
-			gunzip |
-			( cd $chromiumos_remote_tmp_dir && cpio --extract usr.squashfs ) &&
-		( cd $chromiumos_remote_tmp_dir && unsquashfs usr.squashfs lib lib64/modules ) ;
-	done"
+	rm -rf $chromiumos_remote_tmp_dir
+	mv $1/*/. $chromiumos_remote_tmp_dir"
 }
 
 get_dist_releases_chromiumos()
