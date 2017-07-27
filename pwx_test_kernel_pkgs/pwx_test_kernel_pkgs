@@ -39,6 +39,7 @@ force=false
 logdir=$PWD
 lockdir=/var/lock/pwx_test_kernel_pkgs
 pxfuse_dir=
+skip_build=false
 
 exit_handler() {
     rm -rf "$local_tmp_dir"
@@ -59,7 +60,7 @@ parse_args() {
 	    --pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
 	    --prepare-build ) extra_args="$extra_args $1" ;;
 	    --releases=* ) distro_release=${1#--releases=} ;;
-	    --skip-build ) extra_args="$extra_args $1" ;;
+	    --skip-build ) extra_args="$extra_args $1" ; skip_build=true ;;
 	    --skip-cleanup ) extra_args="$extra_args $1" ;;
 	    --skip-load ) extra_args="$extra_args $1" ;;
 	    --* ) usage >&2 ; exit 1 ;;
@@ -134,7 +135,7 @@ matches_first() {
 test_kernel_pkgs() {
     local result release releases local make_args lockfile
 
-    echo "Command: pwx_test_kernel_pkgs $*"
+    echo "Command: test_kernel_pkgs $*"
 
     if [[ -n "$distro_releases" ]] ; then
 	releases=$(echo "$distro_releases" | sed 's/,/ /g')
@@ -174,8 +175,10 @@ test_kernel_pkgs() {
 	    break
 	fi
     done
-    echo "$result $distro $release make_args=$make_args" > "$logdir/exit_code"
-    mv "$logdir/ran_test" "$logdir/done" 2> /dev/null
+    if ! $skip_build ; then
+	echo "$result $distro $release make_args=$make_args" > "$logdir/exit_code"
+	mv "$logdir/ran_test" "$logdir/done" 2> /dev/null
+    fi
     return $result
 }
 
