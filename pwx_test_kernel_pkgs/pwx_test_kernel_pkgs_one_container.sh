@@ -165,7 +165,7 @@ test_kernel_pkgs_load() {
 	dirname=${real%/*}
 	basename=${real##*/}
 	tar -C "$dirname" -c -- "$basename" |
-	    in_container tar -C "${container_tmpdir}/header_pkgs" -xpv
+	    in_container tar -C "${container_tmpdir}/header_pkgs" -xp
     done
 
     pkg_names=$(pkg_files_to_names "$@")
