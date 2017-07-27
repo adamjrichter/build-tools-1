@@ -19,7 +19,7 @@ deb_apt_get_cmd="apt-get --quiet --quiet --yes --force-yes"
 
 in_container_flock_deb() {
     # Do an in_container command, but block for up to five minutes to
-    # acquire (and release) the dpkg lock, to reduce the change of the
+    # acquire (and release) the dpkg lock, to reduce the chance of the
     # command failing due to some automatic dpkg database update running
     # or something like that.  Something taking the lock broke a few
     # of he Ubuntu rebuild tests.
