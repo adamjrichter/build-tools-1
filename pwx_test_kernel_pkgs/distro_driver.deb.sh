@@ -22,7 +22,7 @@ in_container_flock_deb() {
     # acquire (and release) the dpkg lock, to reduce the chance of the
     # command failing due to some automatic dpkg database update running
     # or something like that.  Something taking the lock broke a few
-    # of he Ubuntu rebuild tests.
+    # of the Ubuntu rebuild tests.
     local seconds=600
     local lockfile=/var/lib/dpkg/lock
     in_container env DEBIAN_FRONTEND=noninteractive \
