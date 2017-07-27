@@ -37,7 +37,7 @@ deb_in_container_apt_get() {
 
 dist_start_container_deb()
 {
-    local cmd="apt-get install --quiet --quiet --yes"
+    local cmd="apt-get --quiet --quiet --yes"
     local new_args="--allow-downgrades --allow-remove-essential --allow-change-held-packages"
 
     if in_container_flock_deb sh -c "$cmd $new_args install bash 2> /dev/null" ; then
