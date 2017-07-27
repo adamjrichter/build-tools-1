@@ -41,9 +41,9 @@ force=false
 logdir=$PWD
 pxfuse_dir=""
 prepare_build=false
-skip_build=true
-skip_cleanup=true
-skip_load=true
+skip_build=false
+skip_cleanup=false
+skip_load=false
 
 exit_handler() {
     rm -rf "$local_tmp_dir"
@@ -295,8 +295,8 @@ test_kernel_pkgs_func() {
     make_args="$3"
     shift 3
 
-    if ! $skip_download ; then
-	test_kernel_pkgs_download "$pxfuse_dir" "$@" || return $?
+    if ! $skip_load ; then
+	test_kernel_pkgs_load "$pxfuse_dir" "$@" || return $?
     fi
 
     if ! $skip_build ; then
