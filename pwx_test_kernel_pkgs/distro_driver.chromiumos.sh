@@ -8,7 +8,6 @@ chromiumos_remote_tmp_dir=/tmp/chromiumos_remote_tmp_dir
 pkg_files_to_names_chromiumos()       { pkg_files_to_names_ubuntu     "$@" ; }
 pkg_files_to_dependencies_chromiumos() { pkg_files_to_dependencies_ubuntu "$@" ; }
 install_pkgs_chromiumos()             { install_pkgs_ubuntu           "$@" ; }
-install_pkgs_dir_chromiumos()         { install_pkgs_dir_ubuntu       "$@" ; }
 uninstall_pkgs_chromiumos()           { uninstall_pkgs_ubuntu         "$@" ; }
 pkgs_update_chromiumos()              { pkgs_update_ubuntu            "$@" ; }
 dist_start_container_chromiumos()     { dist_start_container_ubuntu   "$@" ; }
@@ -22,10 +21,6 @@ start_container_chromiumos()
 }
 
 dist_init_container_chromiumos() { dist_init_container_ubuntu "$@" ; }
-
-install_pkgs_chromiumos()             { install_pkgs_ubuntu           "$@" ; }
-install_pkgs_dir_chromiumos()         { install_pkgs_dir_ubuntu       "$@" ; }
-uninstall_pkgs_chromiumos()           { uninstall_pkgs_ubuntu         "$@" ; }
 
 # Rely on dist_clean_up_container_chromiumos to remove the Chromiumos
 # .iso files that were installed by install_pkgs_dir_chromiumos.  So,
@@ -61,17 +56,19 @@ dist_clean_up_container_chromiumos()
     dist_clean_up_container_ubuntu   "$@"
 }
 
-chromiumos_before_build() {
+chromiumos_prepare_build() {
     local container_tmpdir="$1"
     local branch="$3"
+
+    echo "AJR chromiumos_prepare_build $*" >&2
 
     install_pkgs curl
     # FIXME?  Is it necessory to "apt-get install" some other packages,
     # besides curl?
 
     in_container sh -c \
-	       "cd ${container_tmpdir} &&
-		git branch ${branch} &&
+               "cd ${chromiumos_remote_tmp_dir} &&
+		git checkout ${branch} &&
 		./chromeos/scripts/prepareconfig chromiumos-x86_64 &&
 		make prepare"
 }
