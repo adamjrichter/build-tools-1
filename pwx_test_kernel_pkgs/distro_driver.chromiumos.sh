@@ -39,7 +39,7 @@ install_pkgs_dir_chromiumos()
     in_container sh -c "
 	set -x ;
 	rm -rf $chromiumos_remote_tmp_dir
-	mv $1/*/. $chromiumos_remote_tmp_dir"
+	mv $1/* $chromiumos_remote_tmp_dir"
 }
 
 get_dist_releases_chromiumos()
@@ -52,7 +52,7 @@ get_dist_releases_chromiumos()
 
 pkg_files_to_kernel_dirs_chromiumos()
 {
-    in_container sh -c "echo $chromiumos_remote_tmp_dir/squashfs-root/lib/modules/[0-9]*/build"
+    echo "${chromiumos_remote_tmp_dir}"
 }
 
 dist_clean_up_container_chromiumos()
