@@ -10,6 +10,7 @@ Usage: pwx_test_kernel_pkgs [options] pkg_files...
 	--all-releases
 	--arch=architecture            [default: amd64]
 	--containers=container_system  [default: docker]
+	--container-tmpdir=dir       [default: /tmp/test-portworx-kernels.\$\$]
 	--distribution=dist            [default: ubuntu]
 	--force
         --help
@@ -47,11 +48,14 @@ exit_handler() {
 
 # Use a function to parse main argument to avoid modifying them.
 parse_args() {
+    local all_args="$*"
+    local non_switch_args=0
     while [[ $# -gt 0 ]] ; do
 	case "$1" in
 	    --all-releases ) all_releases=true ;;
 	    --arch=* ) arch=${1#--arch=} ;;
 	    --containers=* ) container_system=${1#--containers=} ;;
+	    --container-tmpdir=* ) extra_args="$extra_args $1" ;;
 	    --distribution=* ) distro=${1#--distribution=} ;;
 	    --force ) force=true ;;
 	    --help ) usage ; exit 0 ;;
@@ -63,13 +67,17 @@ parse_args() {
 	    --skip-build ) extra_args="$extra_args $1" ; skip_build=true ;;
 	    --skip-cleanup ) extra_args="$extra_args $1" ;;
 	    --skip-load ) extra_args="$extra_args $1" ;;
-	    --* ) usage >&2 ; exit 1 ;;
-	    * ) break ;;
+	    -- ) break ;;
+	    --* )
+		echo "pwx_test_kernel_pkgs: Unrecognized option \"${1}\"." >&2
+		usage >&2
+		exit 1 ;;
+	    * ) non_switch_args=$(($non_switch_args + 1)) ;;
 	esac
 	shift
     done
 
-    if [[ $# -lt 1 ]] ; then
+    if [[ $non_switch_args -lt 1 ]] ; then
 	usage >&2
 	exit 1
     fi
@@ -134,8 +142,6 @@ matches_first() {
 
 test_kernel_pkgs() {
     local result release releases local make_args lockfile
-
-    echo "Command: test_kernel_pkgs $*"
 
     if [[ -n "$distro_releases" ]] ; then
 	releases=$(echo "$distro_releases" | sed 's/,/ /g')
