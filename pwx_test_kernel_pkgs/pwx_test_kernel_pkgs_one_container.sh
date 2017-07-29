@@ -9,6 +9,7 @@ Usage: pwx_test_kernel_pkgs [options] pkg_files...
     options:
 	--arch=architecture            [default: amd64]
 	--containers=container_system  [default: docker]
+	--container-tmpdir=dir       [default: /tmp/test-portworx-kernels.\$\$]
 	--distribution=dist            [default: ubuntu]
 	--force
         --help
@@ -17,15 +18,14 @@ Usage: pwx_test_kernel_pkgs [options] pkg_files...
 	--prepare-build
 	--pfxuse=pxfuse_src_dir        [default: download tempoary
 				        directory from github]
-	--release=dist_releaes         Which releaes of the OS distribution
-                                       to use.  Mandatory.
-	--releases=dist_releases       Ignored
+	--release=dist_releaes       Which releaes of the OS distribution
+                                     to use.  Mandatory.
+	--releases=dist_releases     Ignored
 	--skip-build
 	--skip-cleanup
 	--skip-load
 EOF
 }
-
 
 . ${scriptsdir}/container_driver.sh
 . ${scriptsdir}/distro_driver.sh
@@ -35,6 +35,7 @@ arch=amd64
 distro=ubuntu
 distro_release=""
 container_system=lxc
+container_tmpdir=/tmp/test-portworx-kernels.$$
 leave_containers_running=false
 make_args=""
 force=false
@@ -49,36 +50,58 @@ exit_handler() {
     rm -rf "$local_tmp_dir"
 }
 
-echo ""
-echo "Command: pwx_test_kernel_pkgs_one_container.sh $*"
+echo "" >&2
+echo "Command: pwx_test_kernel_pkgs_one_container.sh $*" >&2
+echo "pwx_test_kernel_pkgs_one_container \$1=$1." >&2
+echo "pwx_test_kernel_pkgs_one_container \$2=$2." >&2
+echo "pwx_test_kernel_pkgs_one_container \$3=$3." >&2
+echo "pwx_test_kernel_pkgs_one_container \$4=$4." >&2
+echo "pwx_test_kernel_pkgs_one_container \$5=$5." >&2
 
-while [[ $# -gt 0 ]] ; do
-    case "$1" in
-	--arch=* ) arch=${1#--arch=} ;;
-	--containers=* ) container_system=${1#--containers=} ;;
-	--distribution=* ) distro=${1#--distribution=} ;;
+i=1
+count=1
+while [[ $i -le $# ]] ; do
+    arg="${@:$i:1}"
+    echo "AJR pwx_test_kernel_pkgs_on_container.sh arg $count = $arg." >&2
+    count=$((count + 1))
+    case "$arg" in
+	--all-releases ) true ;; # Ignore
+	--arch=* ) arch=${arg#--arch=} ;;
+	--containers=* ) container_system=${arg#--containers=} ;;
+	--container-tmpdir=* ) container_tmpdir=${arg#--container-tmpdir=} ;;
+	--distribution=* ) distro=${arg#--distribution=} ;;
 	--force ) force=true ;;
 	--help ) usage ; exit 0 ;;
 	--leave-containers-running ) leave_containers_running=true ;;
-	--logdir=* ) logdir=${1#--logdir=} ;;
-	--make-args=* ) make_args="${1#--make-args=}" ;;
-	--pxfuse=* ) pxfuse_dir=${1#--pxfuse=} ;;
-	--release=* ) distro_release=${1#--release=} ;;
+	--logdir=* ) logdir=${arg#--logdir=} ;;
+	--make-args=* ) make_args="${arg#--make-args=}" ;;
+	--pxfuse=* ) pxfuse_dir=${arg#--pxfuse=} ;;
+	--release=* ) distro_release=${arg#--release=} ;;
 	--releases=* ) true ;;	# Ignore
 	--prepare-build ) prepare_build=true ;;
 	--skip-build ) skip_build=true ;;
 	--skip-cleanup ) skip_cleanup=true ;;
 	--skip-load ) skip_load=true ;;
-	--* ) usage >&2 ; exit 1 ;;
-	* ) break ;;
+	-- ) ;;
+	--* )
+	    echo "Unrecognized argument \"${arg}\"." >&2
+	    usage >&2
+	    exit 1 ;;
+	* ) i=$((i + 1)) ; continue ;;
     esac
-    shift
+
+    set -- "${@:1:$((i - 1))}" "${@:$((i + 1))}"
+    # ^^^ Deletes the current argument from the argument list.
+
+    case "$arg" in
+	-- ) break ;;
+    esac
 done
 
 pkgformat=$distro
 # Used by some function in distro_driver.sh.
 
-if [[ $# -lt 1 ]] ; then
+if [[ $# -le 0 ]] ; then
     usage >&2
     exit 1
 fi
@@ -143,16 +166,16 @@ guess_utsname_from_headers_dir() {
     esac
 }
 
-# Usage: test_kernel_pkgs_load pxfuse_dir files...
+# Usage: test_kernel_pkgs_load pxfuse_dir container_tmpdir files...
 test_kernel_pkgs_load() {
-    local container_tmpdir
+    local pxfuse_dir="$1"
+    local container_tmpdir="$2"
+
     local result filename real dirname basename headers_dir
     local pkg_names deps_unfiltered dep_names dep_filtered
-    local container_tmpdir=/tmp/test-portworx-kernels.$$
     local pxfuse_dir
 
-    pxfuse_dir="$1"
-    shift
+    shift 2
 
     in_container rm -rf "$container_tmpdir"
     in_container mkdir -p "$container_tmpdir/pxfuse_dir" "$container_tmpdir/header_pkgs"
@@ -165,7 +188,7 @@ test_kernel_pkgs_load() {
 	dirname=${real%/*}
 	basename=${real##*/}
 	tar -C "$dirname" -c -- "$basename" |
-	    in_container tar -C "${container_tmpdir}/header_pkgs" -xp
+	    in_container tar -C "${container_tmpdir}/header_pkgs" -xpv
     done
 
     pkg_names=$(pkg_files_to_names "$@")
@@ -192,19 +215,20 @@ test_kernel_pkgs_load() {
 }
 
 test_kernel_pkgs_build() {
-    local container_tmpdir result_logdir
+    local pxfuse_dir="$1"
+    local container_tmpdir="$2"
+    local result_logdir="$3"
+    local make_args="$4"
+
+    local result_logdir
     local result headers_dir
     local pkg_names deps_unfiltered dep_names guess_utsname
     local dep_filtered
     local export_dir export_pkgs_dir export_module_dir
-    local container_tmpdir=/tmp/test-portworx-kernels.$$
     local pxfuse_dir pxd_version
     local make_args=
 
-    pxfuse_dir="$1"
-    result_logdir="$2"
-    make_args="$3"
-    shift 3
+    shift 4
 
     pkg_names=$(pkg_files_to_names "$@")
     deps_unfiltered=$(pkg_files_to_dependencies "$@")
@@ -232,7 +256,7 @@ test_kernel_pkgs_build() {
     fi
 
     result=0
-    if $prepare_build ; then 
+    if $prepare_build ; then
 	${distro}_prepare_build "${container_tmpdir}" "$@"
 	result=$?
     fi
@@ -247,7 +271,7 @@ test_kernel_pkgs_build() {
 
 	result=$?
     fi
-    
+
     if [[ "$result" = 0 ]] ; then
         in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
             tar -C "${result_logdir}" -xpv
@@ -275,12 +299,11 @@ test_kernel_pkgs_build() {
 }
 
 test_kernel_pkgs_func() {
-    local container_tmpdir result_logdir
+    local result_logdir
     local result filename headers_dir
     local pkg_names deps_unfiltered dep_names arg guess_utsname
     local dep_filtered
     local export_dir export_pkgs_dir export_module_dir
-    local container_tmpdir=/tmp/test-portworx-kernels.$$
     local pxfuse_dir pxd_version
     local make_args=
 
@@ -296,12 +319,13 @@ test_kernel_pkgs_func() {
     shift 3
 
     if ! $skip_load ; then
-	test_kernel_pkgs_load "$pxfuse_dir" "$@" || return $?
+	test_kernel_pkgs_load "$pxfuse_dir" "$container_tmpdir" "$@" ||
+	    return $?
     fi
 
     if ! $skip_build ; then
-	test_kernel_pkgs_build \
-	    "$pxfuse_dir" "$result_logdir" "$make_args" "$@"
+	test_kernel_pkgs_build "$pxfuse_dir" "$container_tmpdir" \
+			       "$result_logdir" "$make_args" "$@"
 	result=$?
     fi
 
@@ -324,10 +348,12 @@ test_kernel_pkgs() {
     local result local
     local release="$distro_release"
 
-    echo "test_kernel_pkgs: Attempting to test kernel package(s) on distribution $distro, release $release, make_args=$make_args."
+    echo "test_kernel_pkgs: Attempting to test kernel package(s) on distribution $distro, release $release, make_args=$make_args." >&2
+    echo "test_kernel_pkgs: Done printing make_args.  Doing start_container." >&2
 
     start_container --release="$release" dist_init_container
 
+    echo "test_kernel_pkgs: Done with start_container.  Calling test_kernel_pkgs_func." >&2
     test_kernel_pkgs_func "$pxfuse_dir" "$logdir" "$make_args" "$@"
     result=$?
 
