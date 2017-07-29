@@ -12,18 +12,25 @@ walk_mirror_chromiumos() {
     local mirror_tree="$1"
     local return_status=0
     local branch
+    local container_tmpdir=/tmp/test-portworx-kernels.$$
 
     shift 1
 
-    "$@" --skip-build --skip-cleanup --all-releases "$mirror_tree"
+    "$@" --skip-build --skip-cleanup --all-releases \
+	 "--container-tmpdir=${container_tmpdir}" "$mirror_tree"
+
     ( cd "$mirror_tree" && git branch -a ) |
 	awk '{print $NF;}' |
 	while read branch ; do
-            if ! "$@" --skip-load --prepare-build --skip-cleanup "$mirror_tree/$branch" "$branch" ; then
+            if ! "$@" --skip-load --prepare-build --skip-cleanup \
+		 "--container-tmpdir=${container_tmpdir}" \
+		 "$mirror_tree/$branch" "$branch" ; then
 		return_status=$?
 	    fi
 	done
-    "$@" --skip-load --skip-build --all-releases "$mirror_tree"
+
+    "$@" --skip-load --skip-build --all-releases \
+	 "--container-tmpdir=${container_tmpdir}" "$mirror_tree"
 
     return $return_status
 }
