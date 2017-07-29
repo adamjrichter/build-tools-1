@@ -85,18 +85,28 @@ prepare_pxfuse_dir() {
 
 PATH=$PATH:/usr/local/bin
 
+find_first_non_switch_arg() {
+    local i arg
+
+    i=1
+    while [[ $i -le $# ]] ; do
+	arg="${@:$i:1}"
+	case "$arg" in
+	    --* ) ;;
+	    * ) echo "$arg" ; return 0 ;;
+	esac
+	i=$((i + 1))
+    done
+    return 1
+}
+
 mirror_callback() {
     local mirror_dir="$1"
     local log_subdir="$2"
-    local pkg1 pkg_subdir command_logdir result word
+    local pkg1 pkg_subdir command_logdir result word i
 
     shift 2
-    for pkg1 in "$@" ; do
-	case "$pkg1" in
-	    --* ) shift ; continue ;;
-	    * ) break ;;
-	esac
-    done
+    pkg1=$(find_first_non_switch_arg "$@")
 
     if [[ -n "$mirror_top" ]] ; then
 	pkg_subdir=${pkg1#$mirror_top}
