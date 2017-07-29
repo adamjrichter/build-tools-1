@@ -60,15 +60,18 @@ chromiumos_prepare_build() {
     local container_tmpdir="$1"
     local branch="$3"
 
-    echo "AJR chromiumos_prepare_build $*" >&2
-
     install_pkgs curl
     # FIXME?  Is it necessory to "apt-get install" some other packages,
     # besides curl?
 
     in_container sh -c \
                "cd ${chromiumos_remote_tmp_dir} &&
+		git clean --force &&
 		git checkout ${branch} &&
 		./chromeos/scripts/prepareconfig chromiumos-x86_64 &&
-		make prepare"
+		make prepare &&
+		make scripts"
+    # 		make &&
+    #		make modules
+    # "make && make modules" is for kernel symbol versioning.
 }
