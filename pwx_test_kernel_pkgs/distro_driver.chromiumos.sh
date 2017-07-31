@@ -111,10 +111,9 @@ chromiumos_build() {
          cd ${container_tmpdir}/pxfuse_dir &&
 	 make clean" || return $?
 
-    default_build_func "${container_tmpdir}" "${headers_dir}" "${make_args}" ||
-	return $?
-
-    mkdir -p "${commit_tgz%/*}"
+    mkdir -p "${commit_tgz%/*}" &&
     in_container sh -c "cd ${container_tmpdir} && tar cz kernel" \
-		 > "${commit_tgz}"
+		 > "${commit_tgz}" &&
+
+    default_build_func "${container_tmpdir}" "${headers_dir}" "${make_args}"
 }
