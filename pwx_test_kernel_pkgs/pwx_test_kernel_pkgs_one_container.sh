@@ -52,18 +52,11 @@ exit_handler() {
 
 echo "" >&2
 echo "Command: pwx_test_kernel_pkgs_one_container.sh $*" >&2
-echo "pwx_test_kernel_pkgs_one_container \$1=$1." >&2
-echo "pwx_test_kernel_pkgs_one_container \$2=$2." >&2
-echo "pwx_test_kernel_pkgs_one_container \$3=$3." >&2
-echo "pwx_test_kernel_pkgs_one_container \$4=$4." >&2
-echo "pwx_test_kernel_pkgs_one_container \$5=$5." >&2
 
 i=1
 count=1
 while [[ $i -le $# ]] ; do
     arg="${@:$i:1}"
-    echo "AJR pwx_test_kernel_pkgs_on_container.sh arg $count = $arg." >&2
-    count=$((count + 1))
     case "$arg" in
 	--all-releases ) true ;; # Ignore
 	--arch=* ) arch=${arg#--arch=} ;;
