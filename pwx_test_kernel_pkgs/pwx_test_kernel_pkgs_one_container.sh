@@ -287,7 +287,7 @@ test_kernel_pkgs_build() {
         rm -rf "$export_pkgs_dir" "$export_module_dir"
         mkdir -p "$export_pkgs_dir" "$export_module_dir"
         ln --symbolic --force "$@" "${export_pkgs_dir}/"
-        symlinks -c "$export_pkgs_dir" > /dev/null
+        symlinks -c -d "$export_pkgs_dir" > /dev/null
 
         cp "${result_logdir}/px.ko" "${export_module_dir}/"
 
