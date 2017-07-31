@@ -207,19 +207,32 @@ test_kernel_pkgs_load() {
     return $result
 }
 
+default_build_func()
+{
+    local container_tmpdir="$1"
+    local headers_dir="$2"
+    local make_args="$3"
+
+    in_container sh -c \
+                 "cd ${container_tmpdir}/pxfuse_dir && \
+                  autoreconf && \
+                  ./configure && \
+                  make KERNELPATH=$headers_dir $make_args"
+}
+
+
 test_kernel_pkgs_build() {
     local pxfuse_dir="$1"
     local container_tmpdir="$2"
     local result_logdir="$3"
     local make_args="$4"
 
-    local result_logdir
     local result headers_dir
     local pkg_names deps_unfiltered dep_names guess_utsname
     local dep_filtered
     local export_dir export_pkgs_dir export_module_dir
-    local pxfuse_dir pxd_version
-    local make_args=
+    local pxd_version
+    local build_func_name
 
     shift 4
 
@@ -248,22 +261,14 @@ test_kernel_pkgs_build() {
         return 1
     fi
 
-    result=0
-    if $prepare_build ; then
-	${distro}_prepare_build "${container_tmpdir}" "$@"
-	result=$?
+    if [[ ".$(type -t ${distro}_build)" = ".function" ]] ; then
+	build_func_name="${distro}_build"
+    else
+	build_func_name=default_build_func
     fi
-    if [[ $result = 0 ]] ; then
-	in_container sh -c \
-                 "cd ${container_tmpdir}/pxfuse_dir && \
-                  autoreconf && \
-                  ./configure && \
-                  make KERNELPATH=$headers_dir $make_args"
 
-	# make KERNELPATH=$headers_dir CC=\"gcc -fno-pie\"
-
-	result=$?
-    fi
+    $build_func_name "${container_tmpdir}" "${headers_dir}" "${make_args}" "$@"
+    result=$?
 
     if [[ "$result" = 0 ]] ; then
         in_container tar -C "${container_tmpdir}/pxfuse_dir" -c px.ko |
