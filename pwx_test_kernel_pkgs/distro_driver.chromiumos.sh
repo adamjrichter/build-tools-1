@@ -71,8 +71,8 @@ chromiumos_build() {
     # this optimization, set the variable make_modules_command to "true" (a
     # no-op) instead of "make modules":
     #
-    # local make_modules_command="true"
-    local make_modules_command="make modules"
+    local make_modules_command="true"
+    # local make_modules_command="make modules"
 
     install_pkgs curl
     # FIXME?  Is it necessory to "apt-get install" some other packages,
