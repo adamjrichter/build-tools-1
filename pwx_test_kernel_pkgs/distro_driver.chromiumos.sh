@@ -115,6 +115,14 @@ chromiumos_build() {
 	return 0
     fi
 
+    if ( in_container cat ${chromiumos_remote_tmp_dir}/kernel/.confg |
+	       grep '# CONFIG_MODVERSIONS is not set' ) ; then
+
+	# No need to build and save kernel symbol versions if kernel symbol
+	# versioning is disabled.
+	return 0
+    fi
+
     # Build the whole kernel (and possibly modules, depending on the
     # value of ${make_modules_command}), just to have kernel symbol
     # versioning information against which px.ko.
