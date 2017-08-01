@@ -32,9 +32,10 @@ pkg_files_to_dependencies_chromiumos() { true ; }
 install_pkgs_dir_chromiumos()
 {
     in_container sh -c "
-	set -x ;
-	rm -rf $chromiumos_remote_tmp_dir
-	mv $1/* $chromiumos_remote_tmp_dir"
+	set -x &&
+	rm -rf ${chromiumos_remote_tmp_dir}/kernel &&
+	mkdir -p ${chromiumos_remote_tmp_dir} &&
+	mv $1/* ${chromiumos_remote_tmp_dir}/kernel"
 }
 
 get_dist_releases_chromiumos()
@@ -47,12 +48,12 @@ get_dist_releases_chromiumos()
 
 pkg_files_to_kernel_dirs_chromiumos()
 {
-    echo "${chromiumos_remote_tmp_dir}"
+    echo "${chromiumos_remote_tmp_dir}/kernel"
 }
 
 dist_clean_up_container_chromiumos()
 {
-    in_container rm -rf "$chromiumos_remote_tmp_dir"
+    in_container rm -rf "${chromiumos_remote_tmp_dir}/kernel"
     dist_clean_up_container_ubuntu   "$@"
 }
 
@@ -63,8 +64,9 @@ chromiumos_build() {
     local log_subdir="$4"
     local branch="$5"
     local commit_name=${log_subdir##*/}
-    local commit_tgz="/home/ftp/cache/kernels/chromiumos/${commit_name}.tar.gz"
+    local commit_archive="/home/ftp/cache/kernels/chromiumos/${commit_name}.tar.xz"
     local build_dir
+    local result
 
     # Currently, px.ko does not depend on any other kernel modules, so
     # we could probably skip making the kernel modules.  If you want to try
@@ -74,19 +76,29 @@ chromiumos_build() {
     local make_modules_command="true"
     # local make_modules_command="make modules"
 
+    echo "AJR chromiumos_build called, commit_archive=$commit_archive." >&2
+    set -x # AJR 
+
     install_pkgs curl
     # FIXME?  Is it necessory to "apt-get install" some other packages,
     # besides curl?
 
-    if [[ -e "${commit_tgz}" ]] ; then
+    if [[ -e "${commit_archive}" ]] &&
+       ! tar -tJ < "${commit_archive}" > /dev/null ; then
+
+	rm -f "${commit_archive}"
+    fi
+
+    if [[ -e "${commit_archive}" ]] ; then
 	in_container sh -c \
             "rm -rf ${container_tmpdir}/kernel &&
+             mkdir -p ${container_tmpdir}/kernel &&
              cd ${container_tmpdir} &&
-	     tar xpz kernel" < "${commit_tgz}" || return $?
+	     tar -xpJ kernel" < "${commit_archive}" || return $?
 	headers_dir="${container_tmpdir}/kernel"
     else
 	in_container sh -c \
-               "cd ${chromiumos_remote_tmp_dir} &&
+               "cd ${chromiumos_remote_tmp_dir}/kernel &&
 		git clean --force &&
 		git checkout ${branch} &&
 		./chromeos/scripts/prepareconfig chromiumos-x86_64 &&
@@ -97,7 +109,7 @@ chromiumos_build() {
     default_build_func "${container_tmpdir}" "${headers_dir}" "${make_args}" ||
 	return $?
 
-    if [[ -e "${commit_tgz}" ]] ; then
+    if [[ -e "${commit_archive}" ]] ; then
 	return 0
     fi
 
@@ -105,15 +117,21 @@ chromiumos_build() {
     # value of ${make_modules_command}), just to have kernel symbol
     # versioning information against which px.ko.
     in_container sh -c \
-        "cd ${container_tmpdir}/kernel &&
+        "cd ${chromiumos_remote_tmp_dir}/kernel &&
 	 make vmlinux &&
 	 ${make_modules_command} &&
          cd ${container_tmpdir}/pxfuse_dir &&
-	 make clean" || return $?
+         make KERNELPATH=$headers_dir clean" || return $?
 
-    mkdir -p "${commit_tgz%/*}" &&
-    in_container sh -c "cd ${container_tmpdir} && tar cz kernel" \
-		 > "${commit_tgz}" &&
+    mkdir -p "${commit_archive%/*}" || return $?
+
+    in_container sh -c "cd ${chromiumos_remote_tmp_dir} && tar -cJ kernel" \
+		 > "${commit_archive}"
+    result=$?
+    if [[ $result != 0 ]] ; then
+	rm -f "${commit_archive}"
+	return $result
+    fi
 
     default_build_func "${container_tmpdir}" "${headers_dir}" "${make_args}"
 }
