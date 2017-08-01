@@ -37,10 +37,10 @@ pkg_files_to_dependencies_chromiumos() { true ; }
 install_pkgs_dir_chromiumos()
 {
     in_container sh -c "
-	set -x &&
-	rm -rf ${chromiumos_remote_tmp_dir}/kernel &&
-	mkdir -p ${chromiumos_remote_tmp_dir} &&
-	mv $1/* ${chromiumos_remote_tmp_dir}/kernel"
+        set -x &&
+        rm -rf ${chromiumos_remote_tmp_dir}/kernel &&
+        mkdir -p ${chromiumos_remote_tmp_dir} &&
+        mv $1/* ${chromiumos_remote_tmp_dir}/kernel"
 }
 
 get_dist_releases_chromiumos()
@@ -88,39 +88,39 @@ chromiumos_build() {
     if [[ -e "${commit_archive}" ]] &&
        ! tar -tJ < "${commit_archive}" > /dev/null ; then
 
-	rm -f "${commit_archive}"
+        rm -f "${commit_archive}"
     fi
 
     if [[ -e "${commit_archive}" ]] ; then
-	in_container sh -c \
+        in_container sh -c \
             "rm -rf ${container_tmpdir}/kernel &&
              mkdir -p ${container_tmpdir}/kernel &&
              cd ${container_tmpdir} &&
-	     tar -xpJ kernel" < "${commit_archive}" || return $?
-	headers_dir="${container_tmpdir}/kernel"
+             tar -xpJ kernel" < "${commit_archive}" || return $?
+        headers_dir="${container_tmpdir}/kernel"
     else
-	in_container sh -c \
+        in_container sh -c \
                "cd ${chromiumos_remote_tmp_dir}/kernel &&
-		git clean --force &&
-		git checkout ${branch} &&
-		./chromeos/scripts/prepareconfig chromiumos-x86_64 &&
-		make prepare &&
-		make scripts" || return $?
+                git clean --force &&
+                git checkout ${branch} &&
+                ./chromeos/scripts/prepareconfig chromiumos-x86_64 &&
+                make prepare &&
+                make scripts" || return $?
     fi
 
     default_build_func "${container_tmpdir}" "${headers_dir}" "${make_args}" ||
-	return $?
+        return $?
 
     if [[ -e "${commit_archive}" ]] ; then
-	return 0
+        return 0
     fi
 
     if ( in_container cat ${chromiumos_remote_tmp_dir}/kernel/.confg |
-	       grep '# CONFIG_MODVERSIONS is not set' ) ; then
+               grep '# CONFIG_MODVERSIONS is not set' ) ; then
 
-	# No need to build and save kernel symbol versions if kernel symbol
-	# versioning is disabled.
-	return 0
+        # No need to build and save kernel symbol versions if kernel symbol
+        # versioning is disabled.
+        return 0
     fi
 
     # Build the whole kernel (and possibly modules, depending on the
@@ -128,8 +128,8 @@ chromiumos_build() {
     # versioning information against which px.ko.
     in_container sh -c \
         "cd ${chromiumos_remote_tmp_dir}/kernel &&
-	 make vmlinux &&
-	 ${make_modules_command} &&
+         make vmlinux &&
+         ${make_modules_command} &&
          cd ${container_tmpdir}/pxfuse_dir &&
          make KERNELPATH=$headers_dir clean" || return $?
 
