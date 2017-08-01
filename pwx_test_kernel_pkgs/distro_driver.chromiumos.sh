@@ -76,9 +76,6 @@ chromiumos_build() {
     local make_modules_command="true"
     # local make_modules_command="make modules"
 
-    echo "AJR chromiumos_build called, commit_archive=$commit_archive." >&2
-    set -x # AJR 
-
     install_pkgs curl xz-utils
     # FIXME?  Is it necessory to "apt-get install" some other packages,
     # besides curl?
