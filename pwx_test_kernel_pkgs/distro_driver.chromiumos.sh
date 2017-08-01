@@ -3,6 +3,11 @@
 
 # For now, just default everything to the common RPM drivers.
 
+# Change the following line to ...= false to inhibit saving .tar.xz files
+# of successful versioned kernel builds.
+chromiumos_save_kernel_builds=true
+# chromiumos_save_kernel_builds=false
+
 chromiumos_remote_tmp_dir=/tmp/chromiumos_remote_tmp_dir
 
 pkg_files_to_names_chromiumos()       { pkg_files_to_names_ubuntu     "$@" ; }
@@ -122,12 +127,14 @@ chromiumos_build() {
 
     mkdir -p "${commit_archive%/*}" || return $?
 
-    in_container sh -c "cd ${chromiumos_remote_tmp_dir} && tar -cJ kernel" \
-		 > "${commit_archive}"
-    result=$?
-    if [[ $result != 0 ]] ; then
-	rm -f "${commit_archive}"
-	return $result
+    if $chromiumos_save_kernel_builds ; then
+        in_container sh -c "cd ${chromiumos_remote_tmp_dir} && tar -cJ kernel" \
+                     > "${commit_archive}"
+        result=$?
+        if [[ $result != 0 ]] ; then
+            rm -f "${commit_archive}"
+            return $result
+        fi
     fi
 
     default_build_func "${container_tmpdir}" "${headers_dir}" "${make_args}"
