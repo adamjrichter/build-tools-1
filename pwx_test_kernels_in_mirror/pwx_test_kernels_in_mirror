@@ -100,10 +100,23 @@ find_first_non_switch_arg() {
     return 1
 }
 
+# In case you want to run only a few examples from each release (for quick
+# testing), you can uncomment the following varialbes and the lines in
+# mirror_callback() that use them:
+# callback_count=1
+# max_callback_count=5
+
 mirror_callback() {
     local mirror_dir="$1"
     local log_subdir="$2"
     local pkg1 pkg_subdir command_logdir result word i
+
+    # echo "mirror_callback: distro=${distro} callback_count=${callback_count}." >&2
+    # callback_count=$((callback_count + 1))
+    # if [[ $callback_count -gt $max_callback_count ]] ; then
+    #     echo "AJR mirror_callback: skipping because callback_count > max_callback_count." >&2
+    #     return 0
+    # fi
 
     shift 2
     pkg1=$(find_first_non_switch_arg "$@")
