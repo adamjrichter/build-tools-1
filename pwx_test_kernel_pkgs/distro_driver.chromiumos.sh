@@ -115,7 +115,7 @@ chromiumos_build() {
         return 0
     fi
 
-    if ( in_container cat ${chromiumos_remote_tmp_dir}/kernel/.confg |
+    if ( in_container cat ${chromiumos_remote_tmp_dir}/kernel/.config |
                grep '# CONFIG_MODVERSIONS is not set' ) ; then
 
         # No need to build and save kernel symbol versions if kernel symbol
