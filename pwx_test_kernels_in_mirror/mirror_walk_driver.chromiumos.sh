@@ -22,7 +22,7 @@ walk_mirror_chromiumos() {
     ( cd "$mirror_tree" && git branch -a ) |
 	awk '{print $NF;}' |
 	while read branch ; do
-	    last_commit=$(cd "$mirror_tree" && git log --max-count=1 ..remotes/origin/0.12.362.B | ( read commit id ; echo "$id" ) )
+	    last_commit=$(cd "$mirror_tree" && git rev-list --max-count=1 "$branch" )
 	    echo "AJR walk_mirror_chromiumos: branch=${branch} last_commit=${last_commit}." >&2
             if ! "$@" --skip-load --prepare-build --skip-cleanup \
 		 "--container-tmpdir=${container_tmpdir}" \
