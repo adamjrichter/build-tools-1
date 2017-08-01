@@ -32,5 +32,5 @@ mirror_coreos() {
 }
 
 mirror_coreos stable
-# mirror_coreos alpha
+mirror_coreos alpha
 mirror_coreos beta
