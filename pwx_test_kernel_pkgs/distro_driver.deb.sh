@@ -45,6 +45,16 @@ dist_start_container_deb()
     else
 	deb_apt_get_cmd="$cmd --force-yes"
     fi
+
+    # Sometimes the package installations in dist_init_container_deb
+    # fail.  So, try again, just to be sure.  I had previously thought
+    # that this doing this here would generate network communication
+    # with a central Debian repository on each kernel build, but doing
+    # and strace on apt-get suggests that this is not the case, even
+    # though it generates a message like "<package> is already the
+    # newest version (<version-number>)."  I guess "apt-get install"
+    # is just using whatever data "apt-get update" left.
+    install_pkgs_deb autoconf g++ gcc git libelf-dev libssl1.0 make tar
 }
 
 dist_init_container_deb() {
